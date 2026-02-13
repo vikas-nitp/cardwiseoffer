@@ -1,9 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { ArrowRight, Pencil, ExternalLink, Star, TrendingUp, Tag } from "lucide-react";
+import { ArrowRight, Pencil, Star, TrendingUp, Tag } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import OfferCard from "@/components/OfferCard";
 
 interface SearchState {
   from: string;
@@ -15,57 +16,66 @@ interface SearchState {
 const offers = [
   {
     id: 1,
-    label: "Best for your card",
+    label: "Best match",
     labelIcon: Star,
-    labelColor: "bg-primary text-primary-foreground",
+    accentClass: "bg-primary text-primary-foreground",
+    accentBorder: "border-primary",
     platform: "MakeMyTrip",
     platformUrl: "https://www.makemytrip.com",
+    bank: "HDFC",
     card: "HDFC Infinia",
     discount: 1200,
     conditions: [
-      "Min booking: ₹5,000",
-      "Non-EMI transactions only",
+      "Min booking: ₹5,000 – ₹9,999",
       "Valid till 30 Apr 2025",
+      "Non-EMI transactions only",
       "Web & Mobile App",
-      "All users eligible",
       "Domestic flights only",
+      "Not valid on Multi-City flights",
+      "Not valid on Mondays",
+      "Cannot be combined with other offers",
     ],
   },
   {
     id: 2,
-    label: "Better option available",
+    label: "Higher savings available",
     labelIcon: TrendingUp,
-    labelColor: "bg-savings text-savings-foreground",
+    accentClass: "bg-accent text-accent-foreground",
+    accentBorder: "border-accent",
     platform: "Cleartrip",
     platformUrl: "https://www.cleartrip.com",
+    bank: "ICICI",
     card: "ICICI Sapphiro",
     discount: 1800,
-    extraSavings: 600,
     conditions: [
-      "Min booking: ₹4,000",
-      "EMI & Non-EMI both",
-      "Valid till 28 Apr 2025",
+      "Min booking: ₹4,000 – ₹9,999",
+      "EMI & Non-EMI allowed",
       "Mobile App only",
-      "First time users",
       "All routes",
+      "Valid till 28 Apr 2025",
+      "Not valid on Multi-City flights",
+      "Not valid on Mondays",
+      "Cannot be combined with other offers",
     ],
   },
   {
     id: 3,
-    label: "No card required",
+    label: "No card needed",
     labelIcon: Tag,
-    labelColor: "bg-secondary text-secondary-foreground",
+    accentClass: "bg-secondary text-secondary-foreground",
+    accentBorder: "border-border",
     platform: "EaseMyTrip",
     platformUrl: "https://www.easemytrip.com",
+    bank: null,
     card: null,
     discount: 500,
     conditions: [
-      "Platform-wide discount",
+      "No card required",
       "No minimum booking",
       "Valid till 25 Apr 2025",
       "Web & Mobile App",
-      "First time users",
       "Domestic flights only",
+      "All users eligible",
     ],
   },
 ];
@@ -88,11 +98,16 @@ const Results = () => {
     }
   })();
 
+  // Extract bank chips from the bank string
+  const bankChips = state.bank
+    ? state.bank.split(",").map((b) => b.trim()).filter(Boolean)
+    : [];
+
   return (
     <div className="min-h-screen sky-gradient flex flex-col">
       <Header />
 
-      <main className="flex-1 px-6 py-8 md:py-12 max-w-3xl mx-auto w-full">
+      <main className="flex-1 px-4 md:px-6 py-8 md:py-12 max-w-6xl mx-auto w-full">
         {/* Summary bar */}
         <div className="bg-card rounded-2xl card-shadow-lg p-5 md:p-6 flex flex-wrap items-center justify-between gap-4 mb-8 animate-fade-up border border-border/50">
           <div className="flex items-center gap-3 flex-wrap">
@@ -106,13 +121,20 @@ const Results = () => {
               {state.to}
             </span>
             <span className="text-muted-foreground">•</span>
-            <span className="font-semibold text-foreground">{formattedDate}</span>
-            {state.bank && (
+            <span className="font-bold text-foreground">{formattedDate}</span>
+            {bankChips.length > 0 && (
               <>
                 <span className="text-muted-foreground">•</span>
-                <span className="text-sm font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">
-                  {state.bank}
-                </span>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {bankChips.map((chip) => (
+                    <span
+                      key={chip}
+                      className="text-xs font-bold bg-primary/10 text-primary px-3 py-1 rounded-full"
+                    >
+                      {chip}
+                    </span>
+                  ))}
+                </div>
               </>
             )}
           </div>
@@ -127,72 +149,25 @@ const Results = () => {
           </Button>
         </div>
 
-        {/* Offer cards */}
-        <div className="space-y-5">
+        {/* Section title */}
+        <div className="mb-6 animate-fade-up" style={{ animationDelay: "0.05s" }}>
+          <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">
+            Best travel offers
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Based on selected banks
+          </p>
+        </div>
+
+        {/* Offer cards — 3 columns on desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {offers.map((offer, index) => (
-            <div
-              key={offer.id}
-              className="bg-card rounded-xl card-shadow p-5 md:p-6 animate-fade-up"
-              style={{ animationDelay: `${0.1 + index * 0.1}s` }}
-            >
-              {/* Label row */}
-              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                <span
-                  className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full ${offer.labelColor}`}
-                >
-                  <offer.labelIcon className="w-3.5 h-3.5" />
-                  {offer.label}
-                  {offer.extraSavings && (
-                    <span className="ml-1 bg-white/20 px-1.5 py-0.5 rounded text-[10px]">
-                      Saves ₹{offer.extraSavings} more
-                    </span>
-                  )}
-                </span>
-              </div>
-
-              {/* Main info - discount + card in one line */}
-              <div className="flex items-baseline gap-3 mb-4 flex-wrap">
-                <p className="text-3xl font-display font-bold text-foreground">
-                  Upto ₹{offer.discount.toLocaleString()}
-                </p>
-                {offer.card && (
-                  <span className="text-sm font-semibold bg-secondary px-3 py-1 rounded-full text-secondary-foreground">
-                    {offer.card}
-                  </span>
-                )}
-                {!offer.card && (
-                  <span className="text-sm font-semibold bg-muted px-3 py-1 rounded-full text-muted-foreground">
-                    No card needed
-                  </span>
-                )}
-              </div>
-
-              {/* Two-column conditions */}
-              <div className="grid grid-cols-2 gap-2 mb-5">
-                {offer.conditions.map((cond) => (
-                  <div
-                    key={cond}
-                    className="text-xs font-medium bg-secondary/60 text-secondary-foreground px-3 py-2 rounded-lg flex items-center gap-2"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary/50 flex-shrink-0" />
-                    {cond}
-                  </div>
-                ))}
-              </div>
-
-              {/* CTA */}
-              <a href={offer.platformUrl} target="_blank" rel="noopener noreferrer">
-                <Button className="gap-2 w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-                  {offer.platform}
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </Button>
-              </a>
-            </div>
+            <OfferCard key={offer.id} {...offer} index={index} />
           ))}
         </div>
 
         {/* Disclaimer */}
-        <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
+        <p className="text-xs text-muted-foreground/70 text-center mt-10 max-w-lg mx-auto leading-relaxed">
           Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
         </p>
       </main>
