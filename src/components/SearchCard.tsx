@@ -3,6 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { MapPin, Calendar, CreditCard, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const banks = [
+  "HDFC Bank",
+  "ICICI Bank",
+  "SBI Card",
+  "Axis Bank",
+  "Kotak Mahindra",
+  "American Express",
+  "Yes Bank",
+  "IndusInd Bank",
+  "RBL Bank",
+  "HSBC",
+];
 
 const SearchCard = () => {
   const navigate = useNavigate();
@@ -17,7 +37,7 @@ const SearchCard = () => {
         from: from || "Bangalore",
         to: to || "Delhi",
         date: date || "2025-04-24",
-        bank: bank || "HDFC",
+        bank: bank || "HDFC Bank",
       },
     });
   };
@@ -66,15 +86,19 @@ const SearchCard = () => {
 
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Select Bank <span className="text-muted-foreground/50">(optional)</span></label>
-          <div className="relative">
-            <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="e.g. HDFC, ICICI, SBI"
-              value={bank}
-              onChange={(e) => setBank(e.target.value)}
-              className="pl-10 bg-secondary/50 border-0 h-12 text-sm"
-            />
-          </div>
+          <Select value={bank} onValueChange={setBank}>
+            <SelectTrigger className="bg-secondary/50 border-0 h-12 text-sm pl-10 relative">
+              <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <SelectValue placeholder="Choose bank" />
+            </SelectTrigger>
+            <SelectContent className="bg-card z-50">
+              {banks.map((b) => (
+                <SelectItem key={b} value={b}>
+                  {b}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
