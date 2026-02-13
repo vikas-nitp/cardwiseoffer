@@ -5,7 +5,7 @@ const Footer = () => {
         "We don't sell tickets. We only show the truth."
       </p>
       <p className="text-xs text-muted-foreground/60 mt-3">
-        © {new Date().getFullYear()} Cardwise. Independent offer comparison.
+        © {new Date().getFullYear()} SaveWithCard. Independent offer comparison.
       </p>
     </footer>
   );
