@@ -12,7 +12,7 @@ const Header = () => {
           <Plane className="w-4 h-4 text-primary-foreground" />
         </div>
         <span className="text-xl font-display font-bold text-foreground">
-          Cardwise
+          SaveWithCard
         </span>
       </Link>
       {isHome && (
