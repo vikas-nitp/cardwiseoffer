@@ -24,7 +24,7 @@ const SearchCard = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-card rounded-2xl card-shadow-lg p-6 md:p-8 animate-fade-up" style={{ animationDelay: "0.2s" }}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">From</label>
           <div className="relative">
