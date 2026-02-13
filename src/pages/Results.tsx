@@ -19,6 +19,7 @@ const offers = [
     labelIcon: Star,
     labelColor: "bg-primary text-primary-foreground",
     platform: "MakeMyTrip",
+    platformUrl: "https://www.makemytrip.com",
     card: "HDFC Infinia",
     discount: 1200,
     conditions: [
@@ -33,6 +34,7 @@ const offers = [
     labelIcon: TrendingUp,
     labelColor: "bg-savings text-savings-foreground",
     platform: "Cleartrip",
+    platformUrl: "https://www.cleartrip.com",
     card: "ICICI Sapphiro",
     discount: 1800,
     extraSavings: 600,
@@ -48,6 +50,7 @@ const offers = [
     labelIcon: Tag,
     labelColor: "bg-secondary text-secondary-foreground",
     platform: "EaseMyTrip",
+    platformUrl: "https://www.easemytrip.com",
     card: null,
     discount: 500,
     conditions: [
@@ -162,13 +165,15 @@ const Results = () => {
               </ul>
 
               {/* CTA */}
-              <Button
-                variant="outline"
-                className="gap-2 w-full md:w-auto"
-              >
-                Go to platform
-                <ExternalLink className="w-3.5 h-3.5" />
-              </Button>
+              <a href={offer.platformUrl} target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="outline"
+                  className="gap-2 w-full md:w-auto"
+                >
+                  Go to {offer.platform}
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </Button>
+              </a>
             </div>
           ))}
         </div>
