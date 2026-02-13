@@ -24,18 +24,33 @@ const banks = [
   "HSBC",
 ];
 
+const cities = [
+  { city: "Bangalore", code: "BLR", airport: "Kempegowda International Airport" },
+  { city: "Delhi", code: "DEL", airport: "Indira Gandhi International Airport" },
+  { city: "Mumbai", code: "BOM", airport: "Chhatrapati Shivaji Maharaj International Airport" },
+  { city: "Chennai", code: "MAA", airport: "Chennai International Airport" },
+  { city: "Hyderabad", code: "HYD", airport: "Rajiv Gandhi International Airport" },
+  { city: "Kolkata", code: "CCU", airport: "Netaji Subhas Chandra Bose International Airport" },
+  { city: "Pune", code: "PNQ", airport: "Pune Airport" },
+  { city: "Goa", code: "GOI", airport: "Manohar International Airport" },
+  { city: "Jaipur", code: "JAI", airport: "Jaipur International Airport" },
+  { city: "Ahmedabad", code: "AMD", airport: "Sardar Vallabhbhai Patel International Airport" },
+];
+
 const SearchCard = () => {
   const navigate = useNavigate();
-  const [from, setFrom] = useState("Bangalore (BLR)");
-  const [to, setTo] = useState("Delhi (DEL)");
+  const [from, setFrom] = useState("BLR");
+  const [to, setTo] = useState("DEL");
   const [date, setDate] = useState("2025-04-24");
   const [bank, setBank] = useState("HDFC Bank");
 
   const handleSearch = () => {
+    const fromCity = cities.find(c => c.code === from);
+    const toCity = cities.find(c => c.code === to);
     navigate("/results", {
       state: {
-        from: from || "Bangalore",
-        to: to || "Delhi",
+        from: fromCity ? `${fromCity.city} (${fromCity.code})` : "Bangalore",
+        to: toCity ? `${toCity.city} (${toCity.code})` : "Delhi",
         date: date || "2025-04-24",
         bank: bank || "HDFC Bank",
       },
@@ -47,28 +62,42 @@ const SearchCard = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">From</label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="City or airport"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              className="pl-10 bg-secondary/50 border-0 h-12 text-sm"
-            />
-          </div>
+          <Select value={from} onValueChange={setFrom}>
+            <SelectTrigger className="bg-secondary/50 border-0 h-auto text-sm pl-10 relative py-2">
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <div className="text-left">
+                <span className="font-bold text-foreground block">{cities.find(c => c.code === from)?.city}</span>
+                <span className="text-xs text-muted-foreground">{from} · {cities.find(c => c.code === from)?.airport}</span>
+              </div>
+            </SelectTrigger>
+            <SelectContent className="bg-card z-50">
+              {cities.map((c) => (
+                <SelectItem key={c.code} value={c.code}>
+                  <span className="font-semibold">{c.city}</span> <span className="text-muted-foreground">({c.code})</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">To</label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="City or airport"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              className="pl-10 bg-secondary/50 border-0 h-12 text-sm"
-            />
-          </div>
+          <Select value={to} onValueChange={setTo}>
+            <SelectTrigger className="bg-secondary/50 border-0 h-auto text-sm pl-10 relative py-2">
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <div className="text-left">
+                <span className="font-bold text-foreground block">{cities.find(c => c.code === to)?.city}</span>
+                <span className="text-xs text-muted-foreground">{to} · {cities.find(c => c.code === to)?.airport}</span>
+              </div>
+            </SelectTrigger>
+            <SelectContent className="bg-card z-50">
+              {cities.map((c) => (
+                <SelectItem key={c.code} value={c.code}>
+                  <span className="font-semibold">{c.city}</span> <span className="text-muted-foreground">({c.code})</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-1.5">
