@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapPin, Calendar, CreditCard, Search } from "lucide-react";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -103,12 +104,24 @@ const SearchCard = () => {
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Departure</label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
+            <Calendar className="absolute left-3 top-4 w-4 h-4 text-muted-foreground" />
+            <div
+              className="bg-secondary/50 border-0 rounded-md pl-10 pr-3 py-2 cursor-pointer"
+              onClick={() => (document.getElementById('date-input') as any)?.showPicker?.()}
+            >
+              <span className="font-bold text-foreground block">
+                {(() => { try { return format(new Date(date), "dd MMM yyyy"); } catch { return date; } })()}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {(() => { try { return format(new Date(date), "EEEE"); } catch { return ""; } })()}
+              </span>
+            </div>
+            <input
+              id="date-input"
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="pl-10 bg-secondary/50 border-0 h-12 text-sm"
+              className="absolute inset-0 opacity-0 cursor-pointer"
             />
           </div>
         </div>
@@ -116,9 +129,12 @@ const SearchCard = () => {
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Select Bank <span className="text-muted-foreground/50">(optional)</span></label>
           <Select value={bank} onValueChange={setBank}>
-            <SelectTrigger className="bg-secondary/50 border-0 h-12 text-sm pl-10 relative">
+            <SelectTrigger className="bg-secondary/50 border-0 h-auto text-sm pl-10 relative py-2">
               <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <SelectValue placeholder="Choose bank" />
+              <div className="text-left">
+                <span className="font-bold text-foreground block">{bank}</span>
+                <span className="text-xs text-muted-foreground">Credit & Debit Cards</span>
+              </div>
             </SelectTrigger>
             <SelectContent className="bg-card z-50">
               {banks.map((b) => (
