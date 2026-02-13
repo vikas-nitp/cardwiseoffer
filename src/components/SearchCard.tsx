@@ -52,7 +52,7 @@ const SearchCard = () => {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Departure Date</label>
+          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Departure</label>
           <div className="relative">
             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
