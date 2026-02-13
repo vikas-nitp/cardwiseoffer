@@ -26,10 +26,10 @@ const banks = [
 
 const SearchCard = () => {
   const navigate = useNavigate();
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [date, setDate] = useState("");
-  const [bank, setBank] = useState("");
+  const [from, setFrom] = useState("Bangalore (BLR)");
+  const [to, setTo] = useState("Delhi (DEL)");
+  const [date, setDate] = useState("2025-04-24");
+  const [bank, setBank] = useState("HDFC Bank");
 
   const handleSearch = () => {
     navigate("/results", {
