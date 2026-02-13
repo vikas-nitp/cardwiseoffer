@@ -105,11 +105,31 @@
 @layer utilities {
   .sky-gradient {
     background: linear-gradient(
-      180deg,
-      hsl(210 60% 95%) 0%,
-      hsl(210 70% 88%) 50%,
-      hsl(210 55% 82%) 100%
+      160deg,
+      hsl(210 60% 96%) 0%,
+      hsl(210 70% 90%) 25%,
+      hsl(200 65% 85%) 50%,
+      hsl(220 60% 82%) 75%,
+      hsl(230 50% 78%) 100%
     );
+    position: relative;
+  }
+
+  .sky-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 20% 10%, hsl(200 80% 90% / 0.6) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 30%, hsl(260 60% 88% / 0.4) 0%, transparent 50%),
+      radial-gradient(ellipse 70% 40% at 50% 90%, hsl(190 70% 85% / 0.3) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .sky-gradient > * {
+    position: relative;
+    z-index: 1;
   }
 
   .card-shadow {
