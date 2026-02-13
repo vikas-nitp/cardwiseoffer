@@ -125,14 +125,13 @@ const Results = () => {
               style={{ animationDelay: `${0.1 + index * 0.1}s` }}
             >
               {/* Label */}
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center mb-4">
                 <span
                   className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full ${offer.labelColor}`}
                 >
                   <offer.labelIcon className="w-3.5 h-3.5" />
                   {offer.label}
                 </span>
-                <span className="text-xs text-muted-foreground">{offer.platform}</span>
               </div>
 
               {/* Main info */}
