@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Calendar, CreditCard, Search } from "lucide-react";
+import { MapPin, Calendar as CalendarIcon, CreditCard, Search } from "lucide-react";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 
 const banks = [
@@ -38,11 +43,13 @@ const cities = [
   { city: "Ahmedabad", code: "AMD", airport: "Sardar Vallabhbhai Patel International Airport" },
 ];
 
+const tileClasses = "bg-secondary/50 border-0 h-auto text-sm pl-10 relative py-2.5 min-h-[56px]";
+
 const SearchCard = () => {
   const navigate = useNavigate();
   const [from, setFrom] = useState("BLR");
   const [to, setTo] = useState("DEL");
-  const [date, setDate] = useState("2025-04-24");
+  const [date, setDate] = useState<Date>(new Date("2025-04-24"));
   const [bank, setBank] = useState("HDFC Bank");
 
   const handleSearch = () => {
@@ -52,7 +59,7 @@ const SearchCard = () => {
       state: {
         from: fromCity ? `${fromCity.city} (${fromCity.code})` : "Bangalore",
         to: toCity ? `${toCity.city} (${toCity.code})` : "Delhi",
-        date: date || "2025-04-24",
+        date: format(date, "yyyy-MM-dd"),
         bank: bank || "HDFC Bank",
       },
     });
@@ -61,14 +68,15 @@ const SearchCard = () => {
   return (
     <div className="w-full max-w-5xl mx-auto bg-card rounded-2xl card-shadow-lg p-6 md:p-8 animate-fade-up" style={{ animationDelay: "0.2s" }}>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* From */}
         <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">From</label>
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">From</label>
           <Select value={from} onValueChange={setFrom}>
-            <SelectTrigger className="bg-secondary/50 border-0 h-auto text-sm pl-10 relative py-2">
+            <SelectTrigger className={tileClasses}>
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <div className="text-left">
+              <div className="text-left truncate">
                 <span className="font-bold text-foreground block">{cities.find(c => c.code === from)?.city}</span>
-                <span className="text-xs text-muted-foreground">{from} · {cities.find(c => c.code === from)?.airport}</span>
+                <span className="text-xs text-muted-foreground truncate block">{from} · {cities.find(c => c.code === from)?.airport}</span>
               </div>
             </SelectTrigger>
             <SelectContent className="bg-card z-50">
@@ -81,14 +89,15 @@ const SearchCard = () => {
           </Select>
         </div>
 
+        {/* To */}
         <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">To</label>
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">To</label>
           <Select value={to} onValueChange={setTo}>
-            <SelectTrigger className="bg-secondary/50 border-0 h-auto text-sm pl-10 relative py-2">
+            <SelectTrigger className={tileClasses}>
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <div className="text-left">
+              <div className="text-left truncate">
                 <span className="font-bold text-foreground block">{cities.find(c => c.code === to)?.city}</span>
-                <span className="text-xs text-muted-foreground">{to} · {cities.find(c => c.code === to)?.airport}</span>
+                <span className="text-xs text-muted-foreground truncate block">{to} · {cities.find(c => c.code === to)?.airport}</span>
               </div>
             </SelectTrigger>
             <SelectContent className="bg-card z-50">
@@ -101,35 +110,36 @@ const SearchCard = () => {
           </Select>
         </div>
 
+        {/* Departure */}
         <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Departure</label>
-          <div className="relative">
-            <Calendar className="absolute left-3 top-4 w-4 h-4 text-muted-foreground" />
-            <div
-              className="bg-secondary/50 border-0 rounded-md pl-10 pr-3 py-2 cursor-pointer"
-              onClick={() => (document.getElementById('date-input') as any)?.showPicker?.()}
-            >
-              <span className="font-bold text-foreground block">
-                {(() => { try { return format(new Date(date), "dd MMM yyyy"); } catch { return date; } })()}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {(() => { try { return format(new Date(date), "EEEE"); } catch { return ""; } })()}
-              </span>
-            </div>
-            <input
-              id="date-input"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-            />
-          </div>
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Departure</label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className={cn(tileClasses, "w-full rounded-md text-left flex items-center")}>
+                <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <div>
+                  <span className="font-bold text-foreground block">{format(date, "dd MMM yyyy")}</span>
+                  <span className="text-xs text-muted-foreground">{format(date, "EEEE")}</span>
+                </div>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={(d) => d && setDate(d)}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
+        {/* Bank */}
         <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Select Bank <span className="text-muted-foreground/50">(optional)</span></label>
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Select Bank <span className="text-muted-foreground/50 font-normal">(optional)</span></label>
           <Select value={bank} onValueChange={setBank}>
-            <SelectTrigger className="bg-secondary/50 border-0 h-auto text-sm pl-10 relative py-2">
+            <SelectTrigger className={tileClasses}>
               <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <div className="text-left">
                 <span className="font-bold text-foreground block">{bank}</span>
