@@ -4,6 +4,7 @@ import type { LucideIcon } from "lucide-react";
 
 interface OfferCardProps {
   label: string;
+  extraLabel?: string;
   labelIcon: LucideIcon;
   accentClass: string;
   accentBorder: string;
@@ -18,6 +19,7 @@ interface OfferCardProps {
 
 const OfferCard = ({
   label,
+  extraLabel,
   labelIcon: LabelIcon,
   accentClass,
   accentBorder,
@@ -36,12 +38,19 @@ const OfferCard = ({
     >
       {/* Label */}
       <div className="px-5 pt-5 pb-3">
-        <span
-          className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full ${accentClass}`}
-        >
-          <LabelIcon className="w-3.5 h-3.5" />
-          {label}
-        </span>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span
+            className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full ${accentClass}`}
+          >
+            <LabelIcon className="w-3.5 h-3.5" />
+            {label}
+          </span>
+          {extraLabel && (
+            <span className="text-xs font-semibold text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
+              {extraLabel}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Discount + Bank */}
@@ -60,9 +69,9 @@ const OfferCard = ({
               {card}
             </span>
           )}
-          {!card && (
+          {!card && !bank && (
             <span className="text-xs font-semibold text-muted-foreground">
-              No bank needed
+              Available for all users
             </span>
           )}
         </div>
