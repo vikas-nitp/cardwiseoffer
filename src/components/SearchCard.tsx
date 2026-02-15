@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Calendar as CalendarIcon, Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Calendar as CalendarIcon, Search, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -26,39 +25,54 @@ const cities: CityOption[] = [
   { city: "Ahmedabad", code: "AMD", airport: "Sardar Vallabhbhai Patel International Airport" },
 ];
 
-const SearchCard = () => {
-  const navigate = useNavigate();
-  const [from, setFrom] = useState<CityOption | null>(null);
-  const [to, setTo] = useState<CityOption | null>(null);
-  const [date, setDate] = useState<Date | undefined>(undefined);
-  const [selectedBanks, setSelectedBanks] = useState<string[]>([]);
+interface SearchCardProps {
+  onSearch: (from: CityOption, to: CityOption, date: Date, banks: string[]) => void;
+  initialFrom?: CityOption | null;
+  initialTo?: CityOption | null;
+  initialDate?: Date;
+  initialBanks?: string[];
+}
 
-  const isSearchDisabled = !from || !to || !date;
+const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBanks }: SearchCardProps) => {
+  const [from, setFrom] = useState<CityOption | null>(initialFrom ?? null);
+  const [to, setTo] = useState<CityOption | null>(initialTo ?? null);
+  const [date, setDate] = useState<Date | undefined>(initialDate ?? new Date());
+  const [selectedBanks, setSelectedBanks] = useState<string[]>(initialBanks ?? []);
+  const [sameError, setSameError] = useState(false);
+
+  // Sync initial values when editing
+  useEffect(() => {
+    if (initialFrom) setFrom(initialFrom);
+    if (initialTo) setTo(initialTo);
+    if (initialDate) setDate(initialDate);
+    if (initialBanks) setSelectedBanks(initialBanks);
+  }, [initialFrom, initialTo, initialDate, initialBanks]);
+
+  // Validate same city
+  useEffect(() => {
+    if (from && to && from.code === to.code) {
+      setSameError(true);
+    } else {
+      setSameError(false);
+    }
+  }, [from, to]);
+
+  const isSearchDisabled = !from || !to || !date || sameError;
 
   const handleSearch = () => {
-    if (!from || !to || !date) return;
-    navigate("/results", {
-      state: {
-        from: `${from.city} (${from.code})`,
-        to: `${to.city} (${to.code})`,
-        date: format(date, "yyyy-MM-dd"),
-        bank: selectedBanks.length > 0 ? selectedBanks.join(", ") : "",
-      },
-    });
+    if (!from || !to || !date || sameError) return;
+    onSearch(from, to, date, selectedBanks);
   };
 
   return (
     <div className="w-full max-w-5xl mx-auto bg-card/95 backdrop-blur-sm rounded-2xl card-shadow-lg p-6 md:p-8 animate-fade-up" style={{ animationDelay: "0.2s" }}>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* From */}
         <CityAutocomplete
           label="From"
           cities={cities}
           value={from}
           onChange={setFrom}
         />
-
-        {/* To */}
         <CityAutocomplete
           label="To"
           cities={cities}
@@ -96,12 +110,19 @@ const SearchCard = () => {
           </Popover>
         </div>
 
-        {/* Bank Multi-Select */}
         <BankMultiSelect
           selected={selectedBanks}
           onChange={setSelectedBanks}
         />
       </div>
+
+      {/* Same city error */}
+      {sameError && (
+        <div className="flex items-center gap-2 mt-3 text-destructive text-sm">
+          <AlertCircle className="w-4 h-4" />
+          <span>Source and destination cannot be the same.</span>
+        </div>
+      )}
 
       <Button
         onClick={handleSearch}

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import type { LucideIcon } from "lucide-react";
 
 interface OfferCardProps {
+  id?: string | number;
   label: string;
   extraLabel?: string;
   labelIcon: LucideIcon;
@@ -15,6 +16,7 @@ interface OfferCardProps {
   discount: number;
   conditions: string[];
   index: number;
+  paymentType?: string;
 }
 
 const OfferCard = ({
