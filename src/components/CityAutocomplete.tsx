@@ -13,12 +13,14 @@ interface CityAutocompleteProps {
   cities: CityOption[];
   value: CityOption | null;
   onChange: (city: CityOption | null) => void;
+  excludeCode?: string;
 }
 
-const CityAutocomplete = ({ label, cities, value, onChange }: CityAutocompleteProps) => {
+const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityAutocompleteProps) => {
+  const availableCities = excludeCode ? cities.filter(c => c.code !== excludeCode) : cities;
   const [query, setQuery] = useState(value ? `${value.city} (${value.code})` : "");
   const [open, setOpen] = useState(false);
-  const [filtered, setFiltered] = useState<CityOption[]>(cities);
+  const [filtered, setFiltered] = useState<CityOption[]>(availableCities);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,7 +47,7 @@ const CityAutocomplete = ({ label, cities, value, onChange }: CityAutocompletePr
     setOpen(true);
     const q = val.toLowerCase();
     setFiltered(
-      cities.filter(
+      availableCities.filter(
         (c) =>
           c.city.toLowerCase().includes(q) ||
           c.code.toLowerCase().includes(q) ||
@@ -76,7 +78,7 @@ const CityAutocomplete = ({ label, cities, value, onChange }: CityAutocompletePr
           onChange={(e) => handleInputChange(e.target.value)}
           onFocus={() => {
             setOpen(true);
-            setFiltered(cities);
+            setFiltered(availableCities);
           }}
           placeholder="Type city or airport..."
           className="w-full bg-secondary/50 border-0 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-md font-bold text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"

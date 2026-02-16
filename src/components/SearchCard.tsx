@@ -36,7 +36,7 @@ interface SearchCardProps {
 const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBanks }: SearchCardProps) => {
   const [from, setFrom] = useState<CityOption | null>(initialFrom ?? null);
   const [to, setTo] = useState<CityOption | null>(initialTo ?? null);
-  const [date, setDate] = useState<Date | undefined>(initialDate ?? new Date());
+  const [date, setDate] = useState<Date | undefined>(initialDate ?? undefined);
   const [selectedBanks, setSelectedBanks] = useState<string[]>(initialBanks ?? []);
   const [sameError, setSameError] = useState(false);
 
@@ -78,6 +78,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
           cities={cities}
           value={to}
           onChange={setTo}
+          excludeCode={from?.code}
         />
 
         {/* Departure */}

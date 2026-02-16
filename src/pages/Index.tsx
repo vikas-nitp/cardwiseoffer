@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import Header from "@/components/Header";
+import type { ActiveSection } from "@/components/Header";
 import Footer from "@/components/Footer";
 import SearchCard from "@/components/SearchCard";
 import TrustIndicators from "@/components/TrustIndicators";
@@ -9,12 +10,10 @@ import DateStrip from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
 import skyBg from "@/assets/sky-bg-2.png";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { ArrowRight, Pencil, Star, TrendingUp, Gift, Search as SearchIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CityOption } from "@/components/CityAutocomplete";
-
-type ActiveSection = "offers" | "about" | "how-it-works";
 
 interface SearchState {
   from: CityOption;
@@ -23,7 +22,6 @@ interface SearchState {
   banks: string[];
 }
 
-// Hash helper for pseudo-random prices
 const hashCode = (s: string) => {
   let hash = 0;
   for (let i = 0; i < s.length; i++) {
@@ -61,122 +59,96 @@ const bankOffers: Record<string, { card: string; baseDiscount: number }[]> = {
   "HSBC": [{ card: "HSBC Smart Value", baseDiscount: 850 }],
 };
 
+const allBankNames = Object.keys(bankOffers);
 const allPlatforms = ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Goibibo"];
 
-const generateOffers = (from: CityOption, to: CityOption, date: Date, banks: string[]) => {
+const priceVariation = (seed: number, base: number, idx: number) => {
+  const variation = ((seed + idx * 137) % 500) - 200;
+  return Math.max(300, base + variation);
+};
+
+/**
+ * Generate the 3 search-result cards: Best Offer, Selected Card (if bank chosen), Default Offer.
+ * The Best Offer discount MUST equal getMinPrice for the same date so prices stay consistent.
+ */
+const generateSearchResults = (from: CityOption, to: CityOption, date: Date, banks: string[]) => {
   const dateStr = format(date, "yyyy-MM-dd");
   const seed = hashCode(`${from.code}-${to.code}-${dateStr}`);
-  const priceVariation = (base: number, idx: number) => {
-    const variation = ((seed + idx * 137) % 500) - 200;
-    return Math.max(300, base + variation);
-  };
 
+  // Best offer across ALL banks for this date
+  let bestDiscount = 0;
+  let bestBank = "";
+  let bestCard = "";
+  allBankNames.forEach((bankName, idx) => {
+    const d = priceVariation(seed, bankOffers[bankName][0].baseDiscount, idx);
+    if (d > bestDiscount) {
+      bestDiscount = d;
+      bestBank = bankName;
+      bestCard = bankOffers[bankName][0].card;
+    }
+  });
+
+  const bestPlatformIdx = seed % allPlatforms.length;
   const result: any[] = [];
 
+  // 1. Best Offer card
+  result.push({
+    id: "best",
+    label: "Best Offer",
+    labelIcon: Star,
+    accentClass: "bg-primary text-primary-foreground",
+    accentBorder: "border-primary",
+    platform: allPlatforms[bestPlatformIdx],
+    platformUrl: buildPlatformUrl(allPlatforms[bestPlatformIdx], from.code, to.code, dateStr),
+    bank: bestBank,
+    card: bestCard,
+    discount: bestDiscount,
+    paymentType: "Credit Card",
+    conditions: [
+      `Min booking: ₹${3000 + (seed % 3) * 1000} – ₹9,999`,
+      "Valid till 30 Apr 2026",
+      "Non-EMI transactions only",
+      "Web & Mobile App",
+      "Domestic flights only",
+    ],
+  });
+
+  // 2. Selected Card offer(s)
   if (banks.length > 0) {
-    const matchedBanks = banks.filter((b) => bankOffers[b]);
-    if (matchedBanks.length === 0) return { offers: [], hasNoOffers: true };
-
-    matchedBanks.forEach((bankName, bIdx) => {
+    banks.forEach((bankName, bIdx) => {
       const bankData = bankOffers[bankName];
-      if (bankData) {
-        bankData.forEach((offer) => {
-          const discount = priceVariation(offer.baseDiscount, bIdx);
-          const platformIdx = (bIdx + seed) % allPlatforms.length;
-          const platform = allPlatforms[platformIdx];
-          result.push({
-            id: `${bankName}-${bIdx}`,
-            label: "",
-            labelIcon: Star,
-            accentClass: "",
-            accentBorder: "",
-            platform,
-            platformUrl: buildPlatformUrl(platform, from.code, to.code, dateStr),
-            bank: bankName,
-            card: offer.card,
-            discount,
-            paymentType: "Credit Card",
-            conditions: [
-              `Min booking: ₹${3000 + (seed % 3) * 1000} – ₹9,999`,
-              `Valid till 30 Apr 2026`,
-              bIdx % 2 === 0 ? "Non-EMI transactions only" : "EMI & Non-EMI allowed",
-              bIdx % 2 === 0 ? "Web & Mobile App" : "Mobile App only",
-              "Domestic flights only",
-            ],
-          });
-        });
-      }
-    });
-
-    result.sort((a, b) => b.discount - a.discount);
-
-    if (result.length > 0) {
-      result[0].label = "Best Offer";
-      result[0].labelIcon = Star;
-      result[0].accentClass = "bg-primary text-primary-foreground";
-      result[0].accentBorder = "border-primary";
-    }
-    if (result.length > 1) {
-      const diff = result[0].discount - result[1].discount;
-      result[1].label = "Selected Card";
-      result[1].extraLabel = diff > 0 ? `₹${diff} less` : undefined;
-      result[1].labelIcon = TrendingUp;
-      result[1].accentClass = "bg-accent text-accent-foreground";
-      result[1].accentBorder = "border-accent";
-    }
-  } else {
-    // No bank selected - generic offers
-    const d1 = priceVariation(1200, 0);
-    const d2 = priceVariation(1800, 1);
-    const sorted = [d1, d2].sort((a, b) => b - a);
-
-    result.push({
-      id: "generic-1",
-      label: "Best Offer",
-      labelIcon: Star,
-      accentClass: "bg-primary text-primary-foreground",
-      accentBorder: "border-primary",
-      platform: "MakeMyTrip",
-      platformUrl: buildPlatformUrl("MakeMyTrip", from.code, to.code, dateStr),
-      bank: "HDFC",
-      card: "HDFC Infinia",
-      discount: sorted[0],
-      paymentType: "Credit Card",
-      conditions: [
-        `Min booking: ₹${3000 + (seed % 3) * 1000} – ₹9,999`,
-        "Valid till 30 Apr 2026",
-        "Non-EMI transactions only",
-        "Web & Mobile App",
-        "Domestic flights only",
-      ],
-    });
-
-    const diff = sorted[0] - sorted[1];
-    result.push({
-      id: "generic-2",
-      label: "Selected Card",
-      extraLabel: `₹${diff} less`,
-      labelIcon: TrendingUp,
-      accentClass: "bg-accent text-accent-foreground",
-      accentBorder: "border-accent",
-      platform: "Cleartrip",
-      platformUrl: buildPlatformUrl("Cleartrip", from.code, to.code, dateStr),
-      bank: "ICICI",
-      card: "ICICI Sapphiro",
-      discount: sorted[1],
-      paymentType: "Credit Card",
-      conditions: [
-        `Min booking: ₹${2000 + (seed % 4) * 1000} – ₹9,999`,
-        "EMI & Non-EMI allowed",
-        "Mobile App only",
-        "All routes",
-        "Valid till 28 Apr 2026",
-      ],
+      if (!bankData) return;
+      const discount = priceVariation(seed, bankData[0].baseDiscount, allBankNames.indexOf(bankName));
+      // Skip if it's already the best offer
+      if (bankName === bestBank) return;
+      const pIdx = (bIdx + 1 + seed) % allPlatforms.length;
+      const diff = bestDiscount - discount;
+      result.push({
+        id: `selected-${bankName}`,
+        label: "Selected Card",
+        extraLabel: diff > 0 ? `₹${diff} less` : undefined,
+        labelIcon: TrendingUp,
+        accentClass: "bg-accent text-accent-foreground",
+        accentBorder: "border-accent",
+        platform: allPlatforms[pIdx],
+        platformUrl: buildPlatformUrl(allPlatforms[pIdx], from.code, to.code, dateStr),
+        bank: bankName,
+        card: bankData[0].card,
+        discount,
+        paymentType: "Credit Card",
+        conditions: [
+          `Min booking: ₹${2000 + (seed % 4) * 1000} – ₹9,999`,
+          bIdx % 2 === 0 ? "EMI & Non-EMI allowed" : "Non-EMI only",
+          bIdx % 2 === 0 ? "Mobile App only" : "Web & Mobile App",
+          "All routes",
+          "Valid till 28 Apr 2026",
+        ],
+      });
     });
   }
 
-  // Default offer (no card needed)
-  const defaultDiscount = priceVariation(500, 2);
+  // 3. Default Offer (no card)
+  const defaultDiscount = priceVariation(seed, 500, 99);
   result.push({
     id: "default",
     label: "Default Offer",
@@ -198,15 +170,85 @@ const generateOffers = (from: CityOption, to: CityOption, date: Date, banks: str
     ],
   });
 
-  return { offers: result, hasNoOffers: false };
+  return result;
+};
+
+/**
+ * Generate ALL bank offers for the All Offers view.
+ */
+const generateAllOffers = (from: CityOption, to: CityOption, date: Date) => {
+  const dateStr = format(date, "yyyy-MM-dd");
+  const seed = hashCode(`${from.code}-${to.code}-${dateStr}`);
+  const result: any[] = [];
+
+  // Find best discount for badge
+  let bestDiscount = 0;
+  allBankNames.forEach((bankName, idx) => {
+    const d = priceVariation(seed, bankOffers[bankName][0].baseDiscount, idx);
+    if (d > bestDiscount) bestDiscount = d;
+  });
+
+  allBankNames.forEach((bankName, idx) => {
+    const bankData = bankOffers[bankName][0];
+    const discount = priceVariation(seed, bankData.baseDiscount, idx);
+    const pIdx = (idx + seed) % allPlatforms.length;
+    const isBest = discount === bestDiscount;
+
+    result.push({
+      id: `all-${bankName}`,
+      label: isBest ? "Best Offer" : bankName,
+      labelIcon: isBest ? Star : TrendingUp,
+      accentClass: isBest ? "bg-primary text-primary-foreground" : "bg-accent text-accent-foreground",
+      accentBorder: isBest ? "border-primary" : "border-accent",
+      platform: allPlatforms[pIdx],
+      platformUrl: buildPlatformUrl(allPlatforms[pIdx], from.code, to.code, dateStr),
+      bank: bankName,
+      card: bankData.card,
+      discount,
+      paymentType: idx % 3 === 2 ? "Debit Card" : "Credit Card",
+      conditions: [
+        `Min booking: ₹${3000 + (seed % 3) * 1000} – ₹9,999`,
+        "Valid till 30 Apr 2026",
+        idx % 2 === 0 ? "Non-EMI transactions only" : "EMI & Non-EMI allowed",
+        idx % 2 === 0 ? "Web & Mobile App" : "Mobile App only",
+        "Domestic flights only",
+      ],
+    });
+  });
+
+  // Default offer
+  const defaultDiscount = priceVariation(seed, 500, 99);
+  result.push({
+    id: "all-default",
+    label: "Default Offer",
+    labelIcon: Gift,
+    accentClass: "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white",
+    accentBorder: "border-violet-400",
+    platform: "EaseMyTrip",
+    platformUrl: buildPlatformUrl("EaseMyTrip", from.code, to.code, dateStr),
+    bank: null,
+    card: null,
+    discount: defaultDiscount,
+    paymentType: "No Card",
+    conditions: [
+      "Available for all users",
+      "No minimum booking",
+      "Valid till 25 Apr 2026",
+      "Web & Mobile App",
+      "Domestic flights only",
+    ],
+  });
+
+  result.sort((a, b) => b.discount - a.discount);
+  return result;
 };
 
 const Index = () => {
-  const [activeSection, setActiveSection] = useState<ActiveSection>("offers");
+  const [activeSection, setActiveSection] = useState<ActiveSection>("about");
   const [searchState, setSearchState] = useState<SearchState | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Sidebar filters
+  // Sidebar filters (All Offers view only)
   const [bankFilter, setBankFilter] = useState<string[]>([]);
   const [platformFilter, setPlatformFilter] = useState<string[]>([]);
   const [paymentFilter, setPaymentFilter] = useState<string[]>([]);
@@ -215,10 +257,9 @@ const Index = () => {
 
   const handleSearch = (from: CityOption, to: CityOption, date: Date, banks: string[]) => {
     setSearchState({ from, to, date, banks });
-    setActiveSection("offers");
+    setActiveSection("results");
     setIsEditing(false);
-    // Initialize bank filter from search banks
-    setBankFilter(banks);
+    setBankFilter([]);
     setPlatformFilter([]);
     setPaymentFilter([]);
   };
@@ -229,30 +270,47 @@ const Index = () => {
     }
   };
 
+  // getMinPrice must match best offer logic
   const getMinPrice = (date: Date) => {
     if (!searchState) return 0;
     const seed = hashCode(`${searchState.from.code}-${searchState.to.code}-${format(date, "yyyy-MM-dd")}`);
-    return 800 + (seed % 1200);
+    let best = 0;
+    allBankNames.forEach((bankName, idx) => {
+      const d = priceVariation(seed, bankOffers[bankName][0].baseDiscount, idx);
+      if (d > best) best = d;
+    });
+    return best;
   };
 
-  const { offers, hasNoOffers } = useMemo(() => {
-    if (!searchState) return { offers: [], hasNoOffers: false };
-    return generateOffers(searchState.from, searchState.to, searchState.date, searchState.banks);
+  // Search Results cards
+  const searchResults = useMemo(() => {
+    if (!searchState) return [];
+    return generateSearchResults(searchState.from, searchState.to, searchState.date, searchState.banks);
   }, [searchState]);
 
-  // Apply sidebar filters
-  const filteredOffers = useMemo(() => {
-    return offers.filter((o) => {
+  // All Offers cards
+  const allOffers = useMemo(() => {
+    if (!searchState) return [];
+    return generateAllOffers(searchState.from, searchState.to, searchState.date);
+  }, [searchState]);
+
+  // Filtered all offers
+  const filteredAllOffers = useMemo(() => {
+    return allOffers.filter((o) => {
       if (bankFilter.length > 0 && o.bank && !bankFilter.includes(o.bank)) return false;
       if (platformFilter.length > 0 && !platformFilter.includes(o.platform)) return false;
       if (paymentFilter.length > 0 && !paymentFilter.includes(o.paymentType)) return false;
       return true;
     });
-  }, [offers, bankFilter, platformFilter, paymentFilter]);
+  }, [allOffers, bankFilter, platformFilter, paymentFilter]);
+
+  // Check if selected banks have offers in search results
+  const hasSelectedCardOffers = searchState?.banks.length
+    ? searchResults.some((o) => o.label === "Selected Card")
+    : true;
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      {/* Fixed sky background */}
       <div
         className="fixed inset-0 z-0"
         style={{
@@ -272,7 +330,7 @@ const Index = () => {
         />
 
         <main className="flex-1 flex flex-col items-center px-6">
-          {/* HERO + SEARCH (always visible) */}
+          {/* HERO + SEARCH */}
           {(!hasSearched || isEditing) && (
             <>
               <section className="flex flex-col items-center justify-center pt-12 md:pt-20 pb-8 max-w-3xl mx-auto text-center">
@@ -300,7 +358,7 @@ const Index = () => {
             </>
           )}
 
-          {/* SEARCH SUMMARY BAR (after search, not editing) */}
+          {/* SEARCH SUMMARY BAR */}
           {hasSearched && !isEditing && (
             <div className="w-full max-w-6xl mx-auto mt-6 mb-4 animate-fade-up">
               <div className="bg-card/90 backdrop-blur-sm rounded-2xl card-shadow-lg p-5 md:p-6 flex flex-wrap items-center justify-between gap-4 border border-border/50">
@@ -342,18 +400,24 @@ const Index = () => {
             </div>
           )}
 
-          {/* CONTENT AREA (section switching) */}
+          {/* CONTENT AREA */}
           <div className="w-full max-w-6xl mx-auto py-8">
-            {/* Before search: show About + How It Works based on nav */}
+            {/* Pre-search: About / How It Works */}
             {!hasSearched && activeSection === "about" && <AboutSection />}
             {!hasSearched && activeSection === "how-it-works" && <HowItWorksSection />}
+            {!hasSearched && (activeSection === "results" || activeSection === "all-offers") && (
+              <div className="space-y-16">
+                <AboutSection />
+                <HowItWorksSection />
+              </div>
+            )}
 
-            {/* After search */}
+            {/* Post-search */}
             {hasSearched && !isEditing && (
               <>
-                {activeSection === "offers" && (
+                {/* SEARCH RESULTS VIEW */}
+                {activeSection === "results" && (
                   <div className="animate-fade-up">
-                    {/* 7-day strip */}
                     <div className="mb-6">
                       <DateStrip
                         selectedDate={searchState.date}
@@ -362,70 +426,74 @@ const Index = () => {
                       />
                     </div>
 
-                    {hasNoOffers ? (
-                      <div className="bg-card/90 backdrop-blur-sm rounded-2xl card-shadow-lg p-10 text-center">
-                        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-                          <SearchIcon className="w-8 h-8 text-muted-foreground" />
-                        </div>
-                        <h2 className="text-xl font-display font-bold text-foreground mb-2">
-                          No active offers found for your selected card on this date.
-                        </h2>
-                        <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                          Try selecting a different bank or check back later.
+                    {/* No offers for selected card message */}
+                    {searchState.banks.length > 0 && !hasSelectedCardOffers && (
+                      <div className="bg-card/90 backdrop-blur-sm rounded-2xl card-shadow p-6 mb-6 text-center">
+                        <p className="text-muted-foreground font-medium">
+                          No active offers on your selected card for this date. Showing best available and default offers.
                         </p>
-                        <Button onClick={() => setIsEditing(true)} className="gap-2">
-                          <Pencil className="w-4 h-4" />
-                          Change search
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex gap-6">
-                        {/* Sidebar */}
-                        <div className="hidden lg:block w-64 shrink-0">
-                          <SidebarFilters
-                            bankFilter={bankFilter}
-                            onBankFilterChange={setBankFilter}
-                            platformFilter={platformFilter}
-                            onPlatformFilterChange={setPlatformFilter}
-                            paymentFilter={paymentFilter}
-                            onPaymentFilterChange={setPaymentFilter}
-                          />
-                        </div>
-
-                        {/* Offer cards */}
-                        <div className="flex-1">
-                          {filteredOffers.length === 0 ? (
-                            <div className="bg-card/90 backdrop-blur-sm rounded-2xl card-shadow-lg p-10 text-center">
-                              <p className="text-muted-foreground">No offers match your filters. Try adjusting filters.</p>
-                            </div>
-                          ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                              {filteredOffers.map((offer, index) => (
-                                <OfferCard key={offer.id} {...offer} index={index} />
-                              ))}
-                            </div>
-                          )}
-
-                          <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
-                            Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
-                          </p>
-                        </div>
                       </div>
                     )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                      {searchResults.map((offer, index) => (
+                        <OfferCard key={offer.id} {...offer} index={index} />
+                      ))}
+                    </div>
+
+                    <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
+                      Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
+                    </p>
+                  </div>
+                )}
+
+                {/* ALL OFFERS VIEW (with filters) */}
+                {activeSection === "all-offers" && (
+                  <div className="animate-fade-up">
+                    <div className="mb-6">
+                      <DateStrip
+                        selectedDate={searchState.date}
+                        onDateChange={handleDateChange}
+                        getMinPrice={getMinPrice}
+                      />
+                    </div>
+
+                    <div className="flex gap-6">
+                      <div className="hidden lg:block w-64 shrink-0">
+                        <SidebarFilters
+                          bankFilter={bankFilter}
+                          onBankFilterChange={setBankFilter}
+                          platformFilter={platformFilter}
+                          onPlatformFilterChange={setPlatformFilter}
+                          paymentFilter={paymentFilter}
+                          onPaymentFilterChange={setPaymentFilter}
+                        />
+                      </div>
+
+                      <div className="flex-1">
+                        {filteredAllOffers.length === 0 ? (
+                          <div className="bg-card/90 backdrop-blur-sm rounded-2xl card-shadow-lg p-10 text-center">
+                            <p className="text-muted-foreground">No offers match your filters. Try adjusting filters.</p>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                            {filteredAllOffers.map((offer, index) => (
+                              <OfferCard key={offer.id} {...offer} index={index} />
+                            ))}
+                          </div>
+                        )}
+
+                        <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
+                          Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 )}
 
                 {activeSection === "about" && <AboutSection />}
                 {activeSection === "how-it-works" && <HowItWorksSection />}
               </>
-            )}
-
-            {/* Default pre-search content (no nav clicked) */}
-            {!hasSearched && activeSection === "offers" && (
-              <div className="space-y-16">
-                <AboutSection />
-                <HowItWorksSection />
-              </div>
             )}
           </div>
         </main>
