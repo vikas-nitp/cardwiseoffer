@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Plane } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type ActiveSection = "offers" | "about" | "how-it-works";
+export type ActiveSection = "results" | "all-offers" | "about" | "how-it-works";
 
 interface HeaderProps {
   activeSection: ActiveSection;
@@ -10,19 +10,20 @@ interface HeaderProps {
   hasSearched: boolean;
 }
 
-const navItems: { label: string; section: ActiveSection }[] = [
-  { label: "All Offers", section: "offers" },
-  { label: "About", section: "about" },
-  { label: "How It Works", section: "how-it-works" },
-];
-
 const Header = ({ activeSection, onSectionChange, hasSearched }: HeaderProps) => {
+  const navItems: { label: string; section: ActiveSection }[] = [
+    ...(hasSearched ? [{ label: "Search Results", section: "results" as ActiveSection }] : []),
+    { label: "All Offers", section: "all-offers" as ActiveSection },
+    { label: "About", section: "about" as ActiveSection },
+    { label: "How It Works", section: "how-it-works" as ActiveSection },
+  ];
+
   return (
     <header className="w-full py-4 px-6 md:px-10 flex items-center justify-between relative z-10">
       <Link
         to="/"
         className="flex items-center gap-2 group"
-        onClick={() => onSectionChange("offers")}
+        onClick={() => onSectionChange(hasSearched ? "results" : "about")}
       >
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
           <Plane className="w-4 h-4 text-primary-foreground" />
