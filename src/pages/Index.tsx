@@ -11,7 +11,7 @@ import SidebarFilters from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
 import skyBg from "@/assets/sky-bg-2.png";
 import { format } from "date-fns";
-import { ArrowRight, Pencil, Star, TrendingUp, Gift, Search as SearchIcon } from "lucide-react";
+import { ArrowRight, Pencil, Star, TrendingUp, Gift, CreditCard, Search as SearchIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CityOption } from "@/components/CityAutocomplete";
 
@@ -67,130 +67,332 @@ const priceVariation = (seed: number, base: number, idx: number) => {
   return Math.max(300, base + variation);
 };
 
+/** Get discount for a specific bank on a specific route+date */
+const getBankDiscount = (seed: number, bankName: string) => {
+  const idx = allBankNames.indexOf(bankName);
+  return priceVariation(seed, bankOffers[bankName][0].baseDiscount, idx);
+};
+
+/** Find the best bank+discount across ALL banks */
+const findBestOffer = (seed: number) => {
+  let bestDiscount = 0;
+  let bestBank = "";
+  allBankNames.forEach((bankName) => {
+    const d = getBankDiscount(seed, bankName);
+    if (d > bestDiscount) {
+      bestDiscount = d;
+      bestBank = bankName;
+    }
+  });
+  return { bestBank, bestDiscount };
+};
+
+/** Find best bank+discount among banks NOT in the excluded list */
+const findBestOtherOffer = (seed: number, excludeBanks: string[]) => {
+  let bestDiscount = 0;
+  let bestBank = "";
+  allBankNames.forEach((bankName) => {
+    if (excludeBanks.includes(bankName)) return;
+    const d = getBankDiscount(seed, bankName);
+    if (d > bestDiscount) {
+      bestDiscount = d;
+      bestBank = bankName;
+    }
+  });
+  return { bestBank, bestDiscount };
+};
+
+const makeConditions = (seed: number, idx: number) => [
+  `Min booking: ₹${3000 + (seed % 3) * 1000} – ₹9,999`,
+  idx % 2 === 0 ? "Non-EMI transactions only" : "EMI & Non-EMI allowed",
+  idx % 2 === 0 ? "Web & Mobile App" : "Mobile App only",
+  "Domestic flights only",
+  "Valid till 30 Apr 2026",
+];
+
 /**
- * Generate the 3 search-result cards: Best Offer, Selected Card (if bank chosen), Default Offer.
- * The Best Offer discount MUST equal getMinPrice for the same date so prices stay consistent.
+ * Generate search result tiles following strict logic:
+ * No card selected → 2 tiles: Best Offer, Default Offer
+ * Case 1: different offers → 3 tiles: Best on Selected, Best on Other, Default
+ * Case 2: both same, no better → 3 tiles: Card1, Card2, Default
+ * Case 3: both same, better exists → 4 tiles: Card1, Card2, Best Other, Default
  */
 const generateSearchResults = (from: CityOption, to: CityOption, date: Date, banks: string[]) => {
   const dateStr = format(date, "yyyy-MM-dd");
   const seed = hashCode(`${from.code}-${to.code}-${dateStr}`);
+  const tiles: any[] = [];
 
-  // Best offer across ALL banks for this date
-  let bestDiscount = 0;
-  let bestBank = "";
-  let bestCard = "";
-  allBankNames.forEach((bankName, idx) => {
-    const d = priceVariation(seed, bankOffers[bankName][0].baseDiscount, idx);
-    if (d > bestDiscount) {
-      bestDiscount = d;
-      bestBank = bankName;
-      bestCard = bankOffers[bankName][0].card;
-    }
-  });
+  const defaultDiscount = priceVariation(seed, 500, 99);
+  const defaultPlatformIdx = (seed + 3) % allPlatforms.length;
 
-  const bestPlatformIdx = seed % allPlatforms.length;
-  const result: any[] = [];
+  if (banks.length === 0) {
+    // NO CARD SELECTED → 2 tiles: Best Offer, Default Offer
+    const { bestBank, bestDiscount } = findBestOffer(seed);
+    const pIdx = seed % allPlatforms.length;
 
-  // 1. Best Offer card
-  result.push({
-    id: "best",
-    label: "Best Offer",
-    labelIcon: Star,
-    accentClass: "bg-primary text-primary-foreground",
-    accentBorder: "border-primary",
-    platform: allPlatforms[bestPlatformIdx],
-    platformUrl: buildPlatformUrl(allPlatforms[bestPlatformIdx], from.code, to.code, dateStr),
-    bank: bestBank,
-    card: bestCard,
-    discount: bestDiscount,
-    paymentType: "Credit Card",
-    conditions: [
-      `Min booking: ₹${3000 + (seed % 3) * 1000} – ₹9,999`,
-      "Valid till 30 Apr 2026",
-      "Non-EMI transactions only",
-      "Web & Mobile App",
-      "Domestic flights only",
-    ],
-  });
+    tiles.push({
+      id: "best",
+      label: "Best Offer",
+      labelIcon: Star,
+      accentClass: "bg-primary text-primary-foreground",
+      accentBorder: "border-primary",
+      platform: allPlatforms[pIdx],
+      platformUrl: buildPlatformUrl(allPlatforms[pIdx], from.code, to.code, dateStr),
+      bank: bestBank,
+      card: bankOffers[bestBank][0].card,
+      discount: bestDiscount,
+      paymentType: "Credit Card",
+      conditions: makeConditions(seed, 0),
+    });
 
-  // 2. Selected Card offer(s)
-  if (banks.length > 0) {
-    banks.forEach((bankName, bIdx) => {
-      const bankData = bankOffers[bankName];
-      if (!bankData) return;
-      const discount = priceVariation(seed, bankData[0].baseDiscount, allBankNames.indexOf(bankName));
-      // Skip if it's already the best offer
-      if (bankName === bestBank) return;
-      const pIdx = (bIdx + 1 + seed) % allPlatforms.length;
-      const diff = bestDiscount - discount;
-      result.push({
-        id: `selected-${bankName}`,
-        label: "Selected Card",
-        extraLabel: diff > 0 ? `₹${diff} less` : undefined,
+    tiles.push({
+      id: "default",
+      label: "Default Offer",
+      labelIcon: Gift,
+      accentClass: "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white",
+      accentBorder: "border-violet-400",
+      platform: allPlatforms[defaultPlatformIdx],
+      platformUrl: buildPlatformUrl(allPlatforms[defaultPlatformIdx], from.code, to.code, dateStr),
+      bank: null,
+      card: null,
+      discount: defaultDiscount,
+      paymentType: "No Card",
+      conditions: ["Available for all users", "No minimum booking", "Valid till 25 Apr 2026", "Web & Mobile App", "Domestic flights only"],
+    });
+
+    return tiles;
+  }
+
+  // CARD(S) SELECTED
+  const selectedDiscounts = banks.map((b) => ({
+    bank: b,
+    card: bankOffers[b]?.[0]?.card ?? b,
+    discount: getBankDiscount(seed, b),
+  }));
+
+  const { bestBank: bestOtherBank, bestDiscount: bestOtherDiscount } = findBestOtherOffer(seed, banks);
+
+  if (banks.length === 1) {
+    const sel = selectedDiscounts[0];
+    // 1 card selected: Best on Selected Card, (maybe) Best on Other Card, Default
+    if (bestOtherDiscount > sel.discount) {
+      // Other card is better → show it
+      tiles.push({
+        id: "selected-0",
+        label: "Best Offer on Selected Card",
+        labelIcon: CreditCard,
+        accentClass: "bg-primary text-primary-foreground",
+        accentBorder: "border-primary",
+        platform: allPlatforms[seed % allPlatforms.length],
+        platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr),
+        bank: sel.bank,
+        card: sel.card,
+        discount: sel.discount,
+        paymentType: "Credit Card",
+        conditions: makeConditions(seed, 0),
+      });
+      tiles.push({
+        id: "best-other",
+        label: "Best Offer on Other Card",
+        extraLabel: `₹${bestOtherDiscount - sel.discount} more savings`,
         labelIcon: TrendingUp,
         accentClass: "bg-accent text-accent-foreground",
         accentBorder: "border-accent",
-        platform: allPlatforms[pIdx],
-        platformUrl: buildPlatformUrl(allPlatforms[pIdx], from.code, to.code, dateStr),
-        bank: bankName,
-        card: bankData[0].card,
-        discount,
+        platform: allPlatforms[(seed + 1) % allPlatforms.length],
+        platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr),
+        bank: bestOtherBank,
+        card: bankOffers[bestOtherBank][0].card,
+        discount: bestOtherDiscount,
         paymentType: "Credit Card",
-        conditions: [
-          `Min booking: ₹${2000 + (seed % 4) * 1000} – ₹9,999`,
-          bIdx % 2 === 0 ? "EMI & Non-EMI allowed" : "Non-EMI only",
-          bIdx % 2 === 0 ? "Mobile App only" : "Web & Mobile App",
-          "All routes",
-          "Valid till 28 Apr 2026",
-        ],
+        conditions: makeConditions(seed, 1),
       });
-    });
+    } else {
+      // Selected card IS the best or equal
+      tiles.push({
+        id: "selected-0",
+        label: "Best Offer on Selected Card",
+        labelIcon: Star,
+        accentClass: "bg-primary text-primary-foreground",
+        accentBorder: "border-primary",
+        platform: allPlatforms[seed % allPlatforms.length],
+        platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr),
+        bank: sel.bank,
+        card: sel.card,
+        discount: sel.discount,
+        paymentType: "Credit Card",
+        conditions: makeConditions(seed, 0),
+      });
+    }
+  } else {
+    // 2 CARDS SELECTED
+    const sel0 = selectedDiscounts[0];
+    const sel1 = selectedDiscounts[1];
+    const sameDiscount = sel0.discount === sel1.discount;
+    const maxSelected = Math.max(sel0.discount, sel1.discount);
+
+    if (sameDiscount) {
+      if (bestOtherDiscount > maxSelected) {
+        // Case 3: same offer, better exists → 4 tiles
+        tiles.push({
+          id: "selected-0",
+          label: `${sel0.bank}`,
+          labelIcon: CreditCard,
+          accentClass: "bg-primary text-primary-foreground",
+          accentBorder: "border-primary",
+          platform: allPlatforms[seed % allPlatforms.length],
+          platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr),
+          bank: sel0.bank,
+          card: sel0.card,
+          discount: sel0.discount,
+          paymentType: "Credit Card",
+          conditions: makeConditions(seed, 0),
+        });
+        tiles.push({
+          id: "selected-1",
+          label: `${sel1.bank}`,
+          labelIcon: CreditCard,
+          accentClass: "bg-primary text-primary-foreground",
+          accentBorder: "border-primary",
+          platform: allPlatforms[(seed + 1) % allPlatforms.length],
+          platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr),
+          bank: sel1.bank,
+          card: sel1.card,
+          discount: sel1.discount,
+          paymentType: "Credit Card",
+          conditions: makeConditions(seed, 1),
+        });
+        tiles.push({
+          id: "best-other",
+          label: "Best Offer on Other Card",
+          extraLabel: `₹${bestOtherDiscount - maxSelected} more savings`,
+          labelIcon: TrendingUp,
+          accentClass: "bg-accent text-accent-foreground",
+          accentBorder: "border-accent",
+          platform: allPlatforms[(seed + 2) % allPlatforms.length],
+          platformUrl: buildPlatformUrl(allPlatforms[(seed + 2) % allPlatforms.length], from.code, to.code, dateStr),
+          bank: bestOtherBank,
+          card: bankOffers[bestOtherBank][0].card,
+          discount: bestOtherDiscount,
+          paymentType: "Credit Card",
+          conditions: makeConditions(seed, 2),
+        });
+      } else {
+        // Case 2: same offer, no better → 3 tiles
+        tiles.push({
+          id: "selected-0",
+          label: `${sel0.bank}`,
+          labelIcon: Star,
+          accentClass: "bg-primary text-primary-foreground",
+          accentBorder: "border-primary",
+          platform: allPlatforms[seed % allPlatforms.length],
+          platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr),
+          bank: sel0.bank,
+          card: sel0.card,
+          discount: sel0.discount,
+          paymentType: "Credit Card",
+          conditions: makeConditions(seed, 0),
+        });
+        tiles.push({
+          id: "selected-1",
+          label: `${sel1.bank}`,
+          labelIcon: Star,
+          accentClass: "bg-primary text-primary-foreground",
+          accentBorder: "border-primary",
+          platform: allPlatforms[(seed + 1) % allPlatforms.length],
+          platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr),
+          bank: sel1.bank,
+          card: sel1.card,
+          discount: sel1.discount,
+          paymentType: "Credit Card",
+          conditions: makeConditions(seed, 1),
+        });
+      }
+    } else {
+      // Case 1: different offers → 3 tiles: Best on Selected, Best on Other, Default
+      const bestSelected = sel0.discount >= sel1.discount ? sel0 : sel1;
+      const otherSelected = sel0.discount >= sel1.discount ? sel1 : sel0;
+
+      tiles.push({
+        id: "selected-best",
+        label: "Best Offer on Selected Card",
+        labelIcon: Star,
+        accentClass: "bg-primary text-primary-foreground",
+        accentBorder: "border-primary",
+        platform: allPlatforms[seed % allPlatforms.length],
+        platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr),
+        bank: bestSelected.bank,
+        card: bestSelected.card,
+        discount: bestSelected.discount,
+        paymentType: "Credit Card",
+        conditions: makeConditions(seed, 0),
+      });
+
+      // Check if an unselected card beats both
+      if (bestOtherDiscount > bestSelected.discount) {
+        tiles.push({
+          id: "best-other",
+          label: "Best Offer on Other Card",
+          extraLabel: `₹${bestOtherDiscount - bestSelected.discount} more savings`,
+          labelIcon: TrendingUp,
+          accentClass: "bg-accent text-accent-foreground",
+          accentBorder: "border-accent",
+          platform: allPlatforms[(seed + 1) % allPlatforms.length],
+          platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr),
+          bank: bestOtherBank,
+          card: bankOffers[bestOtherBank][0].card,
+          discount: bestOtherDiscount,
+          paymentType: "Credit Card",
+          conditions: makeConditions(seed, 1),
+        });
+      } else {
+        // Show the other selected card as second tile
+        tiles.push({
+          id: "selected-other",
+          label: `${otherSelected.bank}`,
+          extraLabel: `₹${bestSelected.discount - otherSelected.discount} less`,
+          labelIcon: CreditCard,
+          accentClass: "bg-accent text-accent-foreground",
+          accentBorder: "border-accent",
+          platform: allPlatforms[(seed + 1) % allPlatforms.length],
+          platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr),
+          bank: otherSelected.bank,
+          card: otherSelected.card,
+          discount: otherSelected.discount,
+          paymentType: "Credit Card",
+          conditions: makeConditions(seed, 1),
+        });
+      }
+    }
   }
 
-  // 3. Default Offer (no card)
-  const defaultDiscount = priceVariation(seed, 500, 99);
-  result.push({
+  // Always end with Default Offer
+  tiles.push({
     id: "default",
     label: "Default Offer",
     labelIcon: Gift,
     accentClass: "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white",
     accentBorder: "border-violet-400",
-    platform: "EaseMyTrip",
-    platformUrl: buildPlatformUrl("EaseMyTrip", from.code, to.code, dateStr),
+    platform: allPlatforms[defaultPlatformIdx],
+    platformUrl: buildPlatformUrl(allPlatforms[defaultPlatformIdx], from.code, to.code, dateStr),
     bank: null,
     card: null,
     discount: defaultDiscount,
     paymentType: "No Card",
-    conditions: [
-      "Available for all users",
-      "No minimum booking",
-      "Valid till 25 Apr 2026",
-      "Web & Mobile App",
-      "Domestic flights only",
-    ],
+    conditions: ["Available for all users", "No minimum booking", "Valid till 25 Apr 2026", "Web & Mobile App", "Domestic flights only"],
   });
 
-  return result;
+  return tiles;
 };
 
-/**
- * Generate ALL bank offers for the All Offers view.
- */
+/** Generate ALL bank offers for the All Offers view */
 const generateAllOffers = (from: CityOption, to: CityOption, date: Date) => {
   const dateStr = format(date, "yyyy-MM-dd");
   const seed = hashCode(`${from.code}-${to.code}-${dateStr}`);
+  const { bestDiscount } = findBestOffer(seed);
   const result: any[] = [];
 
-  // Find best discount for badge
-  let bestDiscount = 0;
   allBankNames.forEach((bankName, idx) => {
-    const d = priceVariation(seed, bankOffers[bankName][0].baseDiscount, idx);
-    if (d > bestDiscount) bestDiscount = d;
-  });
-
-  allBankNames.forEach((bankName, idx) => {
-    const bankData = bankOffers[bankName][0];
-    const discount = priceVariation(seed, bankData.baseDiscount, idx);
+    const discount = getBankDiscount(seed, bankName);
     const pIdx = (idx + seed) % allPlatforms.length;
     const isBest = discount === bestDiscount;
 
@@ -203,20 +405,13 @@ const generateAllOffers = (from: CityOption, to: CityOption, date: Date) => {
       platform: allPlatforms[pIdx],
       platformUrl: buildPlatformUrl(allPlatforms[pIdx], from.code, to.code, dateStr),
       bank: bankName,
-      card: bankData.card,
+      card: bankOffers[bankName][0].card,
       discount,
       paymentType: idx % 3 === 2 ? "Debit Card" : "Credit Card",
-      conditions: [
-        `Min booking: ₹${3000 + (seed % 3) * 1000} – ₹9,999`,
-        "Valid till 30 Apr 2026",
-        idx % 2 === 0 ? "Non-EMI transactions only" : "EMI & Non-EMI allowed",
-        idx % 2 === 0 ? "Web & Mobile App" : "Mobile App only",
-        "Domestic flights only",
-      ],
+      conditions: makeConditions(seed, idx),
     });
   });
 
-  // Default offer
   const defaultDiscount = priceVariation(seed, 500, 99);
   result.push({
     id: "all-default",
@@ -230,13 +425,7 @@ const generateAllOffers = (from: CityOption, to: CityOption, date: Date) => {
     card: null,
     discount: defaultDiscount,
     paymentType: "No Card",
-    conditions: [
-      "Available for all users",
-      "No minimum booking",
-      "Valid till 25 Apr 2026",
-      "Web & Mobile App",
-      "Domestic flights only",
-    ],
+    conditions: ["Available for all users", "No minimum booking", "Valid till 25 Apr 2026", "Web & Mobile App", "Domestic flights only"],
   });
 
   result.sort((a, b) => b.discount - a.discount);
@@ -270,31 +459,22 @@ const Index = () => {
     }
   };
 
-  // getMinPrice must match best offer logic
   const getMinPrice = (date: Date) => {
     if (!searchState) return 0;
     const seed = hashCode(`${searchState.from.code}-${searchState.to.code}-${format(date, "yyyy-MM-dd")}`);
-    let best = 0;
-    allBankNames.forEach((bankName, idx) => {
-      const d = priceVariation(seed, bankOffers[bankName][0].baseDiscount, idx);
-      if (d > best) best = d;
-    });
-    return best;
+    return findBestOffer(seed).bestDiscount;
   };
 
-  // Search Results cards
   const searchResults = useMemo(() => {
     if (!searchState) return [];
     return generateSearchResults(searchState.from, searchState.to, searchState.date, searchState.banks);
   }, [searchState]);
 
-  // All Offers cards
   const allOffers = useMemo(() => {
     if (!searchState) return [];
     return generateAllOffers(searchState.from, searchState.to, searchState.date);
   }, [searchState]);
 
-  // Filtered all offers
   const filteredAllOffers = useMemo(() => {
     return allOffers.filter((o) => {
       if (bankFilter.length > 0 && o.bank && !bankFilter.includes(o.bank)) return false;
@@ -303,11 +483,6 @@ const Index = () => {
       return true;
     });
   }, [allOffers, bankFilter, platformFilter, paymentFilter]);
-
-  // Check if selected banks have offers in search results
-  const hasSelectedCardOffers = searchState?.banks.length
-    ? searchResults.some((o) => o.label === "Selected Card")
-    : true;
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -426,18 +601,11 @@ const Index = () => {
                       />
                     </div>
 
-                    {/* No offers for selected card message */}
-                    {searchState.banks.length > 0 && !hasSelectedCardOffers && (
-                      <div className="bg-card/90 backdrop-blur-sm rounded-2xl card-shadow p-6 mb-6 text-center">
-                        <p className="text-muted-foreground font-medium">
-                          No active offers on your selected card for this date. Showing best available and default offers.
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    <div className="flex gap-5 justify-center">
                       {searchResults.map((offer, index) => (
-                        <OfferCard key={offer.id} {...offer} index={index} />
+                        <div key={offer.id} className="w-[320px] shrink-0">
+                          <OfferCard {...offer} index={index} />
+                        </div>
                       ))}
                     </div>
 

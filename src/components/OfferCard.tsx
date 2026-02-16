@@ -58,7 +58,7 @@ const OfferCard = ({
       {/* Discount + Bank */}
       <div className="px-5 pb-4">
         <p className="text-3xl font-display font-bold text-foreground">
-          Upto ₹{discount.toLocaleString()}
+          ₹{discount.toLocaleString()}
         </p>
         <div className="flex items-center gap-2 mt-2 flex-wrap">
           {bank && (
