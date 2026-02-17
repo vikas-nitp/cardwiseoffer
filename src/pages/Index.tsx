@@ -6,13 +6,13 @@ import SearchCard from "@/components/SearchCard";
 import TrustIndicators from "@/components/TrustIndicators";
 import AboutSection from "@/components/AboutSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
-import FAQSection from "@/components/FAQSection";
+import ContactSection from "@/components/ContactSection";
 import DateStrip from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
 import skyBg from "@/assets/sky-bg-2.png";
 import { format } from "date-fns";
-import { ArrowRight, Pencil, Star, TrendingUp, Gift, CreditCard, ShieldCheck, RefreshCw, Scale } from "lucide-react";
+import { ArrowRight, Pencil, Star, TrendingUp, Gift, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CityOption } from "@/components/CityAutocomplete";
 
@@ -23,7 +23,7 @@ interface SearchState {
   banks: string[];
 }
 
-// --- Data utilities (unchanged logic) ---
+// --- Data utilities ---
 const hashCode = (s: string) => {
   let hash = 0;
   for (let i = 0; i < s.length; i++) {
@@ -123,7 +123,7 @@ const generateSearchResults = (from: CityOption, to: CityOption, date: Date, ban
     });
     tiles.push({
       id: "default", label: "Default Offer", labelIcon: Gift,
-      accentClass: "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white", accentBorder: "border-violet-400",
+      accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent",
       platform: allPlatforms[defaultPlatformIdx],
       platformUrl: buildPlatformUrl(allPlatforms[defaultPlatformIdx], from.code, to.code, dateStr),
       bank: null, card: null, discount: defaultDiscount, paymentType: "No Card",
@@ -141,7 +141,7 @@ const generateSearchResults = (from: CityOption, to: CityOption, date: Date, ban
     const sel = selectedDiscounts[0];
     if (bestOtherDiscount > sel.discount) {
       tiles.push({ id: "selected-0", label: "Best Offer on Selected Card", labelIcon: CreditCard, accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary", platform: allPlatforms[seed % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr), bank: sel.bank, card: sel.card, discount: sel.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 0) });
-      tiles.push({ id: "best-other", label: "Best Offer on Other Card", extraLabel: `₹${bestOtherDiscount - sel.discount} more savings`, labelIcon: TrendingUp, accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent", platform: allPlatforms[(seed + 1) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr), bank: bestOtherBank, card: bankOffers[bestOtherBank][0].card, discount: bestOtherDiscount, paymentType: "Credit Card", conditions: makeConditions(seed, 1) });
+      tiles.push({ id: "best-other", label: "Best Offer on Other Card", extraLabel: `₹${bestOtherDiscount - sel.discount} more savings`, labelIcon: TrendingUp, accentClass: "bg-highlight text-highlight-foreground", accentBorder: "border-highlight", platform: allPlatforms[(seed + 1) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr), bank: bestOtherBank, card: bankOffers[bestOtherBank][0].card, discount: bestOtherDiscount, paymentType: "Credit Card", conditions: makeConditions(seed, 1) });
     } else {
       tiles.push({ id: "selected-0", label: "Best Offer on Selected Card", labelIcon: Star, accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary", platform: allPlatforms[seed % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr), bank: sel.bank, card: sel.card, discount: sel.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 0) });
     }
@@ -155,23 +155,23 @@ const generateSearchResults = (from: CityOption, to: CityOption, date: Date, ban
       tiles.push({ id: "selected-0", label: sel0.bank, labelIcon: CreditCard, accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary", platform: allPlatforms[seed % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr), bank: sel0.bank, card: sel0.card, discount: sel0.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 0) });
       tiles.push({ id: "selected-1", label: sel1.bank, labelIcon: CreditCard, accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary", platform: allPlatforms[(seed + 1) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr), bank: sel1.bank, card: sel1.card, discount: sel1.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 1) });
       if (bestOtherDiscount > maxSelected) {
-        tiles.push({ id: "best-other", label: "Best Offer on Other Card", extraLabel: `₹${bestOtherDiscount - maxSelected} more savings`, labelIcon: TrendingUp, accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent", platform: allPlatforms[(seed + 2) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 2) % allPlatforms.length], from.code, to.code, dateStr), bank: bestOtherBank, card: bankOffers[bestOtherBank][0].card, discount: bestOtherDiscount, paymentType: "Credit Card", conditions: makeConditions(seed, 2) });
+        tiles.push({ id: "best-other", label: "Best Offer on Other Card", extraLabel: `₹${bestOtherDiscount - maxSelected} more savings`, labelIcon: TrendingUp, accentClass: "bg-highlight text-highlight-foreground", accentBorder: "border-highlight", platform: allPlatforms[(seed + 2) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 2) % allPlatforms.length], from.code, to.code, dateStr), bank: bestOtherBank, card: bankOffers[bestOtherBank][0].card, discount: bestOtherDiscount, paymentType: "Credit Card", conditions: makeConditions(seed, 2) });
       }
     } else {
       const bestSelected = sel0.discount >= sel1.discount ? sel0 : sel1;
       const otherSelected = sel0.discount >= sel1.discount ? sel1 : sel0;
       tiles.push({ id: "selected-best", label: "Best Offer on Selected Card", labelIcon: Star, accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary", platform: allPlatforms[seed % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr), bank: bestSelected.bank, card: bestSelected.card, discount: bestSelected.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 0) });
       if (bestOtherDiscount > bestSelected.discount) {
-        tiles.push({ id: "best-other", label: "Best Offer on Other Card", extraLabel: `₹${bestOtherDiscount - bestSelected.discount} more savings`, labelIcon: TrendingUp, accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent", platform: allPlatforms[(seed + 1) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr), bank: bestOtherBank, card: bankOffers[bestOtherBank][0].card, discount: bestOtherDiscount, paymentType: "Credit Card", conditions: makeConditions(seed, 1) });
+        tiles.push({ id: "best-other", label: "Best Offer on Other Card", extraLabel: `₹${bestOtherDiscount - bestSelected.discount} more savings`, labelIcon: TrendingUp, accentClass: "bg-highlight text-highlight-foreground", accentBorder: "border-highlight", platform: allPlatforms[(seed + 1) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr), bank: bestOtherBank, card: bankOffers[bestOtherBank][0].card, discount: bestOtherDiscount, paymentType: "Credit Card", conditions: makeConditions(seed, 1) });
       } else {
-        tiles.push({ id: "selected-other", label: otherSelected.bank, extraLabel: `₹${bestSelected.discount - otherSelected.discount} less`, labelIcon: CreditCard, accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent", platform: allPlatforms[(seed + 1) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr), bank: otherSelected.bank, card: otherSelected.card, discount: otherSelected.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 1) });
+        tiles.push({ id: "selected-other", label: otherSelected.bank, extraLabel: `₹${bestSelected.discount - otherSelected.discount} less`, labelIcon: CreditCard, accentClass: "bg-secondary text-secondary-foreground", accentBorder: "border-secondary", platform: allPlatforms[(seed + 1) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr), bank: otherSelected.bank, card: otherSelected.card, discount: otherSelected.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 1) });
       }
     }
   }
 
   tiles.push({
     id: "default", label: "Default Offer", labelIcon: Gift,
-    accentClass: "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white", accentBorder: "border-violet-400",
+    accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent",
     platform: allPlatforms[defaultPlatformIdx],
     platformUrl: buildPlatformUrl(allPlatforms[defaultPlatformIdx], from.code, to.code, dateStr),
     bank: null, card: null, discount: defaultDiscount, paymentType: "No Card",
@@ -193,8 +193,8 @@ const generateAllOffers = (from: CityOption, to: CityOption, date: Date) => {
     result.push({
       id: `all-${bankName}`, label: isBest ? "Best Offer" : bankName,
       labelIcon: isBest ? Star : TrendingUp,
-      accentClass: isBest ? "bg-primary text-primary-foreground" : "bg-accent text-accent-foreground",
-      accentBorder: isBest ? "border-primary" : "border-accent",
+      accentClass: isBest ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground",
+      accentBorder: isBest ? "border-primary" : "border-secondary",
       platform: allPlatforms[pIdx],
       platformUrl: buildPlatformUrl(allPlatforms[pIdx], from.code, to.code, dateStr),
       bank: bankName, card: bankOffers[bankName][0].card, discount,
@@ -206,7 +206,7 @@ const generateAllOffers = (from: CityOption, to: CityOption, date: Date) => {
   const defaultDiscount = priceVariation(seed, 500, 99);
   result.push({
     id: "all-default", label: "Default Offer", labelIcon: Gift,
-    accentClass: "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white", accentBorder: "border-violet-400",
+    accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent",
     platform: "EaseMyTrip",
     platformUrl: buildPlatformUrl("EaseMyTrip", from.code, to.code, dateStr),
     bank: null, card: null, discount: defaultDiscount, paymentType: "No Card",
@@ -217,7 +217,6 @@ const generateAllOffers = (from: CityOption, to: CityOption, date: Date) => {
   return result;
 };
 
-// Default All Offers (no search needed)
 const generateDefaultAllOffers = () => {
   const seed = hashCode("default-all-offers");
   const result: any[] = [];
@@ -230,8 +229,8 @@ const generateDefaultAllOffers = () => {
     result.push({
       id: `all-${bankName}`, label: isBest ? "Best Offer" : bankName,
       labelIcon: isBest ? Star : TrendingUp,
-      accentClass: isBest ? "bg-primary text-primary-foreground" : "bg-accent text-accent-foreground",
-      accentBorder: isBest ? "border-primary" : "border-accent",
+      accentClass: isBest ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground",
+      accentBorder: isBest ? "border-primary" : "border-secondary",
       platform: allPlatforms[pIdx], platformUrl: "#",
       bank: bankName, card: bankOffers[bankName][0].card, discount,
       paymentType: idx % 3 === 2 ? "Debit Card" : "Credit Card",
@@ -241,7 +240,7 @@ const generateDefaultAllOffers = () => {
 
   result.push({
     id: "all-default", label: "Default Offer", labelIcon: Gift,
-    accentClass: "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white", accentBorder: "border-violet-400",
+    accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent",
     platform: "EaseMyTrip", platformUrl: "#",
     bank: null, card: null, discount: priceVariation(seed, 500, 99), paymentType: "No Card",
     conditions: ["Available for all users", "No minimum booking", "Valid till 25 Apr 2026", "Web & Mobile App", "Domestic flights only"],
@@ -257,7 +256,6 @@ const Index = () => {
   const [activeSection, setActiveSection] = useState<ActiveSection>("home");
   const [searchState, setSearchState] = useState<SearchState | null>(null);
 
-  // Sidebar filters (All Offers view only)
   const [bankFilter, setBankFilter] = useState<string[]>([]);
   const [platformFilter, setPlatformFilter] = useState<string[]>([]);
   const [paymentFilter, setPaymentFilter] = useState<string[]>([]);
@@ -273,7 +271,6 @@ const Index = () => {
   };
 
   const handleEditSearch = () => {
-    // Go back to home with form values preserved
     setActiveSection("home");
   };
 
@@ -308,47 +305,48 @@ const Index = () => {
     });
   }, [allOffers, bankFilter, platformFilter, paymentFilter]);
 
-  const handleSectionChange = (section: ActiveSection) => {
-    setActiveSection(section);
-  };
-
-  // Determine what to show
   const showHome = activeSection === "home";
   const showResults = activeSection === "results" && hasSearched;
   const showAllOffers = activeSection === "all-offers";
   const showAbout = activeSection === "about";
   const showHowItWorks = activeSection === "how-it-works";
-  const showHelp = activeSection === "help";
+  const showContact = activeSection === "contact";
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      <div
-        className="fixed inset-0 z-0"
-        style={{
-          backgroundImage: `url(${skyBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      />
-      <div className="fixed inset-0 z-0 bg-background/20" />
+      {/* Animated background */}
+      <div className="fixed inset-0 z-0">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url(${skyBg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            filter: "blur(1px)",
+          }}
+        />
+        <div className="absolute inset-0 bg-background/30 backdrop-blur-[1px]" />
+        {/* Animated gradient orbs */}
+        <div className="absolute top-20 left-[10%] w-96 h-96 rounded-full bg-primary/5 blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-[10%] w-80 h-80 rounded-full bg-accent/5 blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
+      </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header activeSection={activeSection} onSectionChange={handleSectionChange} />
+        <Header activeSection={activeSection} onSectionChange={setActiveSection} />
 
-        <main className="flex-1 flex flex-col items-center px-6">
+        <main className="flex-1 flex flex-col items-center px-6 pb-8">
 
           {/* ===== HOME VIEW ===== */}
           {showHome && (
             <>
-              {/* Lightweight hero */}
-              <section className="flex flex-col items-center justify-center pt-12 md:pt-16 pb-6 max-w-2xl mx-auto text-center">
-                <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-foreground leading-tight">
-                  Compare card offers.
+              <section className="flex flex-col items-center justify-center pt-16 md:pt-20 pb-8 max-w-2xl mx-auto text-center">
+                <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight leading-tight animate-fade-up">
+                  <span className="text-gradient">Compare card offers.</span>
                   <br />
                   <span className="text-primary">Book smarter.</span>
                 </h1>
-                <p className="mt-3 text-base text-muted-foreground leading-relaxed max-w-lg">
+                <p className="mt-4 text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg animate-fade-up" style={{ animationDelay: "0.1s" }}>
                   See which credit card saves the most on your next flight — across platforms, with no bias.
                 </p>
               </section>
@@ -361,24 +359,7 @@ const Index = () => {
                 initialBanks={searchState?.banks ?? []}
               />
 
-              {/* Minimal trust strip */}
-              <div className="flex items-center justify-center gap-8 mt-8 animate-fade-up" style={{ animationDelay: "0.3s" }}>
-                {[
-                  { icon: ShieldCheck, text: "No booking bias" },
-                  { icon: RefreshCw, text: "Updated daily" },
-                  { icon: Scale, text: "Independent" },
-                ].map(({ icon: Icon, text }) => (
-                  <div key={text} className="flex items-center gap-1.5 text-muted-foreground">
-                    <Icon className="w-3.5 h-3.5 text-accent" />
-                    <span className="text-xs font-medium">{text}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* FAQ at bottom */}
-              <div className="w-full max-w-6xl mx-auto py-16">
-                <FAQSection />
-              </div>
+              <TrustIndicators />
             </>
           )}
 
@@ -386,24 +367,26 @@ const Index = () => {
           {showResults && searchState && (
             <div className="w-full max-w-6xl mx-auto mt-6 animate-fade-up">
               {/* Summary bar */}
-              <div className="bg-card/90 backdrop-blur-sm rounded-2xl card-shadow-lg p-5 md:p-6 flex flex-wrap items-center justify-between gap-4 border border-border/50 mb-6">
+              <div className="glass-card rounded-2xl card-shadow-lg p-5 md:p-6 flex flex-wrap items-center justify-between gap-4 mb-6 animate-scale-in">
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="font-display font-bold text-lg text-foreground">
-                    {searchState.from.city} ({searchState.from.code})
+                    {searchState.from.city}
+                    <span className="text-muted-foreground font-normal text-sm ml-1">({searchState.from.code})</span>
                   </span>
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <ArrowRight className="w-4 h-4 text-primary" />
                   </div>
                   <span className="font-display font-bold text-lg text-foreground">
-                    {searchState.to.city} ({searchState.to.code})
+                    {searchState.to.city}
+                    <span className="text-muted-foreground font-normal text-sm ml-1">({searchState.to.code})</span>
                   </span>
-                  <span className="text-muted-foreground">·</span>
+                  <span className="text-border">|</span>
                   <span className="font-bold text-foreground">{format(searchState.date, "dd MMM yyyy")}</span>
                   {searchState.banks.length > 0 && (
                     <>
-                      <span className="text-muted-foreground">·</span>
+                      <span className="text-border">|</span>
                       {searchState.banks.map((b) => (
-                        <span key={b} className="text-xs font-bold bg-primary/10 text-primary px-3 py-1.5 rounded-full border border-primary/20">
+                        <span key={b} className="text-xs font-bold bg-primary/10 text-primary px-3 py-1.5 rounded-full">
                           {b}
                         </span>
                       ))}
@@ -413,7 +396,7 @@ const Index = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-1.5 font-semibold border-primary/30 text-primary hover:bg-primary/5"
+                  className="gap-1.5 font-semibold border-primary/30 text-primary hover:bg-primary/5 rounded-xl"
                   onClick={handleEditSearch}
                 >
                   <Pencil className="w-3.5 h-3.5" />
@@ -448,9 +431,12 @@ const Index = () => {
           {/* ===== ALL OFFERS VIEW ===== */}
           {showAllOffers && (
             <div className="w-full max-w-6xl mx-auto mt-6 animate-fade-up">
-              <h2 className="text-2xl font-display font-bold text-foreground mb-6">
+              <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">
                 {hasSearched ? `All Offers: ${searchState!.from.city} → ${searchState!.to.city}` : "All Offers"}
               </h2>
+              <p className="text-muted-foreground mb-6">
+                {hasSearched ? "Compare all available bank offers for your route." : "Browse all available bank and card offers across platforms."}
+              </p>
 
               {hasSearched && searchState && (
                 <div className="mb-6">
@@ -475,7 +461,7 @@ const Index = () => {
                 </div>
                 <div className="flex-1">
                   {filteredAllOffers.length === 0 ? (
-                    <div className="bg-card/90 backdrop-blur-sm rounded-2xl card-shadow-lg p-10 text-center">
+                    <div className="glass-card rounded-2xl card-shadow-lg p-10 text-center">
                       <p className="text-muted-foreground">No offers match your filters. Try adjusting filters.</p>
                     </div>
                   ) : (
@@ -504,9 +490,9 @@ const Index = () => {
               <HowItWorksSection />
             </div>
           )}
-          {showHelp && (
+          {showContact && (
             <div className="w-full max-w-6xl mx-auto py-8">
-              <FAQSection />
+              <ContactSection />
             </div>
           )}
         </main>

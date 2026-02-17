@@ -23,6 +23,16 @@ const cities: CityOption[] = [
   { city: "Goa", code: "GOI", airport: "Manohar International Airport" },
   { city: "Jaipur", code: "JAI", airport: "Jaipur International Airport" },
   { city: "Ahmedabad", code: "AMD", airport: "Sardar Vallabhbhai Patel International Airport" },
+  { city: "Lucknow", code: "LKO", airport: "Chaudhary Charan Singh International Airport" },
+  { city: "Kochi", code: "COK", airport: "Cochin International Airport" },
+  { city: "Thiruvananthapuram", code: "TRV", airport: "Trivandrum International Airport" },
+  { city: "Chandigarh", code: "IXC", airport: "Chandigarh International Airport" },
+  { city: "Varanasi", code: "VNS", airport: "Lal Bahadur Shastri International Airport" },
+  { city: "Coimbatore", code: "CJB", airport: "Coimbatore International Airport" },
+  { city: "Patna", code: "PAT", airport: "Jay Prakash Narayan Airport" },
+  { city: "Indore", code: "IDR", airport: "Devi Ahilyabai Holkar Airport" },
+  { city: "Bhubaneswar", code: "BBI", airport: "Biju Patnaik International Airport" },
+  { city: "Visakhapatnam", code: "VTZ", airport: "Visakhapatnam Airport" },
 ];
 
 interface SearchCardProps {
@@ -40,7 +50,6 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
   const [selectedBanks, setSelectedBanks] = useState<string[]>(initialBanks ?? []);
   const [sameError, setSameError] = useState(false);
 
-  // Sync initial values when editing
   useEffect(() => {
     if (initialFrom) setFrom(initialFrom);
     if (initialTo) setTo(initialTo);
@@ -48,13 +57,8 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
     if (initialBanks) setSelectedBanks(initialBanks);
   }, [initialFrom, initialTo, initialDate, initialBanks]);
 
-  // Validate same city
   useEffect(() => {
-    if (from && to && from.code === to.code) {
-      setSameError(true);
-    } else {
-      setSameError(false);
-    }
+    setSameError(!!(from && to && from.code === to.code));
   }, [from, to]);
 
   const isSearchDisabled = !from || !to || !date || sameError;
@@ -65,7 +69,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto bg-card/95 backdrop-blur-sm rounded-2xl card-shadow-lg p-6 md:p-8 animate-fade-up" style={{ animationDelay: "0.2s" }}>
+    <div className="w-full max-w-5xl mx-auto glass-card rounded-2xl card-shadow-lg p-6 md:p-8 animate-fade-up glow-ring" style={{ animationDelay: "0.2s" }}>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <CityAutocomplete
           label="From"
@@ -81,12 +85,11 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
           excludeCode={from?.code}
         />
 
-        {/* Departure */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Departure</label>
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Departure</label>
           <Popover>
             <PopoverTrigger asChild>
-              <button className="w-full bg-secondary/50 border-0 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-md text-left flex items-center relative">
+              <button className="w-full bg-secondary/50 border-0 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left flex items-center relative hover:bg-secondary/70 transition-colors">
                 <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 {date ? (
                   <div>
@@ -117,9 +120,8 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
         />
       </div>
 
-      {/* Same city error */}
       {sameError && (
-        <div className="flex items-center gap-2 mt-3 text-destructive text-sm">
+        <div className="flex items-center gap-2 mt-3 text-destructive text-sm animate-fade-in">
           <AlertCircle className="w-4 h-4" />
           <span>Source and destination cannot be the same.</span>
         </div>
@@ -128,7 +130,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
       <Button
         onClick={handleSearch}
         disabled={isSearchDisabled}
-        className="w-full mt-6 h-12 text-base font-semibold rounded-xl gap-2"
+        className="w-full mt-6 h-12 text-base font-semibold rounded-xl gap-2 shadow-lg hover:shadow-xl transition-all duration-200"
         size="lg"
       >
         <Search className="w-4 h-4" />
