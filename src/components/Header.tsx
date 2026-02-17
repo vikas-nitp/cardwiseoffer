@@ -1,21 +1,20 @@
 import { Link } from "react-router-dom";
-import { Plane } from "lucide-react";
+import { Plane, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type ActiveSection = "results" | "all-offers" | "about" | "how-it-works";
+export type ActiveSection = "home" | "results" | "all-offers" | "about" | "how-it-works" | "help";
 
 interface HeaderProps {
   activeSection: ActiveSection;
   onSectionChange: (section: ActiveSection) => void;
-  hasSearched: boolean;
 }
 
-const Header = ({ activeSection, onSectionChange, hasSearched }: HeaderProps) => {
+const Header = ({ activeSection, onSectionChange }: HeaderProps) => {
   const navItems: { label: string; section: ActiveSection }[] = [
-    ...(hasSearched ? [{ label: "Search Results", section: "results" as ActiveSection }] : []),
-    { label: "All Offers", section: "all-offers" as ActiveSection },
-    { label: "About", section: "about" as ActiveSection },
-    { label: "How It Works", section: "how-it-works" as ActiveSection },
+    { label: "All Offers", section: "all-offers" },
+    { label: "How It Works", section: "how-it-works" },
+    { label: "About", section: "about" },
+    { label: "Help", section: "help" },
   ];
 
   return (
@@ -23,7 +22,7 @@ const Header = ({ activeSection, onSectionChange, hasSearched }: HeaderProps) =>
       <Link
         to="/"
         className="flex items-center gap-2 group"
-        onClick={() => onSectionChange(hasSearched ? "results" : "about")}
+        onClick={() => onSectionChange("home")}
       >
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
           <Plane className="w-4 h-4 text-primary-foreground" />
@@ -47,6 +46,10 @@ const Header = ({ activeSection, onSectionChange, hasSearched }: HeaderProps) =>
             {label}
           </button>
         ))}
+        <div className="ml-2 flex items-center gap-1 text-muted-foreground text-sm">
+          <Globe className="w-3.5 h-3.5" />
+          <span className="font-medium">EN</span>
+        </div>
       </nav>
     </header>
   );

@@ -5,26 +5,26 @@ const steps = [
     icon: Search,
     step: "Step 1",
     title: "Enter your travel details",
-    desc: "Select your flight route, travel date, and the cards or banks you have (optional).",
+    desc: "Select your flight route, travel date, and the cards you have.",
   },
   {
     icon: BarChart3,
     step: "Step 2",
-    title: "We analyze available offers",
-    desc: "We check active bank promotions across major travel platforms — savings amount, eligibility, validity & exclusions. No tricks, just structured data.",
+    title: "We compare active offers",
+    desc: "We check bank promotions across major travel platforms — savings, eligibility, and exclusions.",
   },
   {
     icon: CheckCircle,
     step: "Step 3",
     title: "See the best option",
-    desc: "The best offer for your selected cards, a better option if another card saves more, and a default offer if no card is needed.",
+    desc: "The best offer for your card, a better option if one exists, and a default no-card offer.",
   },
 ];
 
 const HowItWorksSection = () => (
   <section className="w-full max-w-5xl mx-auto animate-fade-up">
     <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground text-center mb-10">
-      How SaveWithCard Works
+      How It Works
     </h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {steps.map((item) => (
