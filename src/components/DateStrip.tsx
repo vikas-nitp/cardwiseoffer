@@ -25,7 +25,7 @@ const DateStrip = ({ selectedDate, onDateChange, getMinPrice }: DateStripProps) 
       <button
         onClick={() => setStartOffset((o) => o - 1)}
         disabled={addDays(selectedDate, startOffset - 3) < today}
-        className="shrink-0 w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors disabled:opacity-30"
+        className="shrink-0 w-9 h-9 rounded-full glass-card flex items-center justify-center hover:bg-secondary transition-all duration-200 disabled:opacity-30"
       >
         <ChevronLeft className="w-4 h-4 text-foreground" />
       </button>
@@ -44,20 +44,20 @@ const DateStrip = ({ selectedDate, onDateChange, getMinPrice }: DateStripProps) 
               key={format(d, "yyyy-MM-dd")}
               onClick={() => onDateChange(d)}
               className={cn(
-                "flex flex-col items-center px-3 py-2.5 rounded-xl border transition-all min-w-[90px]",
+                "flex flex-col items-center px-3 py-3 rounded-xl border transition-all duration-200 min-w-[90px]",
                 isSelected
-                  ? "bg-primary text-primary-foreground border-primary shadow-md"
-                  : "bg-card border-border hover:border-primary/40 hover:bg-primary/5"
+                  ? "bg-primary text-primary-foreground border-primary shadow-lg scale-105"
+                  : "glass-card hover:border-primary/40 hover:shadow-md hover:scale-[1.02]"
               )}
             >
-              <span className="text-[10px] font-semibold uppercase tracking-wide">
+              <span className="text-[10px] font-semibold uppercase tracking-wider opacity-80">
                 {format(d, "EEE")}
               </span>
               <span className="text-sm font-bold">{format(d, "dd MMM")}</span>
               <span
                 className={cn(
-                  "text-xs font-semibold mt-0.5",
-                  isSelected ? "text-primary-foreground/80" : "text-accent"
+                  "text-xs font-bold mt-1",
+                  isSelected ? "text-primary-foreground/90" : "text-accent"
                 )}
               >
                 ₹{price.toLocaleString()}
@@ -69,7 +69,7 @@ const DateStrip = ({ selectedDate, onDateChange, getMinPrice }: DateStripProps) 
 
       <button
         onClick={() => setStartOffset((o) => o + 1)}
-        className="shrink-0 w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary transition-colors"
+        className="shrink-0 w-9 h-9 rounded-full glass-card flex items-center justify-center hover:bg-secondary transition-all duration-200"
       >
         <ChevronRight className="w-4 h-4 text-foreground" />
       </button>

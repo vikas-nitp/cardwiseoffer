@@ -35,8 +35,8 @@ const OfferCard = ({
 }: OfferCardProps) => {
   return (
     <div
-      className={`bg-card rounded-2xl card-shadow flex flex-col h-full animate-fade-up border-t-4 ${accentBorder}`}
-      style={{ animationDelay: `${0.1 + index * 0.1}s` }}
+      className={`glass-card rounded-2xl card-shadow flex flex-col h-full animate-fade-up border-t-4 ${accentBorder} hover:shadow-xl hover:-translate-y-1 transition-all duration-300`}
+      style={{ animationDelay: `${0.1 + index * 0.08}s` }}
     >
       {/* Label */}
       <div className="px-5 pt-5 pb-3">
@@ -48,7 +48,7 @@ const OfferCard = ({
             {label}
           </span>
           {extraLabel && (
-            <span className="text-xs font-semibold text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
+            <span className="text-xs font-semibold text-accent bg-savings-soft px-2.5 py-1 rounded-full">
               {extraLabel}
             </span>
           )}
@@ -57,7 +57,7 @@ const OfferCard = ({
 
       {/* Discount + Bank */}
       <div className="px-5 pb-4">
-        <p className="text-3xl font-display font-bold text-foreground">
+        <p className="text-3xl font-display font-bold text-foreground tracking-tight">
           ₹{discount.toLocaleString()}
         </p>
         <div className="flex items-center gap-2 mt-2 flex-wrap">
@@ -87,7 +87,7 @@ const OfferCard = ({
               key={cond}
               className="text-xs font-medium text-muted-foreground flex items-start gap-2"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40 mt-1.5 flex-shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-primary/30 mt-1.5 flex-shrink-0" />
               {cond}
             </div>
           ))}
@@ -98,7 +98,7 @@ const OfferCard = ({
       <div className="px-5 pb-5">
         <a href={platformUrl} target="_blank" rel="noopener noreferrer" className="block">
           <Button
-            className={`gap-2 w-full font-bold text-sm rounded-xl h-11 ${accentClass} hover:opacity-90 transition-opacity`}
+            className={`gap-2 w-full font-bold text-sm rounded-xl h-11 ${accentClass} hover:opacity-90 transition-all duration-200 shadow-md hover:shadow-lg`}
           >
             {platform}
             <ExternalLink className="w-3.5 h-3.5" />

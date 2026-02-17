@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 40% 13%;
 
-    --primary: 210 85% 48%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 92%;
@@ -32,7 +32,7 @@
 
     --border: 210 25% 88%;
     --input: 210 25% 88%;
-    --ring: 210 85% 48%;
+    --ring: 217 91% 60%;
 
     --radius: 0.75rem;
 
@@ -45,6 +45,7 @@
     --highlight: 38 92% 50%;
     --highlight-foreground: 0 0% 100%;
     --surface-elevated: 0 0% 100%;
+    --glow: 217 91% 70%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -53,7 +54,7 @@
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   .dark {
@@ -63,7 +64,7 @@
     --card-foreground: 210 40% 95%;
     --popover: 220 25% 12%;
     --popover-foreground: 210 40% 95%;
-    --primary: 210 85% 55%;
+    --primary: 217 91% 65%;
     --primary-foreground: 0 0% 100%;
     --secondary: 220 20% 18%;
     --secondary-foreground: 210 40% 95%;
@@ -75,15 +76,16 @@
     --destructive-foreground: 210 40% 98%;
     --border: 220 20% 20%;
     --input: 220 20% 20%;
-    --ring: 210 85% 55%;
+    --ring: 217 91% 65%;
+    --glow: 217 91% 50%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary: 224 76% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 217 91% 60%;
   }
 }
 
@@ -143,9 +145,20 @@
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, hsl(220 40% 13%) 0%, hsl(210 85% 38%) 100%);
+    background: linear-gradient(135deg, hsl(220 40% 13%) 0%, hsl(217 91% 50%) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .glass-card {
+    background: hsl(0 0% 100% / 0.85);
+    backdrop-filter: blur(16px);
+    border: 1px solid hsl(210 25% 88% / 0.5);
+  }
+
+  .glow-ring {
+    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.1),
+                0 0 20px -4px hsl(var(--primary) / 0.15);
   }
 }
