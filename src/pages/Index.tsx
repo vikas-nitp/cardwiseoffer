@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
 import type { ActiveSection } from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -7,6 +8,8 @@ import TrustIndicators from "@/components/TrustIndicators";
 import AboutSection from "@/components/AboutSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import ContactSection from "@/components/ContactSection";
+import ProfileSetup from "@/components/ProfileSetup";
+import { useAuth } from "@/contexts/AuthContext";
 import DateStrip from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
@@ -15,6 +18,12 @@ import { format } from "date-fns";
 import { ArrowRight, Pencil, Star, TrendingUp, Gift, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CityOption } from "@/components/CityAutocomplete";
+
+const pageVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] as const } },
+};
 
 interface SearchState {
   from: CityOption;
@@ -253,6 +262,7 @@ const generateDefaultAllOffers = () => {
 // ============ COMPONENT ============
 
 const Index = () => {
+  const { needsProfile } = useAuth();
   const [activeSection, setActiveSection] = useState<ActiveSection>("home");
   const [searchState, setSearchState] = useState<SearchState | null>(null);
 
@@ -336,109 +346,83 @@ const Index = () => {
         <Header activeSection={activeSection} onSectionChange={setActiveSection} />
 
         <main className="flex-1 flex flex-col items-center px-6 pb-8">
+          <AnimatePresence mode="wait">
 
-          {/* ===== HOME VIEW ===== */}
-          {showHome && (
-            <>
-              <section className="flex flex-col items-center justify-center pt-16 md:pt-20 pb-8 max-w-2xl mx-auto text-center">
-                <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight leading-tight animate-fade-up">
-                  <span className="text-gradient">Compare card offers.</span>
-                  <br />
-                  <span className="text-primary">Book smarter.</span>
-                </h1>
-                <p className="mt-4 text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg animate-fade-up" style={{ animationDelay: "0.1s" }}>
-                  See which credit card saves the most on your next flight — across platforms, with no bias.
-                </p>
-              </section>
+            {/* ===== PROFILE SETUP ===== */}
+            {needsProfile && (
+              <motion.div key="profile" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full">
+                <ProfileSetup />
+              </motion.div>
+            )}
 
-              <SearchCard
-                onSearch={handleSearch}
-                initialFrom={searchState?.from ?? null}
-                initialTo={searchState?.to ?? null}
-                initialDate={searchState?.date ?? undefined}
-                initialBanks={searchState?.banks ?? []}
-              />
+            {/* ===== HOME VIEW ===== */}
+            {showHome && !needsProfile && (
+              <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
+                <section className="flex flex-col items-center justify-center pt-16 md:pt-20 pb-8 max-w-2xl mx-auto text-center">
+                  <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight leading-tight">
+                    <span className="text-gradient">Compare card offers.</span>
+                    <br />
+                    <span className="text-primary">Book smarter.</span>
+                  </h1>
+                  <p className="mt-4 text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg">
+                    See which credit card saves the most on your next flight — across platforms, with no bias.
+                  </p>
+                </section>
 
-              <TrustIndicators />
-            </>
-          )}
-
-          {/* ===== SEARCH RESULTS VIEW ===== */}
-          {showResults && searchState && (
-            <div className="w-full max-w-6xl mx-auto mt-6 animate-fade-up">
-              {/* Summary bar */}
-              <div className="glass-card rounded-2xl card-shadow-lg p-5 md:p-6 flex flex-wrap items-center justify-between gap-4 mb-6 animate-scale-in">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="font-display font-bold text-lg text-foreground">
-                    {searchState.from.city}
-                    <span className="text-muted-foreground font-normal text-sm ml-1">({searchState.from.code})</span>
-                  </span>
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <ArrowRight className="w-4 h-4 text-primary" />
-                  </div>
-                  <span className="font-display font-bold text-lg text-foreground">
-                    {searchState.to.city}
-                    <span className="text-muted-foreground font-normal text-sm ml-1">({searchState.to.code})</span>
-                  </span>
-                  <span className="text-border">|</span>
-                  <span className="font-bold text-foreground">{format(searchState.date, "dd MMM yyyy")}</span>
-                  {searchState.banks.length > 0 && (
-                    <>
-                      <span className="text-border">|</span>
-                      {searchState.banks.map((b) => (
-                        <span key={b} className="text-xs font-bold bg-primary/10 text-primary px-3 py-1.5 rounded-full">
-                          {b}
-                        </span>
-                      ))}
-                    </>
-                  )}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5 font-semibold border-primary/30 text-primary hover:bg-primary/5 rounded-xl"
-                  onClick={handleEditSearch}
-                >
-                  <Pencil className="w-3.5 h-3.5" />
-                  Edit Search
-                </Button>
-              </div>
-
-              {/* Date strip */}
-              <div className="mb-6">
-                <DateStrip
-                  selectedDate={searchState.date}
-                  onDateChange={handleDateChange}
-                  getMinPrice={getMinPrice}
+                <SearchCard
+                  onSearch={handleSearch}
+                  initialFrom={searchState?.from ?? null}
+                  initialTo={searchState?.to ?? null}
+                  initialDate={searchState?.date ?? undefined}
+                  initialBanks={searchState?.banks ?? []}
                 />
-              </div>
 
-              {/* Offer tiles */}
-              <div className="flex gap-5 justify-center flex-wrap">
-                {searchResults.map((offer, index) => (
-                  <div key={offer.id} className="w-[320px] shrink-0">
-                    <OfferCard {...offer} index={index} />
+                <TrustIndicators />
+              </motion.div>
+            )}
+
+            {/* ===== SEARCH RESULTS VIEW ===== */}
+            {showResults && searchState && (
+              <motion.div key="results" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-6">
+                {/* Summary bar */}
+                <div className="glass-card rounded-2xl card-shadow-lg p-5 md:p-6 flex flex-wrap items-center justify-between gap-4 mb-6">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="font-display font-bold text-lg text-foreground">
+                      {searchState.from.city}
+                      <span className="text-muted-foreground font-normal text-sm ml-1">({searchState.from.code})</span>
+                    </span>
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <ArrowRight className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="font-display font-bold text-lg text-foreground">
+                      {searchState.to.city}
+                      <span className="text-muted-foreground font-normal text-sm ml-1">({searchState.to.code})</span>
+                    </span>
+                    <span className="text-border">|</span>
+                    <span className="font-bold text-foreground">{format(searchState.date, "dd MMM yyyy")}</span>
+                    {searchState.banks.length > 0 && (
+                      <>
+                        <span className="text-border">|</span>
+                        {searchState.banks.map((b) => (
+                          <span key={b} className="text-xs font-bold bg-primary/10 text-primary px-3 py-1.5 rounded-full">
+                            {b}
+                          </span>
+                        ))}
+                      </>
+                    )}
                   </div>
-                ))}
-              </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 font-semibold border-primary/30 text-primary hover:bg-primary/5 rounded-xl"
+                    onClick={handleEditSearch}
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                    Edit Search
+                  </Button>
+                </div>
 
-              <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
-                Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
-              </p>
-            </div>
-          )}
-
-          {/* ===== ALL OFFERS VIEW ===== */}
-          {showAllOffers && (
-            <div className="w-full max-w-6xl mx-auto mt-6 animate-fade-up">
-              <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">
-                {hasSearched ? `All Offers: ${searchState!.from.city} → ${searchState!.to.city}` : "All Offers"}
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                {hasSearched ? "Compare all available bank offers for your route." : "Browse all available bank and card offers across platforms."}
-              </p>
-
-              {hasSearched && searchState && (
+                {/* Date strip */}
                 <div className="mb-6">
                   <DateStrip
                     selectedDate={searchState.date}
@@ -446,55 +430,104 @@ const Index = () => {
                     getMinPrice={getMinPrice}
                   />
                 </div>
-              )}
 
-              <div className="flex gap-6">
-                <div className="hidden lg:block w-64 shrink-0">
-                  <SidebarFilters
-                    bankFilter={bankFilter}
-                    onBankFilterChange={setBankFilter}
-                    platformFilter={platformFilter}
-                    onPlatformFilterChange={setPlatformFilter}
-                    paymentFilter={paymentFilter}
-                    onPaymentFilterChange={setPaymentFilter}
-                  />
+                {/* Offer tiles */}
+                <div className="flex gap-5 justify-center flex-wrap">
+                  {searchResults.map((offer, index) => (
+                    <motion.div
+                      key={offer.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1, duration: 0.3 }}
+                      className="w-[320px] shrink-0"
+                    >
+                      <OfferCard {...offer} index={index} />
+                    </motion.div>
+                  ))}
                 </div>
-                <div className="flex-1">
-                  {filteredAllOffers.length === 0 ? (
-                    <div className="glass-card rounded-2xl card-shadow-lg p-10 text-center">
-                      <p className="text-muted-foreground">No offers match your filters. Try adjusting filters.</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                      {filteredAllOffers.map((offer, index) => (
-                        <OfferCard key={offer.id} {...offer} index={index} />
-                      ))}
-                    </div>
-                  )}
-                  <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
-                    Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
 
-          {/* ===== CONTENT SECTIONS ===== */}
-          {showAbout && (
-            <div className="w-full max-w-6xl mx-auto py-8">
-              <AboutSection />
-            </div>
-          )}
-          {showHowItWorks && (
-            <div className="w-full max-w-6xl mx-auto py-8">
-              <HowItWorksSection />
-            </div>
-          )}
-          {showContact && (
-            <div className="w-full max-w-6xl mx-auto py-8">
-              <ContactSection />
-            </div>
-          )}
+                <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
+                  Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
+                </p>
+              </motion.div>
+            )}
+
+            {/* ===== ALL OFFERS VIEW ===== */}
+            {showAllOffers && (
+              <motion.div key="all-offers" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-6">
+                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">
+                  {hasSearched ? `All Offers: ${searchState!.from.city} → ${searchState!.to.city}` : "All Offers"}
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  {hasSearched ? "Compare all available bank offers for your route." : "Browse all available bank and card offers across platforms."}
+                </p>
+
+                {hasSearched && searchState && (
+                  <div className="mb-6">
+                    <DateStrip
+                      selectedDate={searchState.date}
+                      onDateChange={handleDateChange}
+                      getMinPrice={getMinPrice}
+                    />
+                  </div>
+                )}
+
+                <div className="flex gap-6">
+                  <div className="hidden lg:block w-64 shrink-0">
+                    <SidebarFilters
+                      bankFilter={bankFilter}
+                      onBankFilterChange={setBankFilter}
+                      platformFilter={platformFilter}
+                      onPlatformFilterChange={setPlatformFilter}
+                      paymentFilter={paymentFilter}
+                      onPaymentFilterChange={setPaymentFilter}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    {filteredAllOffers.length === 0 ? (
+                      <div className="glass-card rounded-2xl card-shadow-lg p-10 text-center">
+                        <p className="text-muted-foreground">No offers match your filters. Try adjusting filters.</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                        {filteredAllOffers.map((offer, index) => (
+                          <motion.div
+                            key={offer.id}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: index * 0.05, duration: 0.25 }}
+                          >
+                            <OfferCard {...offer} index={index} />
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
+                      Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ===== CONTENT SECTIONS ===== */}
+            {showAbout && (
+              <motion.div key="about" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8">
+                <AboutSection />
+              </motion.div>
+            )}
+            {showHowItWorks && (
+              <motion.div key="how-it-works" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8">
+                <HowItWorksSection />
+              </motion.div>
+            )}
+            {showContact && (
+              <motion.div key="contact" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8">
+                <ContactSection />
+              </motion.div>
+            )}
+
+          </AnimatePresence>
         </main>
 
         <Footer />
