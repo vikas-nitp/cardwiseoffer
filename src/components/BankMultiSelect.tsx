@@ -58,24 +58,24 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
     <div className="space-y-1.5 relative" ref={wrapperRef}>
       <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
         <CreditCard className="w-3.5 h-3.5" />
-        Bank / Card
+        Card
       </label>
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full bg-secondary/50 border-0 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-md text-left relative flex items-center"
+        className="w-full bg-secondary/50 border-0 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left relative flex items-center hover:bg-secondary/70 transition-colors"
       >
         <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         {selected.length === 0 ? (
-          <span className="text-muted-foreground">Select Bank(s)</span>
+          <span className="text-muted-foreground">Select Card(s)</span>
         ) : (
           <span className="font-bold text-foreground">{selected.join(", ")}</span>
         )}
       </button>
-      <p className="text-xs text-muted-foreground/70">Select up to 2 banks (optional)</p>
+      <p className="text-xs text-muted-foreground/70">Select up to 2 cards (optional)</p>
 
       {open && (
-        <div className="absolute top-[calc(100%-1.2rem)] left-0 right-0 z-50 bg-card border border-border rounded-lg shadow-lg">
+        <div className="absolute top-[calc(100%-1.2rem)] left-0 right-0 z-50 bg-card border border-border rounded-xl shadow-xl">
           <div className="p-2 border-b border-border">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -83,15 +83,15 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search banks..."
-                className="w-full pl-8 pr-3 py-2 text-sm bg-secondary/30 rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
+                placeholder="Search cards..."
+                className="w-full pl-8 pr-3 py-2 text-sm bg-secondary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
                 autoFocus
               />
             </div>
           </div>
           {showMaxMsg && (
-            <p className="text-xs text-destructive px-3 py-2 bg-destructive/5 border-b border-border">
-              You can select up to 2 banks only
+            <p className="text-xs text-destructive px-3 py-2 bg-destructive/10 border-b border-border font-medium">
+              ⚠ Maximum 2 cards allowed. Deselect one to choose another.
             </p>
           )}
           <div className="max-h-52 overflow-y-auto py-1">
@@ -123,7 +123,7 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
               );
             })}
             {filtered.length === 0 && (
-              <p className="text-center text-sm text-muted-foreground py-4">No banks found</p>
+              <p className="text-center text-sm text-muted-foreground py-4">No cards found</p>
             )}
           </div>
         </div>

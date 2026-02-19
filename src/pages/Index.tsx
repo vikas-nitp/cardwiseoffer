@@ -8,7 +8,10 @@ import TrustIndicators from "@/components/TrustIndicators";
 import AboutSection from "@/components/AboutSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import ContactSection from "@/components/ContactSection";
+import FAQSection from "@/components/FAQSection";
 import ProfileSetup from "@/components/ProfileSetup";
+import LockedOfferCard from "@/components/LockedOfferCard";
+import AuthModal from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import DateStrip from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
@@ -259,12 +262,16 @@ const generateDefaultAllOffers = () => {
   return result;
 };
 
+// Max visible offers for non-logged-in users
+const MAX_FREE_OFFERS = 2;
+
 // ============ COMPONENT ============
 
 const Index = () => {
-  const { needsProfile } = useAuth();
+  const { needsProfile, isLoggedIn } = useAuth();
   const [activeSection, setActiveSection] = useState<ActiveSection>("home");
   const [searchState, setSearchState] = useState<SearchState | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [bankFilter, setBankFilter] = useState<string[]>([]);
   const [platformFilter, setPlatformFilter] = useState<string[]>([]);
@@ -322,9 +329,41 @@ const Index = () => {
   const showHowItWorks = activeSection === "how-it-works";
   const showContact = activeSection === "contact";
 
+  const renderOfferTiles = (offers: any[], wrapperClass: string) => {
+    const visibleCount = isLoggedIn ? offers.length : Math.min(MAX_FREE_OFFERS, offers.length);
+    const lockedCount = isLoggedIn ? 0 : Math.max(0, offers.length - MAX_FREE_OFFERS);
+
+    return (
+      <div className={wrapperClass}>
+        {offers.slice(0, visibleCount).map((offer, index) => (
+          <motion.div
+            key={offer.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.08, duration: 0.3 }}
+            className="w-full"
+          >
+            <OfferCard {...offer} index={index} />
+          </motion.div>
+        ))}
+        {Array.from({ length: lockedCount }).map((_, i) => (
+          <motion.div
+            key={`locked-${i}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: (visibleCount + i) * 0.08, duration: 0.3 }}
+            className="w-full"
+          >
+            <LockedOfferCard onLoginClick={() => setShowLoginModal(true)} />
+          </motion.div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen flex flex-col relative">
-      {/* Animated background */}
+      {/* Background */}
       <div className="fixed inset-0 z-0">
         <div
           className="absolute inset-0"
@@ -337,7 +376,6 @@ const Index = () => {
           }}
         />
         <div className="absolute inset-0 bg-background/30 backdrop-blur-[1px]" />
-        {/* Animated gradient orbs */}
         <div className="absolute top-20 left-[10%] w-96 h-96 rounded-full bg-primary/5 blur-3xl animate-float" />
         <div className="absolute bottom-20 right-[10%] w-80 h-80 rounded-full bg-accent/5 blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
       </div>
@@ -345,7 +383,7 @@ const Index = () => {
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header activeSection={activeSection} onSectionChange={setActiveSection} />
 
-        <main className="flex-1 flex flex-col items-center px-6 pb-8">
+        <main className="flex-1 flex flex-col items-center px-4 md:px-6 pb-8">
           <AnimatePresence mode="wait">
 
             {/* ===== PROFILE SETUP ===== */}
@@ -358,13 +396,13 @@ const Index = () => {
             {/* ===== HOME VIEW ===== */}
             {showHome && !needsProfile && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
-                <section className="flex flex-col items-center justify-center pt-16 md:pt-20 pb-8 max-w-2xl mx-auto text-center">
-                  <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight leading-tight">
+                <section className="flex flex-col items-center justify-center pt-12 md:pt-20 pb-6 max-w-2xl mx-auto text-center px-4">
+                  <h1 className="text-3xl md:text-5xl font-display font-bold tracking-tight leading-tight">
                     <span className="text-gradient">Compare card offers.</span>
                     <br />
                     <span className="text-primary">Book smarter.</span>
                   </h1>
-                  <p className="mt-4 text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg">
+                  <p className="mt-3 text-sm md:text-lg text-muted-foreground leading-relaxed max-w-lg">
                     See which credit card saves the most on your next flight — across platforms, with no bias.
                   </p>
                 </section>
@@ -383,28 +421,28 @@ const Index = () => {
 
             {/* ===== SEARCH RESULTS VIEW ===== */}
             {showResults && searchState && (
-              <motion.div key="results" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-6">
+              <motion.div key="results" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 {/* Summary bar */}
-                <div className="glass-card rounded-2xl card-shadow-lg p-5 md:p-6 flex flex-wrap items-center justify-between gap-4 mb-6">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className="font-display font-bold text-lg text-foreground">
+                <div className="glass-card rounded-2xl card-shadow-lg p-4 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                  <div className="flex items-center gap-2 flex-wrap text-sm md:text-base">
+                    <span className="font-display font-bold text-foreground">
                       {searchState.from.city}
-                      <span className="text-muted-foreground font-normal text-sm ml-1">({searchState.from.code})</span>
+                      <span className="text-muted-foreground font-normal text-xs ml-1">({searchState.from.code})</span>
                     </span>
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <ArrowRight className="w-4 h-4 text-primary" />
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <ArrowRight className="w-3.5 h-3.5 text-primary" />
                     </div>
-                    <span className="font-display font-bold text-lg text-foreground">
+                    <span className="font-display font-bold text-foreground">
                       {searchState.to.city}
-                      <span className="text-muted-foreground font-normal text-sm ml-1">({searchState.to.code})</span>
+                      <span className="text-muted-foreground font-normal text-xs ml-1">({searchState.to.code})</span>
                     </span>
-                    <span className="text-border">|</span>
-                    <span className="font-bold text-foreground">{format(searchState.date, "dd MMM yyyy")}</span>
+                    <span className="text-border hidden sm:inline">|</span>
+                    <span className="font-bold text-foreground text-sm">{format(searchState.date, "dd MMM yyyy")}</span>
                     {searchState.banks.length > 0 && (
                       <>
-                        <span className="text-border">|</span>
+                        <span className="text-border hidden sm:inline">|</span>
                         {searchState.banks.map((b) => (
-                          <span key={b} className="text-xs font-bold bg-primary/10 text-primary px-3 py-1.5 rounded-full">
+                          <span key={b} className="text-xs font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">
                             {b}
                           </span>
                         ))}
@@ -414,7 +452,7 @@ const Index = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1.5 font-semibold border-primary/30 text-primary hover:bg-primary/5 rounded-xl"
+                    className="gap-1.5 font-semibold border-primary/30 text-primary hover:bg-primary/5 rounded-xl shrink-0 self-start sm:self-auto"
                     onClick={handleEditSearch}
                   >
                     <Pencil className="w-3.5 h-3.5" />
@@ -423,7 +461,7 @@ const Index = () => {
                 </div>
 
                 {/* Date strip */}
-                <div className="mb-6">
+                <div className="mb-5">
                   <DateStrip
                     selectedDate={searchState.date}
                     onDateChange={handleDateChange}
@@ -432,19 +470,10 @@ const Index = () => {
                 </div>
 
                 {/* Offer tiles */}
-                <div className="flex gap-5 justify-center flex-wrap">
-                  {searchResults.map((offer, index) => (
-                    <motion.div
-                      key={offer.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1, duration: 0.3 }}
-                      className="w-[320px] shrink-0"
-                    >
-                      <OfferCard {...offer} index={index} />
-                    </motion.div>
-                  ))}
-                </div>
+                {renderOfferTiles(
+                  searchResults,
+                  "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                )}
 
                 <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
                   Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
@@ -454,16 +483,16 @@ const Index = () => {
 
             {/* ===== ALL OFFERS VIEW ===== */}
             {showAllOffers && (
-              <motion.div key="all-offers" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-6">
-                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">
+              <motion.div key="all-offers" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
+                <h2 className="text-xl md:text-3xl font-display font-bold text-foreground mb-1">
                   {hasSearched ? `All Offers: ${searchState!.from.city} → ${searchState!.to.city}` : "All Offers"}
                 </h2>
-                <p className="text-muted-foreground mb-6">
-                  {hasSearched ? "Compare all available bank offers for your route." : "Browse all available bank and card offers across platforms."}
+                <p className="text-sm text-muted-foreground mb-5">
+                  {hasSearched ? "Compare all available card offers for your route." : "Browse all available card offers across platforms."}
                 </p>
 
                 {hasSearched && searchState && (
-                  <div className="mb-6">
+                  <div className="mb-5">
                     <DateStrip
                       selectedDate={searchState.date}
                       onDateChange={handleDateChange}
@@ -472,7 +501,7 @@ const Index = () => {
                   </div>
                 )}
 
-                <div className="flex gap-6">
+                <div className="flex flex-col lg:flex-row gap-5">
                   <div className="hidden lg:block w-64 shrink-0">
                     <SidebarFilters
                       bankFilter={bankFilter}
@@ -489,18 +518,10 @@ const Index = () => {
                         <p className="text-muted-foreground">No offers match your filters. Try adjusting filters.</p>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        {filteredAllOffers.map((offer, index) => (
-                          <motion.div
-                            key={offer.id}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.05, duration: 0.25 }}
-                          >
-                            <OfferCard {...offer} index={index} />
-                          </motion.div>
-                        ))}
-                      </div>
+                      renderOfferTiles(
+                        filteredAllOffers,
+                        "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
+                      )
                     )}
                     <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
                       Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
@@ -512,26 +533,41 @@ const Index = () => {
 
             {/* ===== CONTENT SECTIONS ===== */}
             {showAbout && (
-              <motion.div key="about" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8">
+              <motion.div key="about" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-6 md:py-8">
                 <AboutSection />
               </motion.div>
             )}
             {showHowItWorks && (
-              <motion.div key="how-it-works" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8">
+              <motion.div key="how-it-works" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-6 md:py-8">
                 <HowItWorksSection />
               </motion.div>
             )}
             {showContact && (
-              <motion.div key="contact" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8">
+              <motion.div key="contact" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-6 md:py-8">
                 <ContactSection />
               </motion.div>
             )}
 
           </AnimatePresence>
+
+          {/* FAQ always visible at bottom on home */}
+          {showHome && !needsProfile && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.35 }}
+              className="w-full max-w-6xl mx-auto mt-12 mb-4"
+            >
+              <FAQSection />
+            </motion.div>
+          )}
         </main>
 
         <Footer />
       </div>
+
+      {/* Login modal triggered by locked offer cards */}
+      <AuthModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
   );
 };

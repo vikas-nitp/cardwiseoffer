@@ -8,14 +8,14 @@ const indicators = [
 
 const TrustIndicators = () => {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-6 mt-8 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+    <div className="flex flex-wrap items-center justify-center gap-3 md:gap-5 mt-6 w-full max-w-5xl mx-auto px-4">
       {indicators.map(({ icon: Icon, label }) => (
         <div
           key={label}
-          className="flex items-center gap-2 text-muted-foreground bg-card/60 backdrop-blur-sm px-4 py-2 rounded-full"
+          className="flex items-center gap-2 text-muted-foreground bg-card/80 backdrop-blur-sm px-3 py-2 rounded-full border border-border/50 text-xs md:text-sm font-medium"
         >
-          <Icon className="w-4 h-4 text-accent" />
-          <span className="text-sm font-medium">{label}</span>
+          <Icon className="w-3.5 h-3.5 text-accent shrink-0" />
+          <span>{label}</span>
         </div>
       ))}
     </div>
