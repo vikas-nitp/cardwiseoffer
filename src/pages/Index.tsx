@@ -10,7 +10,7 @@ import HowItWorksSection from "@/components/HowItWorksSection";
 import ContactSection from "@/components/ContactSection";
 import FAQSection from "@/components/FAQSection";
 import ProfileSetup from "@/components/ProfileSetup";
-import LockedOfferCard from "@/components/LockedOfferCard";
+import GlobalLoginGate from "@/components/GlobalLoginGate";
 import AuthModal from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import DateStrip from "@/components/DateStrip";
@@ -18,9 +18,15 @@ import SidebarFilters from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
 import skyBg from "@/assets/sky-bg-2.png";
 import { format } from "date-fns";
-import { ArrowRight, Pencil, Star, TrendingUp, Gift, CreditCard } from "lucide-react";
+import { ArrowRight, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CityOption } from "@/components/CityAutocomplete";
+import {
+  fetchSearchResults,
+  fetchAllOffers,
+  findBestOffer,
+  hashCode,
+} from "@/services/mockApi";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -35,237 +41,7 @@ interface SearchState {
   banks: string[];
 }
 
-// --- Data utilities ---
-const hashCode = (s: string) => {
-  let hash = 0;
-  for (let i = 0; i < s.length; i++) {
-    hash = ((hash << 5) - hash) + s.charCodeAt(i);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-};
-
-const buildPlatformUrl = (platform: string, fromCode: string, toCode: string, date: string) => {
-  switch (platform) {
-    case "MakeMyTrip":
-      return `https://www.makemytrip.com/flight/search?itinerary=${fromCode}-${toCode}-${date}&tripType=O&paxType=A-1_C-0_I-0&cabinClass=E`;
-    case "Cleartrip":
-      return `https://www.cleartrip.com/flights/${fromCode}-${toCode}-${date}`;
-    case "EaseMyTrip":
-      return `https://www.easemytrip.com/flight-booking/${fromCode}-${toCode}-${date}`;
-    case "Goibibo":
-      return `https://www.goibibo.com/flights/${fromCode}-${toCode}-${date}`;
-    default:
-      return "#";
-  }
-};
-
-const bankOffers: Record<string, { card: string; baseDiscount: number }[]> = {
-  "HDFC Bank": [{ card: "HDFC Infinia", baseDiscount: 1200 }],
-  "ICICI Bank": [{ card: "ICICI Sapphiro", baseDiscount: 1400 }],
-  "SBI Card": [{ card: "SBI Elite", baseDiscount: 1000 }],
-  "Axis Bank": [{ card: "Axis Vistara", baseDiscount: 1100 }],
-  "Kotak Mahindra": [{ card: "Kotak Privy League", baseDiscount: 900 }],
-  "American Express": [{ card: "Amex Platinum Travel", baseDiscount: 1500 }],
-  "Yes Bank": [{ card: "Yes First Exclusive", baseDiscount: 800 }],
-  "IndusInd Bank": [{ card: "IndusInd Legend", baseDiscount: 950 }],
-  "RBL Bank": [{ card: "RBL ShopRite", baseDiscount: 700 }],
-  "HSBC": [{ card: "HSBC Smart Value", baseDiscount: 850 }],
-};
-
-const allBankNames = Object.keys(bankOffers);
-const allPlatforms = ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Goibibo"];
-
-const priceVariation = (seed: number, base: number, idx: number) => {
-  const variation = ((seed + idx * 137) % 500) - 200;
-  return Math.max(300, base + variation);
-};
-
-const getBankDiscount = (seed: number, bankName: string) => {
-  const idx = allBankNames.indexOf(bankName);
-  return priceVariation(seed, bankOffers[bankName][0].baseDiscount, idx);
-};
-
-const findBestOffer = (seed: number) => {
-  let bestDiscount = 0;
-  let bestBank = "";
-  allBankNames.forEach((bankName) => {
-    const d = getBankDiscount(seed, bankName);
-    if (d > bestDiscount) { bestDiscount = d; bestBank = bankName; }
-  });
-  return { bestBank, bestDiscount };
-};
-
-const findBestOtherOffer = (seed: number, excludeBanks: string[]) => {
-  let bestDiscount = 0;
-  let bestBank = "";
-  allBankNames.forEach((bankName) => {
-    if (excludeBanks.includes(bankName)) return;
-    const d = getBankDiscount(seed, bankName);
-    if (d > bestDiscount) { bestDiscount = d; bestBank = bankName; }
-  });
-  return { bestBank, bestDiscount };
-};
-
-const makeConditions = (seed: number, idx: number) => [
-  `Min booking: ₹${3000 + (seed % 3) * 1000} – ₹9,999`,
-  idx % 2 === 0 ? "Non-EMI transactions only" : "EMI & Non-EMI allowed",
-  idx % 2 === 0 ? "Web & Mobile App" : "Mobile App only",
-  "Domestic flights only",
-  "Valid till 30 Apr 2026",
-];
-
-const generateSearchResults = (from: CityOption, to: CityOption, date: Date, banks: string[]) => {
-  const dateStr = format(date, "yyyy-MM-dd");
-  const seed = hashCode(`${from.code}-${to.code}-${dateStr}`);
-  const tiles: any[] = [];
-  const defaultDiscount = priceVariation(seed, 500, 99);
-  const defaultPlatformIdx = (seed + 3) % allPlatforms.length;
-
-  if (banks.length === 0) {
-    const { bestBank, bestDiscount } = findBestOffer(seed);
-    const pIdx = seed % allPlatforms.length;
-    tiles.push({
-      id: "best", label: "Best Offer", labelIcon: Star,
-      accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary",
-      platform: allPlatforms[pIdx],
-      platformUrl: buildPlatformUrl(allPlatforms[pIdx], from.code, to.code, dateStr),
-      bank: bestBank, card: bankOffers[bestBank][0].card, discount: bestDiscount,
-      paymentType: "Credit Card", conditions: makeConditions(seed, 0),
-    });
-    tiles.push({
-      id: "default", label: "Default Offer", labelIcon: Gift,
-      accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent",
-      platform: allPlatforms[defaultPlatformIdx],
-      platformUrl: buildPlatformUrl(allPlatforms[defaultPlatformIdx], from.code, to.code, dateStr),
-      bank: null, card: null, discount: defaultDiscount, paymentType: "No Card",
-      conditions: ["Available for all users", "No minimum booking", "Valid till 25 Apr 2026", "Web & Mobile App", "Domestic flights only"],
-    });
-    return tiles;
-  }
-
-  const selectedDiscounts = banks.map((b) => ({
-    bank: b, card: bankOffers[b]?.[0]?.card ?? b, discount: getBankDiscount(seed, b),
-  }));
-  const { bestBank: bestOtherBank, bestDiscount: bestOtherDiscount } = findBestOtherOffer(seed, banks);
-
-  if (banks.length === 1) {
-    const sel = selectedDiscounts[0];
-    if (bestOtherDiscount > sel.discount) {
-      tiles.push({ id: "selected-0", label: "Best Offer on Selected Card", labelIcon: CreditCard, accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary", platform: allPlatforms[seed % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr), bank: sel.bank, card: sel.card, discount: sel.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 0) });
-      tiles.push({ id: "best-other", label: "Best Offer on Other Card", extraLabel: `₹${bestOtherDiscount - sel.discount} more savings`, labelIcon: TrendingUp, accentClass: "bg-highlight text-highlight-foreground", accentBorder: "border-highlight", platform: allPlatforms[(seed + 1) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr), bank: bestOtherBank, card: bankOffers[bestOtherBank][0].card, discount: bestOtherDiscount, paymentType: "Credit Card", conditions: makeConditions(seed, 1) });
-    } else {
-      tiles.push({ id: "selected-0", label: "Best Offer on Selected Card", labelIcon: Star, accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary", platform: allPlatforms[seed % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr), bank: sel.bank, card: sel.card, discount: sel.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 0) });
-    }
-  } else {
-    const sel0 = selectedDiscounts[0];
-    const sel1 = selectedDiscounts[1];
-    const sameDiscount = sel0.discount === sel1.discount;
-    const maxSelected = Math.max(sel0.discount, sel1.discount);
-
-    if (sameDiscount) {
-      tiles.push({ id: "selected-0", label: sel0.bank, labelIcon: CreditCard, accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary", platform: allPlatforms[seed % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr), bank: sel0.bank, card: sel0.card, discount: sel0.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 0) });
-      tiles.push({ id: "selected-1", label: sel1.bank, labelIcon: CreditCard, accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary", platform: allPlatforms[(seed + 1) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr), bank: sel1.bank, card: sel1.card, discount: sel1.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 1) });
-      if (bestOtherDiscount > maxSelected) {
-        tiles.push({ id: "best-other", label: "Best Offer on Other Card", extraLabel: `₹${bestOtherDiscount - maxSelected} more savings`, labelIcon: TrendingUp, accentClass: "bg-highlight text-highlight-foreground", accentBorder: "border-highlight", platform: allPlatforms[(seed + 2) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 2) % allPlatforms.length], from.code, to.code, dateStr), bank: bestOtherBank, card: bankOffers[bestOtherBank][0].card, discount: bestOtherDiscount, paymentType: "Credit Card", conditions: makeConditions(seed, 2) });
-      }
-    } else {
-      const bestSelected = sel0.discount >= sel1.discount ? sel0 : sel1;
-      const otherSelected = sel0.discount >= sel1.discount ? sel1 : sel0;
-      tiles.push({ id: "selected-best", label: "Best Offer on Selected Card", labelIcon: Star, accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary", platform: allPlatforms[seed % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[seed % allPlatforms.length], from.code, to.code, dateStr), bank: bestSelected.bank, card: bestSelected.card, discount: bestSelected.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 0) });
-      if (bestOtherDiscount > bestSelected.discount) {
-        tiles.push({ id: "best-other", label: "Best Offer on Other Card", extraLabel: `₹${bestOtherDiscount - bestSelected.discount} more savings`, labelIcon: TrendingUp, accentClass: "bg-highlight text-highlight-foreground", accentBorder: "border-highlight", platform: allPlatforms[(seed + 1) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr), bank: bestOtherBank, card: bankOffers[bestOtherBank][0].card, discount: bestOtherDiscount, paymentType: "Credit Card", conditions: makeConditions(seed, 1) });
-      } else {
-        tiles.push({ id: "selected-other", label: otherSelected.bank, extraLabel: `₹${bestSelected.discount - otherSelected.discount} less`, labelIcon: CreditCard, accentClass: "bg-secondary text-secondary-foreground", accentBorder: "border-secondary", platform: allPlatforms[(seed + 1) % allPlatforms.length], platformUrl: buildPlatformUrl(allPlatforms[(seed + 1) % allPlatforms.length], from.code, to.code, dateStr), bank: otherSelected.bank, card: otherSelected.card, discount: otherSelected.discount, paymentType: "Credit Card", conditions: makeConditions(seed, 1) });
-      }
-    }
-  }
-
-  tiles.push({
-    id: "default", label: "Default Offer", labelIcon: Gift,
-    accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent",
-    platform: allPlatforms[defaultPlatformIdx],
-    platformUrl: buildPlatformUrl(allPlatforms[defaultPlatformIdx], from.code, to.code, dateStr),
-    bank: null, card: null, discount: defaultDiscount, paymentType: "No Card",
-    conditions: ["Available for all users", "No minimum booking", "Valid till 25 Apr 2026", "Web & Mobile App", "Domestic flights only"],
-  });
-  return tiles;
-};
-
-const generateAllOffers = (from: CityOption, to: CityOption, date: Date) => {
-  const dateStr = format(date, "yyyy-MM-dd");
-  const seed = hashCode(`${from.code}-${to.code}-${dateStr}`);
-  const { bestDiscount } = findBestOffer(seed);
-  const result: any[] = [];
-
-  allBankNames.forEach((bankName, idx) => {
-    const discount = getBankDiscount(seed, bankName);
-    const pIdx = (idx + seed) % allPlatforms.length;
-    const isBest = discount === bestDiscount;
-    result.push({
-      id: `all-${bankName}`, label: isBest ? "Best Offer" : bankName,
-      labelIcon: isBest ? Star : TrendingUp,
-      accentClass: isBest ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground",
-      accentBorder: isBest ? "border-primary" : "border-secondary",
-      platform: allPlatforms[pIdx],
-      platformUrl: buildPlatformUrl(allPlatforms[pIdx], from.code, to.code, dateStr),
-      bank: bankName, card: bankOffers[bankName][0].card, discount,
-      paymentType: idx % 3 === 2 ? "Debit Card" : "Credit Card",
-      conditions: makeConditions(seed, idx),
-    });
-  });
-
-  const defaultDiscount = priceVariation(seed, 500, 99);
-  result.push({
-    id: "all-default", label: "Default Offer", labelIcon: Gift,
-    accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent",
-    platform: "EaseMyTrip",
-    platformUrl: buildPlatformUrl("EaseMyTrip", from.code, to.code, dateStr),
-    bank: null, card: null, discount: defaultDiscount, paymentType: "No Card",
-    conditions: ["Available for all users", "No minimum booking", "Valid till 25 Apr 2026", "Web & Mobile App", "Domestic flights only"],
-  });
-
-  result.sort((a, b) => b.discount - a.discount);
-  return result;
-};
-
-const generateDefaultAllOffers = () => {
-  const seed = hashCode("default-all-offers");
-  const result: any[] = [];
-  const { bestDiscount } = findBestOffer(seed);
-
-  allBankNames.forEach((bankName, idx) => {
-    const discount = getBankDiscount(seed, bankName);
-    const pIdx = (idx + seed) % allPlatforms.length;
-    const isBest = discount === bestDiscount;
-    result.push({
-      id: `all-${bankName}`, label: isBest ? "Best Offer" : bankName,
-      labelIcon: isBest ? Star : TrendingUp,
-      accentClass: isBest ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground",
-      accentBorder: isBest ? "border-primary" : "border-secondary",
-      platform: allPlatforms[pIdx], platformUrl: "#",
-      bank: bankName, card: bankOffers[bankName][0].card, discount,
-      paymentType: idx % 3 === 2 ? "Debit Card" : "Credit Card",
-      conditions: makeConditions(seed, idx),
-    });
-  });
-
-  result.push({
-    id: "all-default", label: "Default Offer", labelIcon: Gift,
-    accentClass: "bg-accent text-accent-foreground", accentBorder: "border-accent",
-    platform: "EaseMyTrip", platformUrl: "#",
-    bank: null, card: null, discount: priceVariation(seed, 500, 99), paymentType: "No Card",
-    conditions: ["Available for all users", "No minimum booking", "Valid till 25 Apr 2026", "Web & Mobile App", "Domestic flights only"],
-  });
-
-  result.sort((a, b) => b.discount - a.discount);
-  return result;
-};
-
-// Max visible offers for non-logged-in users
 const MAX_FREE_OFFERS = 2;
-
-// ============ COMPONENT ============
 
 const Index = () => {
   const { needsProfile, isLoggedIn } = useAuth();
@@ -287,14 +63,10 @@ const Index = () => {
     setPaymentFilter([]);
   };
 
-  const handleEditSearch = () => {
-    setActiveSection("home");
-  };
+  const handleEditSearch = () => setActiveSection("home");
 
   const handleDateChange = (newDate: Date) => {
-    if (searchState) {
-      setSearchState({ ...searchState, date: newDate });
-    }
+    if (searchState) setSearchState({ ...searchState, date: newDate });
   };
 
   const getMinPrice = (date: Date) => {
@@ -305,13 +77,11 @@ const Index = () => {
 
   const searchResults = useMemo(() => {
     if (!searchState) return [];
-    return generateSearchResults(searchState.from, searchState.to, searchState.date, searchState.banks);
+    return fetchSearchResults(searchState.from, searchState.to, searchState.date, searchState.banks);
   }, [searchState]);
 
-  const allOffers = useMemo(() => {
-    if (searchState) return generateAllOffers(searchState.from, searchState.to, searchState.date);
-    return generateDefaultAllOffers();
-  }, [searchState]);
+  // All Offers is always independent — no route state
+  const allOffers = useMemo(() => fetchAllOffers(), []);
 
   const filteredAllOffers = useMemo(() => {
     return allOffers.filter((o) => {
@@ -329,32 +99,44 @@ const Index = () => {
   const showHowItWorks = activeSection === "how-it-works";
   const showContact = activeSection === "contact";
 
-  const renderOfferTiles = (offers: any[], wrapperClass: string) => {
-    const visibleCount = isLoggedIn ? offers.length : Math.min(MAX_FREE_OFFERS, offers.length);
-    const lockedCount = isLoggedIn ? 0 : Math.max(0, offers.length - MAX_FREE_OFFERS);
+  const renderOfferTiles = (offers: typeof searchResults, wrapperClass: string) => {
+    if (!isLoggedIn) {
+      // Show limited offers + global login gate
+      const preview = offers.slice(0, MAX_FREE_OFFERS);
+      return (
+        <>
+          <div className={wrapperClass}>
+            {preview.map((offer, index) => (
+              <motion.div
+                key={offer.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.08, duration: 0.3 }}
+              >
+                <OfferCard {...offer} index={index} />
+              </motion.div>
+            ))}
+          </div>
+          {offers.length > MAX_FREE_OFFERS && (
+            <GlobalLoginGate
+              onLoginClick={() => setShowLoginModal(true)}
+              totalOffers={offers.length}
+            />
+          )}
+        </>
+      );
+    }
 
     return (
       <div className={wrapperClass}>
-        {offers.slice(0, visibleCount).map((offer, index) => (
+        {offers.map((offer, index) => (
           <motion.div
             key={offer.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.08, duration: 0.3 }}
-            className="w-full"
           >
             <OfferCard {...offer} index={index} />
-          </motion.div>
-        ))}
-        {Array.from({ length: lockedCount }).map((_, i) => (
-          <motion.div
-            key={`locked-${i}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: (visibleCount + i) * 0.08, duration: 0.3 }}
-            className="w-full"
-          >
-            <LockedOfferCard onLoginClick={() => setShowLoginModal(true)} />
           </motion.div>
         ))}
       </div>
@@ -375,7 +157,7 @@ const Index = () => {
             filter: "blur(1px)",
           }}
         />
-        <div className="absolute inset-0 bg-background/30 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px]" />
         <div className="absolute top-20 left-[10%] w-96 h-96 rounded-full bg-primary/5 blur-3xl animate-float" />
         <div className="absolute bottom-20 right-[10%] w-80 h-80 rounded-full bg-accent/5 blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
       </div>
@@ -386,23 +168,23 @@ const Index = () => {
         <main className="flex-1 flex flex-col items-center px-4 md:px-6 pb-8">
           <AnimatePresence mode="wait">
 
-            {/* ===== PROFILE SETUP ===== */}
+            {/* PROFILE SETUP */}
             {needsProfile && (
               <motion.div key="profile" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full">
                 <ProfileSetup />
               </motion.div>
             )}
 
-            {/* ===== HOME VIEW ===== */}
+            {/* HOME */}
             {showHome && !needsProfile && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
-                <section className="flex flex-col items-center justify-center pt-12 md:pt-20 pb-6 max-w-2xl mx-auto text-center px-4">
+                <section className="flex flex-col items-center justify-center pt-10 md:pt-20 pb-6 max-w-2xl mx-auto text-center px-4">
                   <h1 className="text-3xl md:text-5xl font-display font-bold tracking-tight leading-tight">
                     <span className="text-gradient">Compare card offers.</span>
                     <br />
                     <span className="text-primary">Book smarter.</span>
                   </h1>
-                  <p className="mt-3 text-sm md:text-lg text-muted-foreground leading-relaxed max-w-lg">
+                  <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed max-w-lg">
                     See which credit card saves the most on your next flight — across platforms, with no bias.
                   </p>
                 </section>
@@ -419,11 +201,11 @@ const Index = () => {
               </motion.div>
             )}
 
-            {/* ===== SEARCH RESULTS VIEW ===== */}
+            {/* SEARCH RESULTS */}
             {showResults && searchState && (
               <motion.div key="results" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 {/* Summary bar */}
-                <div className="glass-card rounded-2xl card-shadow-lg p-4 md:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                <div className="glass-card rounded-2xl card-shadow-lg p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
                   <div className="flex items-center gap-2 flex-wrap text-sm md:text-base">
                     <span className="font-display font-bold text-foreground">
                       {searchState.from.city}
@@ -442,9 +224,7 @@ const Index = () => {
                       <>
                         <span className="text-border hidden sm:inline">|</span>
                         {searchState.banks.map((b) => (
-                          <span key={b} className="text-xs font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">
-                            {b}
-                          </span>
+                          <span key={b} className="text-xs font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">{b}</span>
                         ))}
                       </>
                     )}
@@ -481,25 +261,15 @@ const Index = () => {
               </motion.div>
             )}
 
-            {/* ===== ALL OFFERS VIEW ===== */}
+            {/* ALL OFFERS — independent global catalog */}
             {showAllOffers && (
               <motion.div key="all-offers" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 <h2 className="text-xl md:text-3xl font-display font-bold text-foreground mb-1">
-                  {hasSearched ? `All Offers: ${searchState!.from.city} → ${searchState!.to.city}` : "All Offers"}
+                  All Card Offers
                 </h2>
                 <p className="text-sm text-muted-foreground mb-5">
-                  {hasSearched ? "Compare all available card offers for your route." : "Browse all available card offers across platforms."}
+                  Browse every active card offer across major travel platforms.
                 </p>
-
-                {hasSearched && searchState && (
-                  <div className="mb-5">
-                    <DateStrip
-                      selectedDate={searchState.date}
-                      onDateChange={handleDateChange}
-                      getMinPrice={getMinPrice}
-                    />
-                  </div>
-                )}
 
                 <div className="flex flex-col lg:flex-row gap-5">
                   <div className="hidden lg:block w-64 shrink-0">
@@ -531,7 +301,7 @@ const Index = () => {
               </motion.div>
             )}
 
-            {/* ===== CONTENT SECTIONS ===== */}
+            {/* CONTENT SECTIONS */}
             {showAbout && (
               <motion.div key="about" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-6 md:py-8">
                 <AboutSection />
@@ -550,7 +320,7 @@ const Index = () => {
 
           </AnimatePresence>
 
-          {/* FAQ always visible at bottom on home */}
+          {/* FAQ on home */}
           {showHome && !needsProfile && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -566,7 +336,6 @@ const Index = () => {
         <Footer />
       </div>
 
-      {/* Login modal triggered by locked offer cards */}
       <AuthModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
   );

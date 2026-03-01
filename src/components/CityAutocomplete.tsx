@@ -24,16 +24,13 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (value) {
-      setQuery(`${value.city} (${value.code})`);
-    }
+    if (value) setQuery(`${value.city} (${value.code})`);
   }, [value]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
         setOpen(false);
-        // Reset query if no valid selection
         if (!value) setQuery("");
         else setQuery(`${value.city} (${value.code})`);
       }
@@ -54,9 +51,7 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
           c.airport.toLowerCase().includes(q)
       )
     );
-    if (value && val !== `${value.city} (${value.code})`) {
-      onChange(null);
-    }
+    if (value && val !== `${value.city} (${value.code})`) onChange(null);
   };
 
   const handleSelect = (city: CityOption) => {
@@ -66,7 +61,7 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
   };
 
   return (
-    <div className="space-y-1.5 relative" ref={wrapperRef}>
+    <div className="space-y-1.5 relative z-20" ref={wrapperRef}>
       <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
         {label}
       </label>
@@ -76,23 +71,20 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
           type="text"
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
-          onFocus={() => {
-            setOpen(true);
-            setFiltered(availableCities);
-          }}
+          onFocus={() => { setOpen(true); setFiltered(availableCities); }}
           placeholder="Type city or airport..."
-          className="w-full bg-secondary/50 border-0 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-md font-bold text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full bg-secondary/50 border-0 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl font-bold text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
       {open && filtered.length > 0 && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 z-[60] mt-1 bg-card border border-border rounded-xl shadow-xl max-h-60 overflow-y-auto">
           {filtered.map((c) => (
             <button
               key={c.code}
               onClick={() => handleSelect(c)}
               className={cn(
-                "w-full text-left px-4 py-3 hover:bg-accent/50 transition-colors flex flex-col",
-                value?.code === c.code && "bg-accent/30"
+                "w-full text-left px-4 py-3 hover:bg-secondary/60 transition-colors flex flex-col",
+                value?.code === c.code && "bg-primary/10"
               )}
             >
               <span className="font-semibold text-sm text-foreground">
@@ -104,7 +96,7 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
         </div>
       )}
       {open && filtered.length === 0 && query.length > 0 && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg p-4 text-center text-sm text-muted-foreground">
+        <div className="absolute top-full left-0 right-0 z-[60] mt-1 bg-card border border-border rounded-xl shadow-lg p-4 text-center text-sm text-muted-foreground">
           No matching cities found
         </div>
       )}
