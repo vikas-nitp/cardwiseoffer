@@ -4,36 +4,10 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import CityAutocomplete, { type CityOption } from "@/components/CityAutocomplete";
 import BankMultiSelect from "@/components/BankMultiSelect";
-
-const cities: CityOption[] = [
-  { city: "Bangalore", code: "BLR", airport: "Kempegowda International Airport" },
-  { city: "Delhi", code: "DEL", airport: "Indira Gandhi International Airport" },
-  { city: "Mumbai", code: "BOM", airport: "Chhatrapati Shivaji Maharaj International Airport" },
-  { city: "Chennai", code: "MAA", airport: "Chennai International Airport" },
-  { city: "Hyderabad", code: "HYD", airport: "Rajiv Gandhi International Airport" },
-  { city: "Kolkata", code: "CCU", airport: "Netaji Subhas Chandra Bose International Airport" },
-  { city: "Pune", code: "PNQ", airport: "Pune Airport" },
-  { city: "Goa", code: "GOI", airport: "Manohar International Airport" },
-  { city: "Jaipur", code: "JAI", airport: "Jaipur International Airport" },
-  { city: "Ahmedabad", code: "AMD", airport: "Sardar Vallabhbhai Patel International Airport" },
-  { city: "Lucknow", code: "LKO", airport: "Chaudhary Charan Singh International Airport" },
-  { city: "Kochi", code: "COK", airport: "Cochin International Airport" },
-  { city: "Thiruvananthapuram", code: "TRV", airport: "Trivandrum International Airport" },
-  { city: "Chandigarh", code: "IXC", airport: "Chandigarh International Airport" },
-  { city: "Varanasi", code: "VNS", airport: "Lal Bahadur Shastri International Airport" },
-  { city: "Coimbatore", code: "CJB", airport: "Coimbatore International Airport" },
-  { city: "Patna", code: "PAT", airport: "Jay Prakash Narayan Airport" },
-  { city: "Indore", code: "IDR", airport: "Devi Ahilyabai Holkar Airport" },
-  { city: "Bhubaneswar", code: "BBI", airport: "Biju Patnaik International Airport" },
-  { city: "Visakhapatnam", code: "VTZ", airport: "Visakhapatnam Airport" },
-];
+import { CITIES } from "@/services/mockApi";
 
 interface SearchCardProps {
   onSearch: (from: CityOption, to: CityOption, date: Date, banks: string[]) => void;
@@ -70,23 +44,12 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
 
   return (
     <div className="w-full max-w-5xl mx-auto glass-card rounded-2xl card-shadow-lg p-6 md:p-8 animate-fade-up glow-ring" style={{ animationDelay: "0.2s" }}>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <CityAutocomplete
-          label="From"
-          cities={cities}
-          value={from}
-          onChange={setFrom}
-        />
-        <CityAutocomplete
-          label="To"
-          cities={cities}
-          value={to}
-          onChange={setTo}
-          excludeCode={from?.code}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <CityAutocomplete label="From" cities={CITIES} value={from} onChange={setFrom} />
+        <CityAutocomplete label="To" cities={CITIES} value={to} onChange={setTo} excludeCode={from?.code} />
 
         <div className="space-y-1.5">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Departure</label>
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Departure</label>
           <Popover>
             <PopoverTrigger asChild>
               <button className="w-full bg-secondary/50 border-0 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left flex items-center relative hover:bg-secondary/70 transition-colors">
@@ -101,7 +64,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
                 )}
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 z-[60]" align="start">
               <Calendar
                 mode="single"
                 selected={date}
@@ -114,10 +77,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
           </Popover>
         </div>
 
-        <BankMultiSelect
-          selected={selectedBanks}
-          onChange={setSelectedBanks}
-        />
+        <BankMultiSelect selected={selectedBanks} onChange={setSelectedBanks} />
       </div>
 
       {sameError && (

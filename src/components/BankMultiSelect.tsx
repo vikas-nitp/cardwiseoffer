@@ -3,16 +3,8 @@ import { CreditCard, Search, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const banks = [
-  "HDFC Bank",
-  "ICICI Bank",
-  "SBI Card",
-  "Axis Bank",
-  "Kotak Mahindra",
-  "American Express",
-  "Yes Bank",
-  "IndusInd Bank",
-  "RBL Bank",
-  "HSBC",
+  "HDFC Bank", "ICICI Bank", "SBI Card", "Axis Bank", "Kotak Mahindra",
+  "American Express", "Yes Bank", "IndusInd Bank", "RBL Bank", "HSBC",
 ];
 
 interface BankMultiSelectProps {
@@ -55,7 +47,7 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
   };
 
   return (
-    <div className="space-y-1.5 relative" ref={wrapperRef}>
+    <div className="space-y-1.5 relative z-10" ref={wrapperRef}>
       <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
         <CreditCard className="w-3.5 h-3.5" />
         Card
@@ -72,10 +64,9 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
           <span className="font-bold text-foreground">{selected.join(", ")}</span>
         )}
       </button>
-      <p className="text-xs text-muted-foreground/70">Select up to 2 cards (optional)</p>
 
       {open && (
-        <div className="absolute top-[calc(100%-1.2rem)] left-0 right-0 z-50 bg-card border border-border rounded-xl shadow-xl">
+        <div className="absolute top-full left-0 right-0 z-[60] mt-1 bg-card border border-border rounded-xl shadow-xl">
           <div className="p-2 border-b border-border">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -102,16 +93,14 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
                   key={bank}
                   onClick={() => toggleBank(bank)}
                   className={cn(
-                    "w-full text-left px-3 py-2.5 flex items-center gap-3 hover:bg-accent/50 transition-colors text-sm",
-                    isSelected && "bg-accent/30"
+                    "w-full text-left px-3 py-2.5 flex items-center gap-3 hover:bg-secondary/60 transition-colors text-sm",
+                    isSelected && "bg-primary/10"
                   )}
                 >
                   <div
                     className={cn(
                       "w-4 h-4 rounded-sm border flex items-center justify-center shrink-0",
-                      isSelected
-                        ? "bg-primary border-primary"
-                        : "border-border"
+                      isSelected ? "bg-primary border-primary" : "border-border"
                     )}
                   >
                     {isSelected && <Check className="w-3 h-3 text-primary-foreground" />}
