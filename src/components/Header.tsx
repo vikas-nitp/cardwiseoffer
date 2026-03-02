@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import AuthModal from "@/components/AuthModal";
+import { isFeatureEnabled } from "@/config/featureFlags";
 
 export type ActiveSection = "home" | "results" | "all-offers" | "about" | "how-it-works" | "contact";
 
@@ -18,8 +19,8 @@ const Header = ({ activeSection, onSectionChange }: HeaderProps) => {
   const [showAuth, setShowAuth] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const navItems: { label: string; section: ActiveSection }[] = [
-    { label: "All Offers", section: "all-offers" },
+  const navItems: { label: string; section: ActiveSection; flag?: string }[] = [
+    ...(isFeatureEnabled("allOffers") ? [{ label: "All Offers", section: "all-offers" as ActiveSection }] : []),
     { label: "How It Works", section: "how-it-works" },
     { label: "About", section: "about" },
     { label: "Contact Us", section: "contact" },
@@ -32,7 +33,7 @@ const Header = ({ activeSection, onSectionChange }: HeaderProps) => {
 
   return (
     <>
-      <header className="w-full py-3 px-4 md:px-10 flex items-center justify-between relative z-20">
+      <header className="w-full py-3 px-4 md:px-10 flex items-center justify-between relative z-[50]">
         <Link
           to="/"
           className="flex items-center gap-2 group"
@@ -113,9 +114,9 @@ const Header = ({ activeSection, onSectionChange }: HeaderProps) => {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-30 md:hidden">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <nav className="absolute top-0 right-0 w-64 h-full bg-card shadow-xl p-6 pt-16 flex flex-col gap-1 animate-slide-in-right">
+        <div className="fixed inset-0 z-[60] md:hidden">
+          <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <nav className="absolute top-0 right-0 w-64 h-full bg-card shadow-xl p-6 pt-16 flex flex-col gap-1 animate-slide-in-right border-l border-border">
             <button onClick={() => setMobileOpen(false)} className="absolute top-4 right-4 text-muted-foreground">
               <X className="w-5 h-5" />
             </button>
