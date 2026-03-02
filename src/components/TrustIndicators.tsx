@@ -1,18 +1,19 @@
 import { ShieldCheck, RefreshCw, Scale, Users } from "lucide-react";
-import { getDailyVisitorCount } from "@/services/mockApi";
+import { useVisitorCount } from "@/hooks/useApi";
 
 const TrustIndicators = () => {
-  const visitorCount = getDailyVisitorCount();
+  const { data } = useVisitorCount();
+  const visitorCount = data?.count ?? 0;
 
   const indicators = [
     { icon: ShieldCheck, label: "No booking bias" },
     { icon: RefreshCw, label: "Updated daily" },
     { icon: Scale, label: "Independent comparison" },
-    { icon: Users, label: `${visitorCount.toLocaleString()} visitors today` },
+    ...(visitorCount > 0 ? [{ icon: Users, label: `${visitorCount.toLocaleString()} visitors today` }] : []),
   ];
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 mt-6 w-full max-w-5xl mx-auto px-4 relative z-0">
+    <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 mt-6 w-full max-w-5xl mx-auto px-4 relative z-0">
       {indicators.map(({ icon: Icon, label }) => (
         <div
           key={label}

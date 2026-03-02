@@ -1,12 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-export interface CityOption {
-  city: string;
-  code: string;
-  airport: string;
-}
+import type { CityOption } from "@/types/api";
 
 interface CityAutocompleteProps {
   label: string;
@@ -44,11 +39,10 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
     setOpen(true);
     const q = val.toLowerCase();
     setFiltered(
-      availableCities.filter(
-        (c) =>
-          c.city.toLowerCase().includes(q) ||
-          c.code.toLowerCase().includes(q) ||
-          c.airport.toLowerCase().includes(q)
+      availableCities.filter(c =>
+        c.city.toLowerCase().includes(q) ||
+        c.code.toLowerCase().includes(q) ||
+        c.airport.toLowerCase().includes(q)
       )
     );
     if (value && val !== `${value.city} (${value.code})`) onChange(null);
@@ -61,7 +55,7 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
   };
 
   return (
-    <div className="space-y-1.5 relative z-20" ref={wrapperRef}>
+    <div className="space-y-1.5 relative" ref={wrapperRef}>
       <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
         {label}
       </label>
@@ -105,3 +99,4 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
 };
 
 export default CityAutocomplete;
+export type { CityOption };

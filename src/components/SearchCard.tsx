@@ -5,11 +5,12 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import CityAutocomplete, { type CityOption } from "@/components/CityAutocomplete";
+import CityAutocomplete from "@/components/CityAutocomplete";
 import BankMultiSelect from "@/components/BankMultiSelect";
-import { CITIES } from "@/services/mockApi";
+import type { CityOption } from "@/types/api";
 
 interface SearchCardProps {
+  cities: CityOption[];
   onSearch: (from: CityOption, to: CityOption, date: Date, banks: string[]) => void;
   initialFrom?: CityOption | null;
   initialTo?: CityOption | null;
@@ -17,7 +18,7 @@ interface SearchCardProps {
   initialBanks?: string[];
 }
 
-const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBanks }: SearchCardProps) => {
+const SearchCard = ({ cities, onSearch, initialFrom, initialTo, initialDate, initialBanks }: SearchCardProps) => {
   const [from, setFrom] = useState<CityOption | null>(initialFrom ?? null);
   const [to, setTo] = useState<CityOption | null>(initialTo ?? null);
   const [date, setDate] = useState<Date | undefined>(initialDate ?? undefined);
@@ -43,10 +44,14 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto glass-card rounded-2xl card-shadow-lg p-6 md:p-8 animate-fade-up glow-ring" style={{ animationDelay: "0.2s" }}>
+    <div className="w-full max-w-5xl mx-auto glass-card rounded-2xl card-shadow-lg p-6 md:p-8 animate-fade-up glow-ring relative z-30" style={{ animationDelay: "0.2s" }}>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        <CityAutocomplete label="From" cities={CITIES} value={from} onChange={setFrom} />
-        <CityAutocomplete label="To" cities={CITIES} value={to} onChange={setTo} excludeCode={from?.code} />
+        <div className="relative z-[40]">
+          <CityAutocomplete label="From" cities={cities} value={from} onChange={setFrom} />
+        </div>
+        <div className="relative z-[40]">
+          <CityAutocomplete label="To" cities={cities} value={to} onChange={setTo} excludeCode={from?.code} />
+        </div>
 
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Departure</label>
@@ -77,7 +82,9 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
           </Popover>
         </div>
 
-        <BankMultiSelect selected={selectedBanks} onChange={setSelectedBanks} />
+        <div className="relative z-[35]">
+          <BankMultiSelect selected={selectedBanks} onChange={setSelectedBanks} />
+        </div>
       </div>
 
       {sameError && (

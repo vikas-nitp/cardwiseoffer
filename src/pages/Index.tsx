@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
 import type { ActiveSection } from "@/components/Header";
@@ -11,22 +11,21 @@ import ContactSection from "@/components/ContactSection";
 import FAQSection from "@/components/FAQSection";
 import ProfileSetup from "@/components/ProfileSetup";
 import GlobalLoginGate from "@/components/GlobalLoginGate";
+import LockedOfferCard from "@/components/LockedOfferCard";
 import AuthModal from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import DateStrip from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import skyBg from "@/assets/sky-bg-2.png";
 import { format } from "date-fns";
-import { ArrowRight, Pencil } from "lucide-react";
+import { ArrowRight, Pencil, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { CityOption } from "@/components/CityAutocomplete";
-import {
-  fetchSearchResults,
-  fetchAllOffers,
-  findBestOffer,
-  hashCode,
-} from "@/services/mockApi";
+import type { CityOption, OfferTile, SearchRequest, DateStripEntry } from "@/types/api";
+import { useMeta, useSearch, useOffers } from "@/hooks/useApi";
+import { isFeatureEnabled } from "@/config/featureFlags";
+import { toast } from "@/hooks/use-toast";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -34,63 +33,76 @@ const pageVariants = {
   exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] as const } },
 };
 
-interface SearchState {
-  from: CityOption;
-  to: CityOption;
-  date: Date;
-  banks: string[];
-}
-
 const MAX_FREE_OFFERS = 2;
 
 const Index = () => {
   const { needsProfile, isLoggedIn } = useAuth();
   const [activeSection, setActiveSection] = useState<ActiveSection>("home");
-  const [searchState, setSearchState] = useState<SearchState | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  // Search state
+  const [searchFrom, setSearchFrom] = useState<CityOption | null>(null);
+  const [searchTo, setSearchTo] = useState<CityOption | null>(null);
+  const [searchDate, setSearchDate] = useState<Date | undefined>();
+  const [searchBanks, setSearchBanks] = useState<string[]>([]);
+  const [searchReq, setSearchReq] = useState<SearchRequest | null>(null);
+
+  // All Offers filters
   const [bankFilter, setBankFilter] = useState<string[]>([]);
   const [platformFilter, setPlatformFilter] = useState<string[]>([]);
   const [paymentFilter, setPaymentFilter] = useState<string[]>([]);
 
-  const hasSearched = searchState !== null;
+  // API hooks
+  const meta = useMeta();
+  const cities = meta.data?.cities ?? [];
+
+  const searchResult = useSearch(searchReq);
+  const offersFilters = useMemo(() => {
+    const f: any = {};
+    if (bankFilter.length) f.bank = bankFilter;
+    if (platformFilter.length) f.platform = platformFilter;
+    if (paymentFilter.length) f.paymentType = paymentFilter;
+    return Object.keys(f).length ? f : undefined;
+  }, [bankFilter, platformFilter, paymentFilter]);
+  const allOffersResult = useOffers(activeSection === "all-offers" ? offersFilters : undefined);
+
+  const hasSearched = searchReq !== null;
 
   const handleSearch = (from: CityOption, to: CityOption, date: Date, banks: string[]) => {
-    setSearchState({ from, to, date, banks });
+    setSearchFrom(from);
+    setSearchTo(to);
+    setSearchDate(date);
+    setSearchBanks(banks);
+    setSearchReq({
+      from: from.code,
+      to: to.code,
+      date: format(date, "yyyy-MM-dd"),
+      banks,
+    });
     setActiveSection("results");
-    setBankFilter([]);
-    setPlatformFilter([]);
-    setPaymentFilter([]);
   };
 
   const handleEditSearch = () => setActiveSection("home");
 
-  const handleDateChange = (newDate: Date) => {
-    if (searchState) setSearchState({ ...searchState, date: newDate });
+  const handleDateChange = (dateStr: string) => {
+    if (!searchReq) return;
+    setSearchDate(new Date(dateStr));
+    setSearchReq({ ...searchReq, date: dateStr });
   };
 
-  const getMinPrice = (date: Date) => {
-    if (!searchState) return 0;
-    const seed = hashCode(`${searchState.from.code}-${searchState.to.code}-${format(date, "yyyy-MM-dd")}`);
-    return findBestOffer(seed).bestDiscount;
-  };
-
-  const searchResults = useMemo(() => {
-    if (!searchState) return [];
-    return fetchSearchResults(searchState.from, searchState.to, searchState.date, searchState.banks);
-  }, [searchState]);
-
-  // All Offers is always independent — no route state
-  const allOffers = useMemo(() => fetchAllOffers(), []);
-
-  const filteredAllOffers = useMemo(() => {
-    return allOffers.filter((o) => {
-      if (bankFilter.length > 0 && o.bank && !bankFilter.includes(o.bank)) return false;
-      if (platformFilter.length > 0 && !platformFilter.includes(o.platform)) return false;
-      if (paymentFilter.length > 0 && !paymentFilter.includes(o.paymentType)) return false;
-      return true;
-    });
-  }, [allOffers, bankFilter, platformFilter, paymentFilter]);
+  const handleSectionChange = useCallback((section: ActiveSection) => {
+    if (section === "all-offers" && !isFeatureEnabled("allOffers")) {
+      toast({ title: "Feature unavailable", description: "All Offers is currently disabled." });
+      return;
+    }
+    // Clear All Offers filters when navigating to it
+    if (section === "all-offers") {
+      setBankFilter([]);
+      setPlatformFilter([]);
+      setPaymentFilter([]);
+    }
+    setActiveSection(section);
+  }, []);
 
   const showHome = activeSection === "home";
   const showResults = activeSection === "results" && hasSearched;
@@ -99,10 +111,49 @@ const Index = () => {
   const showHowItWorks = activeSection === "how-it-works";
   const showContact = activeSection === "contact";
 
-  const renderOfferTiles = (offers: typeof searchResults, wrapperClass: string) => {
+  const renderOfferTiles = (offers: OfferTile[], wrapperClass: string, loading?: boolean, error?: string | null, retry?: () => void) => {
+    if (loading) {
+      return (
+        <div className={wrapperClass}>
+          {[1, 2, 3].map(i => (
+            <div key={i} className="glass-card rounded-2xl p-5 space-y-4">
+              <Skeleton className="h-6 w-24 rounded-full" />
+              <Skeleton className="h-10 w-32" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-11 w-full rounded-xl" />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="glass-card rounded-2xl card-shadow-lg p-10 text-center max-w-md mx-auto">
+          <AlertCircle className="w-10 h-10 text-destructive mx-auto mb-3" />
+          <h3 className="font-display font-bold text-foreground mb-2">Something went wrong</h3>
+          <p className="text-sm text-muted-foreground mb-4">{error}</p>
+          {retry && (
+            <Button variant="outline" onClick={retry} className="gap-2 rounded-xl">
+              <RefreshCw className="w-4 h-4" /> Try Again
+            </Button>
+          )}
+        </div>
+      );
+    }
+
+    if (!offers.length) {
+      return (
+        <div className="glass-card rounded-2xl card-shadow-lg p-10 text-center max-w-md mx-auto">
+          <p className="text-muted-foreground">No offers found. Try adjusting your filters.</p>
+        </div>
+      );
+    }
+
     if (!isLoggedIn) {
-      // Show limited offers + global login gate
       const preview = offers.slice(0, MAX_FREE_OFFERS);
+      const lockedCount = Math.min(offers.length - MAX_FREE_OFFERS, 3);
       return (
         <>
           <div className={wrapperClass}>
@@ -114,6 +165,16 @@ const Index = () => {
                 transition={{ delay: index * 0.08, duration: 0.3 }}
               >
                 <OfferCard {...offer} index={index} />
+              </motion.div>
+            ))}
+            {Array.from({ length: lockedCount }, (_, i) => (
+              <motion.div
+                key={`locked-${i}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: (preview.length + i) * 0.08, duration: 0.3 }}
+              >
+                <LockedOfferCard />
               </motion.div>
             ))}
           </div>
@@ -163,20 +224,13 @@ const Index = () => {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header activeSection={activeSection} onSectionChange={setActiveSection} />
+        <Header activeSection={activeSection} onSectionChange={handleSectionChange} />
 
         <main className="flex-1 flex flex-col items-center px-4 md:px-6 pb-8">
           <AnimatePresence mode="wait">
 
-            {/* PROFILE SETUP */}
-            {needsProfile && (
-              <motion.div key="profile" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full">
-                <ProfileSetup />
-              </motion.div>
-            )}
-
             {/* HOME */}
-            {showHome && !needsProfile && (
+            {showHome && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
                 <section className="flex flex-col items-center justify-center pt-10 md:pt-20 pb-6 max-w-2xl mx-auto text-center px-4">
                   <h1 className="text-3xl md:text-5xl font-display font-bold tracking-tight leading-tight">
@@ -189,41 +243,51 @@ const Index = () => {
                   </p>
                 </section>
 
-                <SearchCard
-                  onSearch={handleSearch}
-                  initialFrom={searchState?.from ?? null}
-                  initialTo={searchState?.to ?? null}
-                  initialDate={searchState?.date ?? undefined}
-                  initialBanks={searchState?.banks ?? []}
-                />
+                {meta.loading ? (
+                  <div className="w-full max-w-5xl mx-auto glass-card rounded-2xl p-8 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-14 rounded-xl" />)}
+                    </div>
+                    <Skeleton className="h-12 rounded-xl" />
+                  </div>
+                ) : (
+                  <SearchCard
+                    cities={cities}
+                    onSearch={handleSearch}
+                    initialFrom={searchFrom}
+                    initialTo={searchTo}
+                    initialDate={searchDate}
+                    initialBanks={searchBanks}
+                  />
+                )}
 
                 <TrustIndicators />
               </motion.div>
             )}
 
             {/* SEARCH RESULTS */}
-            {showResults && searchState && (
+            {showResults && searchResult.data && (
               <motion.div key="results" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 {/* Summary bar */}
                 <div className="glass-card rounded-2xl card-shadow-lg p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
                   <div className="flex items-center gap-2 flex-wrap text-sm md:text-base">
                     <span className="font-display font-bold text-foreground">
-                      {searchState.from.city}
-                      <span className="text-muted-foreground font-normal text-xs ml-1">({searchState.from.code})</span>
+                      {searchResult.data.from.city}
+                      <span className="text-muted-foreground font-normal text-xs ml-1">({searchResult.data.from.code})</span>
                     </span>
                     <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                       <ArrowRight className="w-3.5 h-3.5 text-primary" />
                     </div>
                     <span className="font-display font-bold text-foreground">
-                      {searchState.to.city}
-                      <span className="text-muted-foreground font-normal text-xs ml-1">({searchState.to.code})</span>
+                      {searchResult.data.to.city}
+                      <span className="text-muted-foreground font-normal text-xs ml-1">({searchResult.data.to.code})</span>
                     </span>
                     <span className="text-border hidden sm:inline">|</span>
-                    <span className="font-bold text-foreground text-sm">{format(searchState.date, "dd MMM yyyy")}</span>
-                    {searchState.banks.length > 0 && (
+                    <span className="font-bold text-foreground text-sm">{searchDate ? format(searchDate, "dd MMM yyyy") : ""}</span>
+                    {searchBanks.length > 0 && (
                       <>
                         <span className="text-border hidden sm:inline">|</span>
-                        {searchState.banks.map((b) => (
+                        {searchBanks.map((b) => (
                           <span key={b} className="text-xs font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">{b}</span>
                         ))}
                       </>
@@ -243,21 +307,38 @@ const Index = () => {
                 {/* Date strip */}
                 <div className="mb-5">
                   <DateStrip
-                    selectedDate={searchState.date}
+                    entries={searchResult.data.dateStrip}
+                    selectedDate={searchReq!.date}
                     onDateChange={handleDateChange}
-                    getMinPrice={getMinPrice}
                   />
                 </div>
 
                 {/* Offer tiles */}
                 {renderOfferTiles(
-                  searchResults,
-                  "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                  searchResult.data.offers,
+                  "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4",
+                  searchResult.loading,
+                  searchResult.error,
+                  searchResult.retry,
                 )}
 
                 <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
                   Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
                 </p>
+              </motion.div>
+            )}
+
+            {/* Search loading */}
+            {showResults && searchResult.loading && !searchResult.data && (
+              <motion.div key="results-loading" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-6">
+                {renderOfferTiles([], "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4", true)}
+              </motion.div>
+            )}
+
+            {/* Search error */}
+            {showResults && searchResult.error && !searchResult.data && (
+              <motion.div key="results-error" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-6">
+                {renderOfferTiles([], "", false, searchResult.error, searchResult.retry)}
               </motion.div>
             )}
 
@@ -283,15 +364,12 @@ const Index = () => {
                     />
                   </div>
                   <div className="flex-1">
-                    {filteredAllOffers.length === 0 ? (
-                      <div className="glass-card rounded-2xl card-shadow-lg p-10 text-center">
-                        <p className="text-muted-foreground">No offers match your filters. Try adjusting filters.</p>
-                      </div>
-                    ) : (
-                      renderOfferTiles(
-                        filteredAllOffers,
-                        "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
-                      )
+                    {renderOfferTiles(
+                      allOffersResult.data?.offers ?? [],
+                      "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4",
+                      allOffersResult.loading,
+                      allOffersResult.error,
+                      allOffersResult.retry,
                     )}
                     <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
                       Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
@@ -321,7 +399,7 @@ const Index = () => {
           </AnimatePresence>
 
           {/* FAQ on home */}
-          {showHome && !needsProfile && (
+          {showHome && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -335,6 +413,9 @@ const Index = () => {
 
         <Footer />
       </div>
+
+      {/* Profile overlay — full screen gate */}
+      {needsProfile && <ProfileSetup />}
 
       <AuthModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
