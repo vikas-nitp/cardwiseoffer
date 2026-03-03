@@ -99,7 +99,7 @@ export interface OfferTile {
 
 const makeConditions = (seed: number, idx: number): string[] => [
   `Min booking: ₹${3000 + (seed % 3) * 1000}`,
-  idx % 2 === 0 ? "Non-EMI transactions only" : "EMI & Non-EMI allowed",
+  idx % 2 === 0 ? "Credit Card only" : "Credit & Debit Card",
   idx % 2 === 0 ? "Web & Mobile App" : "Mobile App only",
   "Domestic flights only",
   "Valid till 30 Apr 2026",
@@ -278,4 +278,57 @@ export function getDailyVisitorCount(): number {
   const today = format(new Date(), "yyyy-MM-dd");
   const seed = hashCode(today);
   return 1200 + (seed % 800); // 1200–2000 visitors
+}
+
+// ── Mock API functions for testing without backend ────────────────
+export async function mockSearchOffers(
+  from: string,
+  to: string,
+  date: string,
+  isAuthenticated: boolean
+) {
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  
+  // Create mock city objects
+  const fromCity: CityOption = CITIES.find(c => c.code === from) || CITIES[0];
+  const toCity: CityOption = CITIES.find(c => c.code === to) || CITIES[1];
+  const dateObj = new Date(date);
+  
+  const offers = fetchSearchResults(fromCity, toCity, dateObj, []);
+  
+  return {
+    summary: {
+      from_airport: from,
+      to_airport: to,
+      date,
+      base_fare: 1600,
+    },
+    strip7days: Array.from({ length: 7 }, (_, i) => ({
+      date: new Date(new Date(date).getTime() + i * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+      price: 1600 + i * 10,
+    })),
+    offers: isAuthenticated ? offers : offers.slice(0, 2),
+  };
+}
+
+export async function mockFetchAllOffers(isAuthenticated: boolean) {
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  
+  const offers = fetchSearchResults(CITIES[0], CITIES[1], new Date(), []);
+  return isAuthenticated ? offers : offers.slice(0, 2);
+}
+
+export async function mockFetchFeatureFlags() {
+  // Simulate network delay
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  
+  return {
+    allOffers: true,
+    savedCards: false,
+    authRequiredForAllOffers: true,
+  };
 }

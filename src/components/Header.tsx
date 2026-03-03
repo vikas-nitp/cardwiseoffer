@@ -5,22 +5,22 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import AuthModal from "@/components/AuthModal";
-import { isFeatureEnabled } from "@/config/featureFlags";
 
 export type ActiveSection = "home" | "results" | "all-offers" | "about" | "how-it-works" | "contact";
 
 interface HeaderProps {
   activeSection: ActiveSection;
   onSectionChange: (section: ActiveSection) => void;
+  authEnabled?: boolean; // Whether to show login UI
 }
 
-const Header = ({ activeSection, onSectionChange }: HeaderProps) => {
+const Header = ({ activeSection, onSectionChange, authEnabled = true }: HeaderProps) => {
   const { isLoggedIn, user, logout } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const navItems: { label: string; section: ActiveSection; flag?: string }[] = [
-    ...(isFeatureEnabled("allOffers") ? [{ label: "All Offers", section: "all-offers" as ActiveSection }] : []),
+  const navItems: { label: string; section: ActiveSection }[] = [
+    { label: "All Offers", section: "all-offers" },
     { label: "How It Works", section: "how-it-works" },
     { label: "About", section: "about" },
     { label: "Contact Us", section: "contact" },
@@ -33,7 +33,7 @@ const Header = ({ activeSection, onSectionChange }: HeaderProps) => {
 
   return (
     <>
-      <header className="w-full py-3 px-4 md:px-10 flex items-center justify-between relative z-[50]">
+      <header className="w-full py-3 px-4 md:px-10 flex items-center justify-between relative z-20">
         <Link
           to="/"
           className="flex items-center gap-2 group"
@@ -80,7 +80,7 @@ const Header = ({ activeSection, onSectionChange }: HeaderProps) => {
                 <LogOut className="w-4 h-4" />
               </button>
             </div>
-          ) : (
+          ) : authEnabled ? (
             <Button
               variant="default"
               size="sm"
@@ -90,7 +90,7 @@ const Header = ({ activeSection, onSectionChange }: HeaderProps) => {
               <User className="w-4 h-4" />
               Login
             </Button>
-          )}
+          ) : null}
         </nav>
 
         {/* Mobile hamburger */}
@@ -114,9 +114,9 @@ const Header = ({ activeSection, onSectionChange }: HeaderProps) => {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[60] md:hidden">
-          <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <nav className="absolute top-0 right-0 w-64 h-full bg-card shadow-xl p-6 pt-16 flex flex-col gap-1 animate-slide-in-right border-l border-border">
+        <div className="fixed inset-0 z-30 md:hidden">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <nav className="absolute top-0 right-0 w-64 h-full bg-card shadow-xl p-6 pt-16 flex flex-col gap-1 animate-slide-in-right">
             <button onClick={() => setMobileOpen(false)} className="absolute top-4 right-4 text-muted-foreground">
               <X className="w-5 h-5" />
             </button>
@@ -143,7 +143,7 @@ const Header = ({ activeSection, onSectionChange }: HeaderProps) => {
                   <LogOut className="w-4 h-4" />
                   Logout
                 </button>
-              ) : (
+              ) : authEnabled ? (
                 <Button
                   className="w-full rounded-xl font-semibold gap-1.5"
                   onClick={() => { setShowAuth(true); setMobileOpen(false); }}
@@ -151,7 +151,7 @@ const Header = ({ activeSection, onSectionChange }: HeaderProps) => {
                   <User className="w-4 h-4" />
                   Login
                 </Button>
-              )}
+              ) : null}
             </div>
           </nav>
         </div>

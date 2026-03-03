@@ -1,4 +1,4 @@
-import { Lock, User } from "lucide-react";
+import { Lock, User, Mail, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface GlobalLoginGateProps {
@@ -26,6 +26,14 @@ const GlobalLoginGate = ({ onLoginClick, totalOffers }: GlobalLoginGateProps) =>
         <User className="w-4 h-4" />
         Sign In to Continue
       </Button>
+      <div className="flex items-center justify-center gap-4 mt-5">
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Mail className="w-3.5 h-3.5" /> Email
+        </span>
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Smartphone className="w-3.5 h-3.5" /> Mobile OTP
+        </span>
+      </div>
     </div>
   );
 };

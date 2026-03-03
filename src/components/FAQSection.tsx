@@ -15,6 +15,10 @@ const faqs = [
     a: "No. We are an independent comparison tool. We redirect you to the travel platform where you can complete your booking.",
   },
   {
+    q: "Which banks and platforms do you support?",
+    a: "We currently support HDFC, ICICI, SBI, Axis, and American Express cards across MakeMyTrip, Cleartrip, EaseMyTrip, and Goibibo. We're actively expanding to include more banks and platforms.",
+  },
+  {
     q: "How are the offers sourced?",
     a: "We aggregate publicly available promotions from major banks and travel platforms like MakeMyTrip, Cleartrip, EaseMyTrip, and Goibibo.",
   },

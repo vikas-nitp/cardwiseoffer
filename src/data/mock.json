@@ -1,0 +1,35 @@
+{
+  "cities": [
+    { "city": "Bangalore", "code": "BLR", "airport": "Kempegowda International Airport" },
+    { "city": "Delhi", "code": "DEL", "airport": "Indira Gandhi International Airport" },
+    { "city": "Mumbai", "code": "BOM", "airport": "Chhatrapati Shivaji Maharaj International Airport" },
+    { "city": "Chennai", "code": "MAA", "airport": "Chennai International Airport" },
+    { "city": "Hyderabad", "code": "HYD", "airport": "Rajiv Gandhi International Airport" },
+    { "city": "Kolkata", "code": "CCU", "airport": "Netaji Subhas Chandra Bose International Airport" },
+    { "city": "Pune", "code": "PNQ", "airport": "Pune Airport" },
+    { "city": "Goa", "code": "GOI", "airport": "Manohar International Airport" },
+    { "city": "Jaipur", "code": "JAI", "airport": "Jaipur International Airport" },
+    { "city": "Ahmedabad", "code": "AMD", "airport": "Sardar Vallabhbhai Patel International Airport" }
+  ],
+  "banks": [
+    "HDFC Bank",
+    "ICICI Bank",
+    "SBI Card",
+    "Axis Bank",
+    "Kotak Mahindra",
+    "American Express",
+    "Yes Bank",
+    "IndusInd Bank",
+    "RBL Bank",
+    "HSBC"
+  ],
+  "platforms": ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Goibibo"],
+  "paymentMethods": ["Credit Card", "Debit Card", "No Card"],
+  "featureFlags": {
+    "authEnabled": false,
+    "offerLockingEnabled": false,
+    "allOffers": true,
+    "savedCards": false,
+    "dailyVisitorsEnabled": false
+  }
+}

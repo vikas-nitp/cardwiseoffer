@@ -1,73 +1,59 @@
-# Welcome to your Lovable project
+# CardWiseOffer Frontend
 
-## Project info
+A React + TypeScript application for comparing credit card offers across travel platforms.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Quick Start
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Install dependencies
+npm install
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server (port 8080)
 npm run dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
 ```
 
-**Edit a file directly in GitHub**
+## Tech Stack
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **React 18** + TypeScript
+- **Vite** for fast development and builds
+- **TailwindCSS** for styling
+- **shadcn/ui** for UI components
+- **Framer Motion** for animations
+- **date-fns** for date handling
 
-**Use GitHub Codespaces**
+## Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+src/
+├── components/     # UI components
+├── contexts/       # React contexts (Auth)
+├── hooks/          # Custom React hooks
+├── pages/          # Page components
+├── services/       # API services
+├── constants/      # App constants
+└── lib/            # Utility functions
+```
 
-## What technologies are used for this project?
+## Backend Integration
 
-This project is built with:
+The frontend connects to the FastAPI backend at `http://localhost:8001`.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Set `VITE_API_BASE_URL` in `.env` to override.
 
-## How can I deploy this project?
+## Feature Flags
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+The app respects feature flags from the backend:
+- `authEnabled` - Show/hide login UI
+- `offerLockingEnabled` - Lock offers for guests
+- `allOffers` - Enable All Offers section
+- `savedCards` - Enable Saved Cards feature
 
-## Can I connect a custom domain to my Lovable project?
+## License
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT

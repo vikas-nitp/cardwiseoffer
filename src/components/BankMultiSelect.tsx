@@ -1,11 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { CreditCard, Search, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const banks = [
-  "HDFC Bank", "ICICI Bank", "SBI Card", "Axis Bank", "Kotak Mahindra",
-  "American Express", "Yes Bank", "IndusInd Bank", "RBL Bank", "HSBC",
-];
+import { useMeta } from "@/contexts/MetaContext";
+import { MAX_BANK_FILTERS } from "@/constants";
 
 interface BankMultiSelectProps {
   selected: string[];
@@ -13,10 +10,23 @@ interface BankMultiSelectProps {
 }
 
 const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
+  const { meta } = useMeta();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [showMaxMsg, setShowMaxMsg] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Build bank display names map
+  const bankDisplayNames = useMemo(() => {
+    const names: Record<string, string> = {};
+    meta.banks.forEach((b) => {
+      names[b.id] = b.name;
+    });
+    return names;
+  }, [meta.banks]);
+
+  // Get bank IDs for filtering
+  const bankIds = useMemo(() => meta.banks.map((b) => b.id), [meta.banks]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -30,15 +40,15 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const filtered = banks.filter((b) =>
-    b.toLowerCase().includes(search.toLowerCase())
+  const filtered = bankIds.filter((b) =>
+    (bankDisplayNames[b] || b).toLowerCase().includes(search.toLowerCase())
   );
 
   const toggleBank = (bank: string) => {
     if (selected.includes(bank)) {
       onChange(selected.filter((b) => b !== bank));
       setShowMaxMsg(false);
-    } else if (selected.length >= 2) {
+    } else if (selected.length >= MAX_BANK_FILTERS) {
       setShowMaxMsg(true);
     } else {
       onChange([...selected, bank]);
@@ -47,7 +57,7 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
   };
 
   return (
-    <div className="space-y-1.5 relative z-10" ref={wrapperRef}>
+    <div className="space-y-1.5 relative z-30" ref={wrapperRef}>
       <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
         <CreditCard className="w-3.5 h-3.5" />
         Card
@@ -61,7 +71,7 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
         {selected.length === 0 ? (
           <span className="text-muted-foreground">Select Card(s)</span>
         ) : (
-          <span className="font-bold text-foreground">{selected.join(", ")}</span>
+          <span className="font-bold text-foreground">{selected.map(b => bankDisplayNames[b] || b).join(", ")}</span>
         )}
       </button>
 
@@ -106,7 +116,7 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
                     {isSelected && <Check className="w-3 h-3 text-primary-foreground" />}
                   </div>
                   <span className={cn("text-foreground", isSelected && "font-semibold")}>
-                    {bank}
+                    {bankDisplayNames[bank] || bank}
                   </span>
                 </button>
               );

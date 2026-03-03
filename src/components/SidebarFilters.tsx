@@ -1,6 +1,8 @@
 import { Check, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { useMeta } from "@/contexts/MetaContext";
+import { PAYMENT_METHODS } from "@/constants";
 
 interface FilterSelectProps {
   title: string;
@@ -8,12 +10,16 @@ interface FilterSelectProps {
   selected: string[];
   onToggle: (item: string) => void;
   searchable?: boolean;
+  displayNames?: Record<string, string>; // Optional mapping from value to display name
 }
 
-const FilterSelect = ({ title, items, selected, onToggle, searchable = false }: FilterSelectProps) => {
+const FilterSelect = ({ title, items, selected, onToggle, searchable = false, displayNames }: FilterSelectProps) => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Helper to get display name
+  const getDisplayName = (item: string) => displayNames?.[item] || item;
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -27,13 +33,13 @@ const FilterSelect = ({ title, items, selected, onToggle, searchable = false }: 
   }, []);
 
   const filtered = searchable
-    ? items.filter((item) => item.toLowerCase().includes(search.toLowerCase()))
+    ? items.filter((item) => getDisplayName(item).toLowerCase().includes(search.toLowerCase()))
     : items;
 
   const displayText = selected.length === 0
     ? `All ${title}`
     : selected.length <= 2
-      ? selected.join(", ")
+      ? selected.map(getDisplayName).join(", ")
       : `${selected.length} selected`;
 
   return (
@@ -85,7 +91,7 @@ const FilterSelect = ({ title, items, selected, onToggle, searchable = false }: 
                     >
                       {isSelected && <Check className="w-3 h-3 text-primary-foreground" />}
                     </div>
-                    {item}
+                    {getDisplayName(item)}
                   </button>
                 );
               })}
@@ -110,14 +116,6 @@ const FilterSelect = ({ title, items, selected, onToggle, searchable = false }: 
   );
 };
 
-const allBanks = [
-  "HDFC Bank", "ICICI Bank", "SBI Card", "Axis Bank", "Kotak Mahindra",
-  "American Express", "Yes Bank", "IndusInd Bank", "RBL Bank", "HSBC",
-];
-
-const platforms = ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Goibibo"];
-const paymentTypes = ["Credit Card", "Debit Card", "No Card"];
-
 interface SidebarFiltersProps {
   bankFilter: string[];
   onBankFilterChange: (banks: string[]) => void;
@@ -135,6 +133,21 @@ const SidebarFilters = ({
   paymentFilter,
   onPaymentFilterChange,
 }: SidebarFiltersProps) => {
+  const { meta } = useMeta();
+  
+  // Build bank display names from meta
+  const bankDisplayNames = useMemo(() => {
+    const names: Record<string, string> = {};
+    meta.banks.forEach((b) => {
+      names[b.id] = b.name;
+    });
+    return names;
+  }, [meta.banks]);
+
+  // Extract bank and platform IDs from meta
+  const bankIds = useMemo(() => meta.banks.map((b) => b.id), [meta.banks]);
+  const platformIds = useMemo(() => meta.platforms.map((p) => p.id), [meta.platforms]);
+
   const toggleItem = (arr: string[], item: string, setter: (v: string[]) => void) => {
     setter(arr.includes(item) ? arr.filter((i) => i !== item) : [...arr, item]);
   };
@@ -144,21 +157,22 @@ const SidebarFilters = ({
       <h3 className="text-sm font-bold text-foreground mb-5 font-display">Filters</h3>
       <FilterSelect
         title="Bank"
-        items={allBanks}
+        items={bankIds}
         selected={bankFilter}
         onToggle={(b) => toggleItem(bankFilter, b, onBankFilterChange)}
         searchable
+        displayNames={bankDisplayNames}
       />
       <FilterSelect
         title="Platform"
-        items={platforms}
+        items={platformIds}
         selected={platformFilter}
         onToggle={(p) => toggleItem(platformFilter, p, onPlatformFilterChange)}
         searchable
       />
       <FilterSelect
         title="Payment Method"
-        items={paymentTypes}
+        items={PAYMENT_METHODS as unknown as string[]}
         selected={paymentFilter}
         onToggle={(t) => toggleItem(paymentFilter, t, onPaymentFilterChange)}
       />
