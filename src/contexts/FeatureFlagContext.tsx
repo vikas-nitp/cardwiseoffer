@@ -26,8 +26,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   dailyVisitorsEnabled: false,  // Don't show visitors if API fails
 };
 
-// ── API Config ─────────────────────────────────────────────────────
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || "http://localhost:8001";
+// Remove direct API_BASE_URL usage — dataRepo handles fallback
 
 // ── Context ────────────────────────────────────────────────────────
 interface FeatureFlagContextValue {
@@ -62,29 +61,15 @@ export const FeatureFlagProvider = ({ children }: FeatureFlagProviderProps) => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/feature-flags`, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Merge with defaults to ensure all fields exist
-      const mergedFlags: FeatureFlags = {
-        ...DEFAULT_FLAGS,
-        ...data,
-      };
-
+      const { repoFetchFeatureFlags } = await import("@/services/dataRepo");
+      const data = await repoFetchFeatureFlags();
+      const mergedFlags: FeatureFlags = { ...DEFAULT_FLAGS, ...data };
       setFlags(mergedFlags);
-      log.info("Feature flags loaded", mergedFlags);
+      log.info("Feature flags loaded", flags);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       log.warn("Failed to load feature flags, using defaults", { error: message });
       setError(message);
-      // Keep defaults on error
       setFlags(DEFAULT_FLAGS);
     } finally {
       setLoading(false);

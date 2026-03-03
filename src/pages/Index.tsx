@@ -26,15 +26,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { CityOption } from "@/components/CityAutocomplete";
 import { MAX_FREE_OFFERS } from "@/constants";
-import {
-  searchOffers,
-  fetchAllOffers as fetchAllOffersAPI,
-  transformSearchResponse,
-  transformAllOffers,
-  type OfferTile,
-  type SearchResponse,
-  APIError,
-} from "@/services/api";
+import type { OfferTile } from "@/services/api";
+import { repoSearchOffers, repoFetchAllOffers, isMockMode } from "@/services/dataRepo";
 import { log } from "@/lib/logger";
 
 const pageVariants = {
@@ -87,11 +80,10 @@ const Index = () => {
     setAllOffersLoading(true);
     setAllOffersError(null);
     try {
-      const offers = await fetchAllOffersAPI(isLoggedIn);
-      const transformed = transformAllOffers(offers);
-      setAllOffers(transformed);
+      const offers = await repoFetchAllOffers(isLoggedIn);
+      setAllOffers(offers);
     } catch (err) {
-      const errorMsg = err instanceof APIError ? err.message : "Failed to fetch offers. Please try again.";
+      const errorMsg = err instanceof Error ? err.message : "Failed to fetch offers. Please try again.";
       setAllOffersError(errorMsg);
       setAllOffers([]);
     } finally {
@@ -126,15 +118,12 @@ const Index = () => {
     setStrip7days([]);
 
     try {
-      const dateStr = format(date, "yyyy-MM-dd");
-      const response = await searchOffers(from.code, to.code, dateStr, banks, [], isLoggedIn);
-      const transformed = transformSearchResponse(response);
-      setSearchResults(transformed);
-      // Store 7-day strip from backend (no frontend date generation)
-      setStrip7days(response.strip7days || []);
-      log.info("Search completed", { offers: transformed.length, strip: response.strip7days?.length });
+      const result = await repoSearchOffers(from, to, date, banks, isLoggedIn);
+      setSearchResults(result.offers);
+      setStrip7days(result.strip7days);
+      log.info("Search completed", { offers: result.offers.length, strip: result.strip7days.length, mock: isMockMode() });
     } catch (err) {
-      const errorMsg = err instanceof APIError ? err.message : "Failed to fetch offers. Please try again.";
+      const errorMsg = err instanceof Error ? err.message : "Failed to fetch offers. Please try again.";
       log.error("Search failed", err);
       setSearchError(errorMsg);
       setSearchResults([]);
@@ -156,20 +145,11 @@ const Index = () => {
     setSearchError(null);
 
     try {
-      const dateStr = format(newDate, "yyyy-MM-dd");
-      const response = await searchOffers(
-        searchState.from.code,
-        searchState.to.code,
-        dateStr,
-        searchState.banks,
-        [],
-        isLoggedIn
-      );
-      const transformed = transformSearchResponse(response);
-      setSearchResults(transformed);
-      setStrip7days(response.strip7days || []);
+      const result = await repoSearchOffers(searchState.from, searchState.to, newDate, searchState.banks, isLoggedIn);
+      setSearchResults(result.offers);
+      setStrip7days(result.strip7days);
     } catch (err) {
-      const errorMsg = err instanceof APIError ? err.message : "Failed to fetch offers.";
+      const errorMsg = err instanceof Error ? err.message : "Failed to fetch offers.";
       setSearchError(errorMsg);
     } finally {
       setSearchLoading(false);

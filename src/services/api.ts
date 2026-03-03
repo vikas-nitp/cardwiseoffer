@@ -32,10 +32,11 @@ export interface MetaData {
 
 // ── Feature flags (matches /api/v1/feature-flags) ─────────
 export interface FeatureFlags {
-  authEnabled: boolean;       // Whether auth/login is enabled
-  offerLockingEnabled: boolean; // Whether to lock offers for guests
+  authEnabled: boolean;
+  offerLockingEnabled: boolean;
   allOffers: boolean;
   savedCards: boolean;
+  dailyVisitorsEnabled?: boolean;
 }
 
 // ── Backend OfferCard (matches offer_engine.py) ───────────
