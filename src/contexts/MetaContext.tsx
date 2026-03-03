@@ -65,8 +65,7 @@ const DEFAULT_META: MetaData = {
   supported_platforms: ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Goibibo"],
 };
 
-// ── API Config ─────────────────────────────────────────────────────
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || "http://localhost:8001";
+// API URL read safely inside fetchMeta — no crash if missing
 
 // ── Context ────────────────────────────────────────────────────────
 interface MetaContextValue {
@@ -105,17 +104,20 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/meta`, {
+      const apiUrl = (import.meta.env.VITE_API_BASE_URL as string) || "";
+      if (!apiUrl) {
+        log.info("No API URL configured, using default meta");
+        setMeta(DEFAULT_META);
+        return;
+      }
+
+      const response = await fetch(`${apiUrl}/api/v1/meta`, {
         headers: { "Content-Type": "application/json" },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
 
-      // Merge with defaults to ensure all fields exist
       const mergedMeta: MetaData = {
         banks: data.banks || DEFAULT_META.banks,
         platforms: data.platforms || DEFAULT_META.platforms,
@@ -125,15 +127,8 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
         supported_banks: data.supported_banks || DEFAULT_META.supported_banks,
         supported_platforms: data.supported_platforms || DEFAULT_META.supported_platforms,
       };
-
       setMeta(mergedMeta);
-      log.info("Meta data loaded", {
-        banks: mergedMeta.banks.length,
-        platforms: mergedMeta.platforms.length,
-        airports: mergedMeta.airports.length,
-        supported_banks: mergedMeta.supported_banks.length,
-        supported_platforms: mergedMeta.supported_platforms.length,
-      });
+      log.info("Meta data loaded from API");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       log.warn("Failed to load meta, using defaults", { error: message });
