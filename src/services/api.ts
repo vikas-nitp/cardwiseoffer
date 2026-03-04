@@ -120,6 +120,11 @@ async function apiCall<T>(
   body?: unknown,
   isAuthenticated: boolean = false
 ): Promise<T> {
+  // Fail fast if no API URL is configured — dataRepo will fall back to mock
+  if (!API_BASE_URL) {
+    throw new APIError(0, "No API URL configured");
+  }
+
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     "x-user-auth": isAuthenticated ? "true" : "false",
