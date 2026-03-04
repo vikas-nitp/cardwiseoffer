@@ -1,56 +1,89 @@
 /**
  * Mock API Service — backend-ready architecture
- * All data generation is centralized here for easy replacement with real APIs.
+ * All reference data is loaded from src/data/mock/ JSON files.
+ * No hardcoded data in this file.
  */
 
 import { format } from "date-fns";
 import type { CityOption } from "@/components/CityAutocomplete";
+import { CITIES } from "@/constants";
+import offersData from "@/data/mock/offers.json";
+import bankOffersMvpData from "@/data/mock/bankOffersMvp.json";
 
-// ── Constants ──────────────────────────────────────────────
-export const CITIES: CityOption[] = [
-  { city: "Bangalore", code: "BLR", airport: "Kempegowda International Airport" },
-  { city: "Delhi", code: "DEL", airport: "Indira Gandhi International Airport" },
-  { city: "Mumbai", code: "BOM", airport: "Chhatrapati Shivaji Maharaj International Airport" },
-  { city: "Chennai", code: "MAA", airport: "Chennai International Airport" },
-  { city: "Hyderabad", code: "HYD", airport: "Rajiv Gandhi International Airport" },
-  { city: "Kolkata", code: "CCU", airport: "Netaji Subhas Chandra Bose International Airport" },
-  { city: "Pune", code: "PNQ", airport: "Pune Airport" },
-  { city: "Goa", code: "GOI", airport: "Manohar International Airport" },
-  { city: "Jaipur", code: "JAI", airport: "Jaipur International Airport" },
-  { city: "Ahmedabad", code: "AMD", airport: "Sardar Vallabhbhai Patel International Airport" },
-  { city: "Lucknow", code: "LKO", airport: "Chaudhary Charan Singh International Airport" },
-  { city: "Kochi", code: "COK", airport: "Cochin International Airport" },
-  { city: "Thiruvananthapuram", code: "TRV", airport: "Trivandrum International Airport" },
-  { city: "Chandigarh", code: "IXC", airport: "Chandigarh International Airport" },
-  { city: "Varanasi", code: "VNS", airport: "Lal Bahadur Shastri International Airport" },
-  { city: "Coimbatore", code: "CJB", airport: "Coimbatore International Airport" },
-  { city: "Patna", code: "PAT", airport: "Jay Prakash Narayan Airport" },
-  { city: "Indore", code: "IDR", airport: "Devi Ahilyabai Holkar Airport" },
-  { city: "Bhubaneswar", code: "BBI", airport: "Biju Patnaik International Airport" },
-  { city: "Visakhapatnam", code: "VTZ", airport: "Visakhapatnam Airport" },
-];
+// ── Types for raw offer JSON ──────────────────────────────
+export interface RawOffer {
+  offer_id: string;
+  bank: string;
+  card_name: string;
+  platform: string;
+  category: string;
+  payment_method: string;
+  discount_type: string;
+  discount_value: number;
+  max_discount: number;
+  min_txn: number;
+  coupon_code: string;
+  valid_from: string;
+  valid_to: string;
+  channels: string;
+  eligibility_notes: string;
+  terms_url: string;
+  priority_score: number;
+  login_required: boolean;
+}
 
+export interface RawBankOffer {
+  offer_id: string;
+  bank: string;
+  platform: string;
+  category: string;
+  payment_method: string;
+  discount_type: string;
+  discount_value: number;
+  max_discount: number;
+  min_txn: number;
+  max_txn: number | null;
+  coupon_code: string;
+  emi_type: string | null;
+  emi_tenure_months: number | null;
+  valid_from: string;
+  valid_to: string;
+  valid_days: string;
+  frequency_limit: string;
+  channels: string;
+  offer_status: string;
+}
+
+// ── Loaded mock data ──────────────────────────────────────
+const OFFERS: RawOffer[] = offersData as RawOffer[];
+const BANK_OFFERS_MVP: RawBankOffer[] = bankOffersMvpData as RawBankOffer[];
+
+// ── Legacy constants (derived from JSON for backward compat) ──
 export interface CardOffer {
   bank: string;
   card: string;
   baseDiscount: number;
 }
 
-export const BANK_OFFERS: Record<string, CardOffer> = {
-  "HDFC Bank": { bank: "HDFC Bank", card: "HDFC Infinia", baseDiscount: 1800 },
-  "ICICI Bank": { bank: "ICICI Bank", card: "ICICI Sapphiro", baseDiscount: 1600 },
-  "SBI Card": { bank: "SBI Card", card: "SBI Elite", baseDiscount: 1400 },
-  "Axis Bank": { bank: "Axis Bank", card: "Axis Vistara", baseDiscount: 1200 },
-  "Kotak Mahindra": { bank: "Kotak Mahindra", card: "Kotak Privy League", baseDiscount: 1050 },
-  "American Express": { bank: "American Express", card: "Amex Platinum Travel", baseDiscount: 2000 },
-  "Yes Bank": { bank: "Yes Bank", card: "Yes First Exclusive", baseDiscount: 900 },
-  "IndusInd Bank": { bank: "IndusInd Bank", card: "IndusInd Legend", baseDiscount: 800 },
-  "RBL Bank": { bank: "RBL Bank", card: "RBL ShopRite", baseDiscount: 650 },
-  "HSBC": { bank: "HSBC", card: "HSBC Smart Value", baseDiscount: 750 },
-};
+// Build BANK_OFFERS lookup from offers.json (pick highest discount per bank)
+function buildBankOffers(): Record<string, CardOffer> {
+  const map: Record<string, CardOffer> = {};
+  for (const o of OFFERS) {
+    if (o.bank === "Any") continue;
+    const existing = map[o.bank];
+    if (!existing || o.discount_value > existing.baseDiscount) {
+      map[o.bank] = { bank: o.bank, card: o.card_name, baseDiscount: o.discount_value };
+    }
+  }
+  return map;
+}
 
+export const BANK_OFFERS: Record<string, CardOffer> = buildBankOffers();
 export const ALL_BANKS = Object.keys(BANK_OFFERS);
-export const ALL_PLATFORMS = ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Goibibo"];
+export const ALL_PLATFORMS = [...new Set(OFFERS.map((o) => o.platform))];
+
+// Re-export CITIES for backward compat
+export { CITIES };
 
 // ── Deterministic seed ─────────────────────────────────────
 export const hashCode = (s: string): number => {
@@ -62,10 +95,9 @@ export const hashCode = (s: string): number => {
   return Math.abs(hash);
 };
 
-// ── Price with controlled ₹100-₹300 variation ─────────────
+// ── Price with controlled variation ────────────────────────
 const priceVariation = (seed: number, base: number, idx: number): number => {
-  // Creates a variation between -300 and +300 in steps of ~100
-  const v = ((seed + idx * 137) % 7) - 3; // -3 to +3
+  const v = ((seed + idx * 137) % 7) - 3;
   return Math.max(400, base + v * 100);
 };
 
@@ -85,7 +117,7 @@ export interface OfferTile {
   id: string;
   label: string;
   extraLabel?: string;
-  labelIcon: string; // icon name to resolve in component
+  labelIcon: string;
   accentClass: string;
   accentBorder: string;
   platform: string;
@@ -152,7 +184,7 @@ export function fetchSearchResults(
       accentClass: "bg-primary text-primary-foreground", accentBorder: "border-primary",
       platform: ALL_PLATFORMS[pIdx],
       platformUrl: buildPlatformUrl(ALL_PLATFORMS[pIdx], from.code, to.code, dateStr),
-      bank: bestBank, card: BANK_OFFERS[bestBank].card, discount: bestDiscount,
+      bank: bestBank, card: BANK_OFFERS[bestBank]?.card ?? bestBank, discount: bestDiscount,
       paymentType: "Credit Card", conditions: makeConditions(seed, 0),
     });
     tiles.push({
@@ -188,7 +220,7 @@ export function fetchSearchResults(
         accentClass: "bg-highlight text-highlight-foreground", accentBorder: "border-highlight",
         platform: ALL_PLATFORMS[(seed + 1) % ALL_PLATFORMS.length],
         platformUrl: buildPlatformUrl(ALL_PLATFORMS[(seed + 1) % ALL_PLATFORMS.length], from.code, to.code, dateStr),
-        bank: bestOtherBank, card: BANK_OFFERS[bestOtherBank].card, discount: bestOtherDiscount,
+        bank: bestOtherBank, card: BANK_OFFERS[bestOtherBank]?.card ?? bestOtherBank, discount: bestOtherDiscount,
         paymentType: "Credit Card", conditions: makeConditions(seed, 1),
       });
     }
@@ -212,7 +244,7 @@ export function fetchSearchResults(
         accentClass: "bg-highlight text-highlight-foreground", accentBorder: "border-highlight",
         platform: ALL_PLATFORMS[(seed + 2) % ALL_PLATFORMS.length],
         platformUrl: buildPlatformUrl(ALL_PLATFORMS[(seed + 2) % ALL_PLATFORMS.length], from.code, to.code, dateStr),
-        bank: bestOtherBank, card: BANK_OFFERS[bestOtherBank].card, discount: bestOtherDiscount,
+        bank: bestOtherBank, card: BANK_OFFERS[bestOtherBank]?.card ?? bestOtherBank, discount: bestOtherDiscount,
         paymentType: "Credit Card", conditions: makeConditions(seed, 2),
       });
     }
@@ -249,7 +281,7 @@ export function fetchAllOffers(from?: CityOption, to?: CityOption, date?: Date):
       accentBorder: "border-secondary",
       platform: ALL_PLATFORMS[pIdx],
       platformUrl: from && to ? buildPlatformUrl(ALL_PLATFORMS[pIdx], from.code, to.code, dateStr) : "#",
-      bank: bankName, card: BANK_OFFERS[bankName].card, discount,
+      bank: bankName, card: BANK_OFFERS[bankName]?.card ?? bankName, discount,
       paymentType: idx % 3 === 2 ? "Debit Card" : "Credit Card",
       conditions: makeConditions(seed, idx),
     });
@@ -263,7 +295,6 @@ export function fetchAllOffers(from?: CityOption, to?: CityOption, date?: Date):
     conditions: ["Available for all users", "No minimum booking", "Valid till 25 Apr 2026", "Web & Mobile App", "Domestic flights only"],
   });
 
-  // Sort descending and mark the best
   result.sort((a, b) => b.discount - a.discount);
   if (result.length > 0) {
     result[0].label = "Best Offer";
@@ -279,7 +310,7 @@ export function fetchAllOffers(from?: CityOption, to?: CityOption, date?: Date):
 export function getDailyVisitorCount(): number {
   const today = format(new Date(), "yyyy-MM-dd");
   const seed = hashCode(today);
-  return 1200 + (seed % 800); // 1200–2000 visitors
+  return 1200 + (seed % 800);
 }
 
 // ── Mock API functions for testing without backend ────────────────
@@ -289,10 +320,8 @@ export async function mockSearchOffers(
   date: string,
   isAuthenticated: boolean
 ) {
-  // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 500));
   
-  // Create mock city objects
   const fromCity: CityOption = CITIES.find(c => c.code === from) || CITIES[0];
   const toCity: CityOption = CITIES.find(c => c.code === to) || CITIES[1];
   const dateObj = new Date(date);
@@ -317,20 +346,19 @@ export async function mockSearchOffers(
 }
 
 export async function mockFetchAllOffers(isAuthenticated: boolean) {
-  // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 800));
-  
   const offers = fetchSearchResults(CITIES[0], CITIES[1], new Date(), []);
   return isAuthenticated ? offers : offers.slice(0, 2);
 }
 
 export async function mockFetchFeatureFlags() {
-  // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 200));
-  
   return {
     allOffers: true,
     savedCards: false,
     authRequiredForAllOffers: true,
   };
 }
+
+// ── Export raw data for external use ───────────────────────
+export { OFFERS, BANK_OFFERS_MVP };

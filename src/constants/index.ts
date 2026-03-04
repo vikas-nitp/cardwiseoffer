@@ -3,6 +3,9 @@
  * All hardcoded values, configuration, and mock data centralized here
  */
 
+import airportsData from "@/data/mock/airports.json";
+import featureFlagsData from "@/data/mock/featureFlags.json";
+
 // ────────────────────────────────────────────────────────────────────
 // API & Environment
 // ────────────────────────────────────────────────────────────────────
@@ -35,7 +38,7 @@ export const API_RETRY_ATTEMPTS = 2;
 export const API_RETRY_DELAY_MS = 1000;
 
 // ────────────────────────────────────────────────────────────────────
-// Cities Data (for autocomplete)
+// Cities Data (loaded from airports.json mock data)
 // ────────────────────────────────────────────────────────────────────
 
 export interface CityOption {
@@ -44,18 +47,12 @@ export interface CityOption {
   airport: string;
 }
 
-export const CITIES: CityOption[] = [
-  { city: "Bangalore", code: "BLR", airport: "Kempegowda International Airport" },
-  { city: "Delhi", code: "DEL", airport: "Indira Gandhi International Airport" },
-  { city: "Mumbai", code: "BOM", airport: "Chhatrapati Shivaji Maharaj International Airport" },
-  { city: "Chennai", code: "MAA", airport: "Chennai International Airport" },
-  { city: "Hyderabad", code: "HYD", airport: "Rajiv Gandhi International Airport" },
-  { city: "Kolkata", code: "CCU", airport: "Netaji Subhas Chandra Bose International Airport" },
-  { city: "Pune", code: "PNQ", airport: "Pune Airport" },
-  { city: "Goa", code: "GOI", airport: "Manohar International Airport" },
-  { city: "Jaipur", code: "JAI", airport: "Jaipur International Airport" },
-  { city: "Ahmedabad", code: "AMD", airport: "Sardar Vallabhbhai Patel International Airport" },
-];
+// Map airport JSON → CityOption shape used by the UI
+export const CITIES: CityOption[] = airportsData.map((a) => ({
+  city: a.city,
+  code: a.code,
+  airport: a.name,
+}));
 
 // ────────────────────────────────────────────────────────────────────
 // Bank Data (for filter) - CANONICAL CODES matching backend
@@ -138,12 +135,13 @@ export const ERROR_MESSAGES = {
 } as const;
 
 // ────────────────────────────────────────────────────────────────────
-// Default Feature Flags (fallback - matches backend feature_flags.json)
+// Default Feature Flags (loaded from featureFlags.json mock data)
 // ────────────────────────────────────────────────────────────────────
 
 export const DEFAULT_FEATURE_FLAGS = {
-  authEnabled: true,           // Whether auth/login is enabled
-  offerLockingEnabled: true,   // Whether to lock offers for guests
-  allOffers: true,
-  savedCards: false,
+  authEnabled: featureFlagsData.authEnabled ?? false,
+  offerLockingEnabled: featureFlagsData.offerLockingEnabled ?? false,
+  allOffers: featureFlagsData.allOffers ?? true,
+  savedCards: featureFlagsData.savedCards ?? false,
+  dailyVisitorsEnabled: featureFlagsData.dailyVisitorsEnabled ?? true,
 } as const;
