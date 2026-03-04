@@ -108,8 +108,10 @@ const makeConditions = (seed: number, idx: number): string[] => [
 // ── Core API functions ─────────────────────────────────────
 
 export const getBankDiscount = (seed: number, bankName: string): number => {
+  const offer = BANK_OFFERS[bankName];
+  if (!offer) return 0;
   const idx = ALL_BANKS.indexOf(bankName);
-  return priceVariation(seed, BANK_OFFERS[bankName].baseDiscount, idx);
+  return priceVariation(seed, offer.baseDiscount, idx);
 };
 
 export const findBestOffer = (seed: number): { bestBank: string; bestDiscount: number } => {
