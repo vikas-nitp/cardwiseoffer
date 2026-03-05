@@ -21,7 +21,7 @@ import OfferCard from "@/components/OfferCard";
 import TrustDisclaimer from "@/components/TrustDisclaimer";
 import skyBg from "@/assets/sky-bg-2.png";
 import { format } from "date-fns";
-import { ArrowRight, Pencil, AlertCircle, Loader2 } from "lucide-react";
+import { ArrowRight, Pencil, AlertCircle, Loader2, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { CityOption } from "@/components/CityAutocomplete";
@@ -43,7 +43,6 @@ interface SearchState {
   banks: string[];
 }
 
-// Backend response types for 7-day strip
 interface PriceStripDay {
   date: string;
   price: number;
@@ -60,7 +59,6 @@ const Index = () => {
   const [platformFilter, setPlatformFilter] = useState<string[]>([]);
   const [paymentFilter, setPaymentFilter] = useState<string[]>([]);
 
-  // API State
   const [searchResults, setSearchResults] = useState<OfferTile[]>([]);
   const [strip7days, setStrip7days] = useState<PriceStripDay[]>([]);
   const [allOffers, setAllOffers] = useState<OfferTile[]>([]);
@@ -70,12 +68,9 @@ const Index = () => {
   const [allOffersError, setAllOffersError] = useState<string | null>(null);
 
   const hasSearched = searchState !== null;
-  
-  // Derived state from feature flags
   const authEnabled = featureFlags.authEnabled;
   const offerLockingEnabled = featureFlags.offerLockingEnabled;
 
-  // Load all offers when All Offers section is accessed
   const handleAllOffersClick = async () => {
     setAllOffersLoading(true);
     setAllOffersError(null);
@@ -91,21 +86,36 @@ const Index = () => {
     }
   };
 
-  // Update activeSection to trigger all offers load
   useEffect(() => {
     if (activeSection === "all-offers" && allOffers.length === 0 && !allOffersLoading) {
       handleAllOffersClick();
     }
   }, [activeSection]);
 
+  // ── Deterministic filtering: OR within category, AND across categories ──
   const filteredAllOffers = useMemo(() => {
     return allOffers.filter((o) => {
-      if (bankFilter.length > 0 && o.bank && !bankFilter.includes(o.bank)) return false;
-      if (platformFilter.length > 0 && !platformFilter.includes(o.platform)) return false;
-      if (paymentFilter.length > 0 && !paymentFilter.includes(o.paymentType)) return false;
+      // Bank filter: OR logic within
+      if (bankFilter.length > 0) {
+        if (!o.bank || !bankFilter.includes(o.bank)) return false;
+      }
+      // Platform filter: OR logic within
+      if (platformFilter.length > 0) {
+        if (!platformFilter.includes(o.platform)) return false;
+      }
+      // Payment filter: OR logic within
+      if (paymentFilter.length > 0) {
+        if (!paymentFilter.includes(o.paymentType)) return false;
+      }
       return true;
     });
   }, [allOffers, bankFilter, platformFilter, paymentFilter]);
+
+  const handleResetFilters = () => {
+    setBankFilter([]);
+    setPlatformFilter([]);
+    setPaymentFilter([]);
+  };
 
   const handleSearch = async (from: CityOption, to: CityOption, date: Date, banks: string[]) => {
     setSearchState({ from, to, date, banks });
@@ -135,11 +145,8 @@ const Index = () => {
 
   const handleEditSearch = () => setActiveSection("home");
 
-  // Handle date change from strip - re-fetch with new date
   const handleDateChange = async (newDate: Date) => {
     if (!searchState) return;
-    
-    // Update local state
     setSearchState({ ...searchState, date: newDate });
     setSearchLoading(true);
     setSearchError(null);
@@ -164,11 +171,9 @@ const Index = () => {
   const showContact = activeSection === "contact";
 
   const renderOfferTiles = (offers: typeof searchResults, wrapperClass: string) => {
-    // If auth is disabled OR offer locking is disabled, show all offers without login gate
     const shouldShowLoginGate = authEnabled && offerLockingEnabled && !isLoggedIn;
     
     if (shouldShowLoginGate) {
-      // Show limited offers + global login gate
       const preview = offers.slice(0, MAX_FREE_OFFERS);
       return (
         <>
@@ -194,7 +199,6 @@ const Index = () => {
       );
     }
 
-    // Show all offers without login gate
     return (
       <div className={wrapperClass}>
         {offers.map((offer, index) => (
@@ -210,6 +214,22 @@ const Index = () => {
       </div>
     );
   };
+
+  // ── Empty state component ──
+  const EmptyState = ({ onReset }: { onReset: () => void }) => (
+    <div className="bg-card rounded-2xl card-shadow border border-border/50 p-12 text-center">
+      <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+        <SearchX className="w-6 h-6 text-muted-foreground" />
+      </div>
+      <h3 className="text-lg font-display font-bold text-foreground mb-2">No offers match your filters</h3>
+      <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
+        Try adjusting your filter combination to see more results.
+      </p>
+      <Button onClick={onReset} variant="outline" className="rounded-xl font-semibold gap-2">
+        Reset Filters
+      </Button>
+    </div>
+  );
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -278,7 +298,7 @@ const Index = () => {
             {showResults && searchState && (
               <motion.div key="results" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 {/* Summary bar */}
-                <div className="glass-card rounded-2xl card-shadow-lg p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                <div className="bg-card rounded-2xl card-shadow-lg border border-border/50 p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
                   <div className="flex items-center gap-2 flex-wrap text-sm md:text-base">
                     <span className="font-display font-bold text-foreground">
                       {searchState.from.city}
@@ -325,16 +345,13 @@ const Index = () => {
                 {searchError && (
                   <Alert variant="destructive" className="mb-6">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      {searchError}
-                    </AlertDescription>
+                    <AlertDescription>{searchError}</AlertDescription>
                   </Alert>
                 )}
 
                 {/* Success State */}
                 {!searchLoading && !searchError && (
                   <>
-                    {/* Date strip - backend driven, always 7 days */}
                     {strip7days.length > 0 && (
                       <div className="mb-5">
                         <DateStrip
@@ -345,10 +362,13 @@ const Index = () => {
                       </div>
                     )}
 
-                    {/* Offer tiles */}
-                    {renderOfferTiles(
-                      searchResults,
-                      "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                    {searchResults.length === 0 ? (
+                      <EmptyState onReset={handleEditSearch} />
+                    ) : (
+                      renderOfferTiles(
+                        searchResults,
+                        "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                      )
                     )}
 
                     <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
@@ -359,7 +379,7 @@ const Index = () => {
               </motion.div>
             )}
 
-            {/* ALL OFFERS — independent global catalog */}
+            {/* ALL OFFERS */}
             {showAllOffers && featureFlags.allOffers && (
               <motion.div key="all-offers" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 <h2 className="text-xl md:text-3xl font-display font-bold text-foreground mb-1">
@@ -369,7 +389,6 @@ const Index = () => {
                   Browse every active card offer across major travel platforms.
                 </p>
 
-                {/* Loading State */}
                 {allOffersLoading && (
                   <div className="flex flex-col items-center justify-center py-20 gap-4">
                     <Loader2 className="w-8 h-8 text-primary animate-spin" />
@@ -377,17 +396,13 @@ const Index = () => {
                   </div>
                 )}
 
-                {/* Error State */}
                 {allOffersError && (
                   <Alert variant="destructive" className="mb-6">
                     <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      {allOffersError}
-                    </AlertDescription>
+                    <AlertDescription>{allOffersError}</AlertDescription>
                   </Alert>
                 )}
 
-                {/* Success State */}
                 {!allOffersLoading && !allOffersError && (
                   <div className="flex flex-col lg:flex-row gap-5">
                     <div className="hidden lg:block w-64 shrink-0">
@@ -398,13 +413,12 @@ const Index = () => {
                         onPlatformFilterChange={setPlatformFilter}
                         paymentFilter={paymentFilter}
                         onPaymentFilterChange={setPaymentFilter}
+                        onResetAll={handleResetFilters}
                       />
                     </div>
                     <div className="flex-1">
                       {filteredAllOffers.length === 0 ? (
-                        <div className="glass-card rounded-2xl card-shadow-lg p-10 text-center">
-                          <p className="text-muted-foreground">No offers match your filters. Try adjusting filters.</p>
-                        </div>
+                        <EmptyState onReset={handleResetFilters} />
                       ) : (
                         renderOfferTiles(
                           filteredAllOffers,

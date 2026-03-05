@@ -1,8 +1,5 @@
 /**
  * Data Repository — API-first with automatic mock fallback
- * 
- * Tries real backend first. If unreachable/error → falls back to mock data.
- * Components ONLY call this layer, never api.ts or mockApi.ts directly.
  */
 
 import { format, addDays } from "date-fns";
@@ -23,23 +20,18 @@ import {
   getBankDiscount,
   CITIES,
 } from "@/services/mockApi";
-import { DEFAULT_FEATURE_FLAGS } from "@/constants";
+import { DEFAULT_FEATURE_FLAGS, STRIP_DAYS_COUNT } from "@/constants";
 import type { CityOption } from "@/components/CityAutocomplete";
 
-// Track if we're in mock mode for DevBanner
 let _isMockMode = true;
 export const isMockMode = () => _isMockMode;
 
-// ── Generate mock 7-day strip ──────────────────────────────
+// ── Generate mock 7-day strip — always NEXT 7 days from selected date ──
 function generateMockStrip(date: Date, fromCode: string, toCode: string): Array<{ date: string; price: number }> {
-  const baseDate = new Date(date);
-  // Center the strip around the selected date (3 before, selected, 3 after)
-  const startDate = addDays(baseDate, -3);
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = addDays(startDate, i);
+  return Array.from({ length: STRIP_DAYS_COUNT }, (_, i) => {
+    const d = addDays(date, i);
     const dateStr = format(d, "yyyy-MM-dd");
     const seed = hashCode(`${fromCode}-${toCode}-${dateStr}`);
-    // Find best discount for this date as the "price"
     let bestPrice = 0;
     ALL_BANKS.forEach((b) => {
       const disc = getBankDiscount(seed, b);
