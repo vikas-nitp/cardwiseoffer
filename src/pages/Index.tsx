@@ -217,15 +217,15 @@ const Index = () => {
 
   // ── Empty state component ──
   const EmptyState = ({ onReset }: { onReset: () => void }) => (
-    <div className="bg-card rounded-2xl card-shadow border border-border/50 p-12 text-center">
-      <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-        <SearchX className="w-6 h-6 text-muted-foreground" />
+    <div className="bg-card rounded-2xl card-shadow border border-border/40 p-12 text-center">
+      <div className="w-12 h-12 rounded-xl bg-muted/60 flex items-center justify-center mx-auto mb-4">
+        <SearchX className="w-5 h-5 text-muted-foreground" />
       </div>
-      <h3 className="text-lg font-display font-bold text-foreground mb-2">No offers match your filters</h3>
-      <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
+      <h3 className="text-base font-bold text-foreground mb-2 tracking-tight">No offers match your filters</h3>
+      <p className="text-[13px] text-muted-foreground mb-6 max-w-sm mx-auto">
         Try adjusting your filter combination to see more results.
       </p>
-      <Button onClick={onReset} variant="outline" className="rounded-xl font-semibold gap-2">
+      <Button onClick={onReset} variant="outline" className="rounded-xl font-medium text-[13px] gap-2">
         Reset Filters
       </Button>
     </div>
