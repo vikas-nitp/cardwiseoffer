@@ -233,21 +233,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      {/* Background */}
-      <div className="fixed inset-0 z-0">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url(${skyBg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            filter: "blur(1px)",
-          }}
-        />
-        <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px]" />
-        <div className="absolute top-20 left-[10%] w-96 h-96 rounded-full bg-primary/5 blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-[10%] w-80 h-80 rounded-full bg-accent/5 blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
+      {/* Background — soft sky gradient with subtle cloud/trail decorations */}
+      <div className="fixed inset-0 z-0 sky-gradient airplane-trail cloud-decoration">
+        <div className="absolute top-16 left-[8%] w-[500px] h-[500px] rounded-full bg-primary/[0.03] blur-[80px]" />
+        <div className="absolute bottom-16 right-[8%] w-[400px] h-[400px] rounded-full bg-accent/[0.03] blur-[80px]" />
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
