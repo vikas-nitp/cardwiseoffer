@@ -246,7 +246,7 @@ const Index = () => {
           authEnabled={authEnabled}
         />
 
-        <main className="flex-1 flex flex-col items-center px-4 md:px-6 pb-8">
+        <main className="flex-1 flex flex-col items-center px-4 md:px-8 pb-10">
           <AnimatePresence mode="wait">
 
             {/* PROFILE SETUP */}
