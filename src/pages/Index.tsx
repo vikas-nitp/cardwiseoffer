@@ -287,26 +287,26 @@ const Index = () => {
             {showResults && searchState && (
               <motion.div key="results" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 {/* Summary bar */}
-                <div className="bg-card rounded-2xl card-shadow-lg border border-border/50 p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
-                  <div className="flex items-center gap-2 flex-wrap text-sm md:text-base">
-                    <span className="font-display font-bold text-foreground">
+                <div className="bg-card rounded-2xl card-shadow border border-border/40 p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                  <div className="flex items-center gap-2 flex-wrap text-[13px]">
+                    <span className="font-bold text-foreground">
                       {searchState.from.city}
-                      <span className="text-muted-foreground font-normal text-xs ml-1">({searchState.from.code})</span>
+                      <span className="text-muted-foreground font-normal text-[11px] ml-1">({searchState.from.code})</span>
                     </span>
-                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <ArrowRight className="w-3.5 h-3.5 text-primary" />
+                    <div className="w-6 h-6 rounded-md bg-primary/8 flex items-center justify-center shrink-0">
+                      <ArrowRight className="w-3 h-3 text-primary" />
                     </div>
-                    <span className="font-display font-bold text-foreground">
+                    <span className="font-bold text-foreground">
                       {searchState.to.city}
-                      <span className="text-muted-foreground font-normal text-xs ml-1">({searchState.to.code})</span>
+                      <span className="text-muted-foreground font-normal text-[11px] ml-1">({searchState.to.code})</span>
                     </span>
-                    <span className="text-border hidden sm:inline">|</span>
-                    <span className="font-bold text-foreground text-sm">{format(searchState.date, "dd MMM yyyy")}</span>
+                    <span className="text-border/60 hidden sm:inline">·</span>
+                    <span className="font-semibold text-foreground">{format(searchState.date, "dd MMM yyyy")}</span>
                     {searchState.banks.length > 0 && (
                       <>
-                        <span className="text-border hidden sm:inline">|</span>
+                        <span className="text-border/60 hidden sm:inline">·</span>
                         {searchState.banks.map((b) => (
-                          <span key={b} className="text-xs font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">{b}</span>
+                          <span key={b} className="text-[11px] font-medium bg-primary/6 text-primary px-2 py-0.5 rounded-md">{b}</span>
                         ))}
                       </>
                     )}
@@ -314,11 +314,11 @@ const Index = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1.5 font-semibold border-primary/30 text-primary hover:bg-primary/5 rounded-xl shrink-0 self-start sm:self-auto"
+                    className="gap-1.5 font-medium text-[13px] border-border/60 text-foreground hover:bg-muted/40 rounded-lg shrink-0 self-start sm:self-auto h-8"
                     onClick={handleEditSearch}
                   >
-                    <Pencil className="w-3.5 h-3.5" />
-                    Edit Search
+                    <Pencil className="w-3 h-3" />
+                    Edit
                   </Button>
                 </div>
 
