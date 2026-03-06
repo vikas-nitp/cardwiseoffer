@@ -10,7 +10,6 @@ import BankMultiSelect from "@/components/BankMultiSelect";
 import { useMeta } from "@/contexts/MetaContext";
 import { MAX_BANK_FILTERS } from "@/constants";
 
-// ── Validation helpers (matches backend schemas.py) ────────────────
 const AIRPORT_CODE_PATTERN = /^[A-Z]{3}$/;
 
 const validateAirportCode = (code: string): boolean => {
@@ -23,8 +22,6 @@ const validateDate = (date: Date): boolean => {
   return date >= today;
 };
 
-// ────────────────────────────────────────────────────────────────────
-
 interface SearchCardProps {
   onSearch: (from: CityOption, to: CityOption, date: Date, banks: string[]) => void;
   initialFrom?: CityOption | null;
@@ -36,7 +33,6 @@ interface SearchCardProps {
 const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBanks }: SearchCardProps) => {
   const { meta } = useMeta();
   
-  // Convert airports from MetaContext to CityOption format
   const cities: CityOption[] = useMemo(() => {
     return meta.airports.map((airport) => ({
       city: airport.city,
@@ -45,13 +41,11 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
     }));
   }, [meta.airports]);
 
-  // Field names match backend: from_airport, to_airport, depart_date, banks
   const [fromAirport, setFromAirport] = useState<CityOption | null>(initialFrom ?? null);
   const [toAirport, setToAirport] = useState<CityOption | null>(initialTo ?? null);
   const [departDate, setDepartDate] = useState<Date | undefined>(initialDate ?? undefined);
   const [banks, setBanks] = useState<string[]>(initialBanks ?? []);
 
-  // Validation errors
   const [errors, setErrors] = useState<{
     from?: string;
     to?: string;
@@ -66,12 +60,10 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
     if (initialBanks) setBanks(initialBanks);
   }, [initialFrom, initialTo, initialDate, initialBanks]);
 
-  // Validation logic
   const validation = useMemo(() => {
     const newErrors: typeof errors = {};
     let isValid = true;
 
-    // From airport validation
     if (!fromAirport) {
       isValid = false;
     } else if (!validateAirportCode(fromAirport.code)) {
@@ -79,7 +71,6 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
       isValid = false;
     }
 
-    // To airport validation
     if (!toAirport) {
       isValid = false;
     } else if (!validateAirportCode(toAirport.code)) {
@@ -87,13 +78,11 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
       isValid = false;
     }
 
-    // Same airport check
     if (fromAirport && toAirport && fromAirport.code === toAirport.code) {
       newErrors.to = "Destination cannot be same as source";
       isValid = false;
     }
 
-    // Date validation
     if (!departDate) {
       isValid = false;
     } else if (!validateDate(departDate)) {
@@ -101,7 +90,6 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
       isValid = false;
     }
 
-    // Banks validation (max 5 per backend)
     if (banks.length > MAX_BANK_FILTERS) {
       newErrors.banks = `Maximum ${MAX_BANK_FILTERS} banks allowed`;
       isValid = false;
@@ -116,7 +104,6 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
     onSearch(fromAirport, toAirport, departDate, banks);
   };
 
-  // Min/max date for calendar (today to 1 year ahead)
   const today = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -159,23 +146,23 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
         {/* Departure Date */}
         <div className="space-y-1">
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Departure</label>
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em]">Departure</label>
             <Popover>
               <PopoverTrigger asChild>
                 <button 
                   className={cn(
-                    "w-full bg-secondary/50 border-0 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left flex items-center relative hover:bg-secondary/70 transition-colors",
+                    "w-full bg-muted/40 border border-border/30 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left flex items-center relative hover:border-primary/20 transition-all duration-200",
                     errors.date && "ring-2 ring-destructive"
                   )}
                 >
                   <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   {departDate ? (
                     <div>
-                      <span className="font-bold text-foreground block">{format(departDate, "dd MMM yyyy")}</span>
-                      <span className="text-xs text-muted-foreground">{format(departDate, "EEEE")}</span>
+                      <span className="font-bold text-foreground block text-[13px]">{format(departDate, "dd MMM yyyy")}</span>
+                      <span className="text-[10px] text-muted-foreground">{format(departDate, "EEEE")}</span>
                     </div>
                   ) : (
-                    <span className="text-muted-foreground">Select date</span>
+                    <span className="text-muted-foreground text-[13px]">Select date</span>
                   )}
                 </button>
               </PopoverTrigger>
@@ -216,7 +203,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
       <Button
         onClick={handleSearch}
         disabled={!validation.isValid}
-        className="w-full mt-6 h-12 text-base font-semibold rounded-xl gap-2 shadow-lg hover:shadow-xl transition-all duration-200"
+        className="w-full mt-6 h-12 text-sm font-semibold rounded-xl gap-2 shadow-sm hover:shadow-md transition-all duration-200"
         size="lg"
       >
         <Search className="w-4 h-4" />

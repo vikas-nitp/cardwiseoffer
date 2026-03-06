@@ -62,7 +62,7 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
 
   return (
     <div className="space-y-1.5 relative z-40" ref={wrapperRef}>
-      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
+      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em]">
         {label}
       </label>
       <div className="relative">
@@ -73,30 +73,30 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
           onChange={(e) => handleInputChange(e.target.value)}
           onFocus={() => { setOpen(true); setFiltered(availableCities); }}
           placeholder="Type city or airport..."
-          className="w-full bg-secondary/50 border-0 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl font-bold text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full bg-muted/40 border border-border/30 h-auto text-[13px] pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl font-semibold text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring hover:border-primary/20 transition-all duration-200"
         />
       </div>
       {open && filtered.length > 0 && (
-        <div className="absolute top-full left-0 right-0 z-[60] mt-1 bg-card border border-border rounded-xl shadow-xl max-h-60 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 z-[60] mt-1 bg-card border border-border/60 rounded-xl shadow-xl max-h-60 overflow-y-auto">
           {filtered.map((c) => (
             <button
               key={c.code}
               onClick={() => handleSelect(c)}
               className={cn(
-                "w-full text-left px-4 py-3 hover:bg-secondary/60 transition-colors flex flex-col",
-                value?.code === c.code && "bg-primary/10"
+                "w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors flex flex-col",
+                value?.code === c.code && "bg-primary/6"
               )}
             >
-              <span className="font-semibold text-sm text-foreground">
+              <span className="font-medium text-[13px] text-foreground">
                 {c.city} <span className="text-muted-foreground">({c.code})</span>
               </span>
-              <span className="text-xs text-muted-foreground">{c.airport}</span>
+              <span className="text-[11px] text-muted-foreground">{c.airport}</span>
             </button>
           ))}
         </div>
       )}
       {open && filtered.length === 0 && query.length > 0 && (
-        <div className="absolute top-full left-0 right-0 z-[60] mt-1 bg-card border border-border rounded-xl shadow-lg p-4 text-center text-sm text-muted-foreground">
+        <div className="absolute top-full left-0 right-0 z-[60] mt-1 bg-card border border-border/60 rounded-xl shadow-lg p-4 text-center text-[13px] text-muted-foreground">
           No matching cities found
         </div>
       )}

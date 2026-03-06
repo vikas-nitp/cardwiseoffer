@@ -45,20 +45,20 @@ const FAQSection = () => {
 
   return (
     <section className="w-full max-w-3xl mx-auto animate-fade-up">
-      <div className="bg-card rounded-2xl card-shadow-lg p-8 md:p-12 border border-border/50">
-        <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-1">
+      <div className="glass-card rounded-2xl card-shadow-lg p-8 md:p-10">
+        <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 tracking-tight">
           Frequently Asked Questions
         </h2>
-        <p className="text-sm text-muted-foreground mb-8">
+        <p className="text-[13px] text-muted-foreground mb-6">
           Common questions about CardWiseOffer.
         </p>
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, i) => (
-            <AccordionItem key={i} value={`faq-${i}`} className="border-border/40">
-              <AccordionTrigger className="text-sm font-semibold text-foreground hover:text-primary text-left py-5">
+            <AccordionItem key={i} value={`faq-${i}`} className="border-border/30">
+              <AccordionTrigger className="text-[13px] font-semibold text-foreground hover:text-primary text-left py-4">
                 {faq.q}
               </AccordionTrigger>
-              <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-5">
+              <AccordionContent className="text-[13px] text-muted-foreground leading-relaxed pb-4">
                 {faq.a}
               </AccordionContent>
             </AccordionItem>
