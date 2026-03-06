@@ -371,17 +371,17 @@ const Index = () => {
             {/* ALL OFFERS */}
             {showAllOffers && featureFlags.allOffers && (
               <motion.div key="all-offers" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
-                <h2 className="text-xl md:text-3xl font-display font-bold text-foreground mb-1">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 tracking-tight">
                   All Card Offers
                 </h2>
-                <p className="text-sm text-muted-foreground mb-5">
+                <p className="text-[13px] text-muted-foreground mb-5">
                   Browse every active card offer across major travel platforms.
                 </p>
 
                 {allOffersLoading && (
-                  <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                    <p className="text-sm text-muted-foreground">Loading all offers...</p>
+                  <div className="flex flex-col items-center justify-center py-20 gap-3">
+                    <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                    <p className="text-[13px] text-muted-foreground">Loading all offers...</p>
                   </div>
                 )}
 
