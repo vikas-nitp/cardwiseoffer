@@ -23,25 +23,27 @@ const steps = [
 
 const HowItWorksSection = () => (
   <section className="w-full max-w-5xl mx-auto animate-fade-up">
-    <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground text-center mb-3">
-      How It Works
-    </h2>
-    <p className="text-center text-muted-foreground mb-10 max-w-lg mx-auto">
-      Three simple steps to find the best card offer for your flight.
-    </p>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="text-center mb-10">
+      <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-2">
+        How It Works
+      </h2>
+      <p className="text-sm text-muted-foreground max-w-md mx-auto">
+        Three simple steps to find the best card offer for your flight.
+      </p>
+    </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
       {steps.map((item, i) => (
         <div
           key={item.step}
-          className="glass-card rounded-2xl card-shadow p-6 md:p-8 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300 animate-fade-up"
-          style={{ animationDelay: `${i * 0.15}s` }}
+          className="glass-card rounded-2xl card-shadow p-7 text-center hover:card-shadow-lg hover:-translate-y-0.5 transition-all duration-300 animate-fade-up"
+          style={{ animationDelay: `${i * 0.12}s` }}
         >
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <item.icon className="w-6 h-6 text-primary" />
+          <div className="w-12 h-12 rounded-xl bg-primary/8 flex items-center justify-center mx-auto mb-4">
+            <item.icon className="w-5 h-5 text-primary" />
           </div>
-          <span className="text-xs font-bold text-primary uppercase tracking-widest">{item.step}</span>
-          <h3 className="text-lg font-display font-bold text-foreground mt-2 mb-3">{item.title}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+          <span className="text-[10px] font-bold text-primary uppercase tracking-[0.15em]">Step {item.step}</span>
+          <h3 className="text-base font-bold text-foreground mt-2 mb-2.5 tracking-tight">{item.title}</h3>
+          <p className="text-[13px] text-muted-foreground leading-relaxed">{item.desc}</p>
         </div>
       ))}
     </div>

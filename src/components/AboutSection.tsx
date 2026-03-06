@@ -3,10 +3,10 @@ import { CheckCircle } from "lucide-react";
 const AboutSection = () => (
   <section className="w-full max-w-3xl mx-auto animate-fade-up">
     <div className="glass-card rounded-2xl card-shadow-lg p-8 md:p-12">
-      <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-6">
+      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 tracking-tight">
         About CardWiseOffer
       </h2>
-      <div className="space-y-4 text-muted-foreground leading-relaxed text-sm md:text-base">
+      <div className="space-y-4 text-muted-foreground leading-relaxed text-[13px] md:text-sm">
         <p>
           <span className="text-foreground font-semibold">CardWiseOffer</span> helps you find the best real credit card savings before booking your travel.
         </p>
@@ -25,7 +25,7 @@ const AboutSection = () => (
             </li>
           ))}
         </ul>
-        <p className="border-t border-border pt-4 italic text-muted-foreground">
+        <p className="border-t border-border/40 pt-4 italic text-muted-foreground">
           We don't sell tickets. We don't push bookings. Our only goal is to help you make a smarter decision before you pay.
         </p>
       </div>

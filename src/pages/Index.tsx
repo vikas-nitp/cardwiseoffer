@@ -19,7 +19,7 @@ import DateStrip from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
 import TrustDisclaimer from "@/components/TrustDisclaimer";
-import skyBg from "@/assets/sky-bg-2.png";
+// Background is now CSS-based sky gradient (no image import needed)
 import { format } from "date-fns";
 import { ArrowRight, Pencil, AlertCircle, Loader2, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -217,15 +217,15 @@ const Index = () => {
 
   // ── Empty state component ──
   const EmptyState = ({ onReset }: { onReset: () => void }) => (
-    <div className="bg-card rounded-2xl card-shadow border border-border/50 p-12 text-center">
-      <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
-        <SearchX className="w-6 h-6 text-muted-foreground" />
+    <div className="bg-card rounded-2xl card-shadow border border-border/40 p-12 text-center">
+      <div className="w-12 h-12 rounded-xl bg-muted/60 flex items-center justify-center mx-auto mb-4">
+        <SearchX className="w-5 h-5 text-muted-foreground" />
       </div>
-      <h3 className="text-lg font-display font-bold text-foreground mb-2">No offers match your filters</h3>
-      <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
+      <h3 className="text-base font-bold text-foreground mb-2 tracking-tight">No offers match your filters</h3>
+      <p className="text-[13px] text-muted-foreground mb-6 max-w-sm mx-auto">
         Try adjusting your filter combination to see more results.
       </p>
-      <Button onClick={onReset} variant="outline" className="rounded-xl font-semibold gap-2">
+      <Button onClick={onReset} variant="outline" className="rounded-xl font-medium text-[13px] gap-2">
         Reset Filters
       </Button>
     </div>
@@ -233,21 +233,10 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col relative">
-      {/* Background */}
-      <div className="fixed inset-0 z-0">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url(${skyBg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            filter: "blur(1px)",
-          }}
-        />
-        <div className="absolute inset-0 bg-background/40 backdrop-blur-[1px]" />
-        <div className="absolute top-20 left-[10%] w-96 h-96 rounded-full bg-primary/5 blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-[10%] w-80 h-80 rounded-full bg-accent/5 blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
+      {/* Background — soft sky gradient with subtle cloud/trail decorations */}
+      <div className="fixed inset-0 z-0 sky-gradient airplane-trail cloud-decoration">
+        <div className="absolute top-16 left-[8%] w-[500px] h-[500px] rounded-full bg-primary/[0.03] blur-[80px]" />
+        <div className="absolute bottom-16 right-[8%] w-[400px] h-[400px] rounded-full bg-accent/[0.03] blur-[80px]" />
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
@@ -257,7 +246,7 @@ const Index = () => {
           authEnabled={authEnabled}
         />
 
-        <main className="flex-1 flex flex-col items-center px-4 md:px-6 pb-8">
+        <main className="flex-1 flex flex-col items-center px-4 md:px-8 pb-10">
           <AnimatePresence mode="wait">
 
             {/* PROFILE SETUP */}
@@ -270,13 +259,13 @@ const Index = () => {
             {/* HOME */}
             {showHome && !needsProfile && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
-                <section className="flex flex-col items-center justify-center pt-12 md:pt-24 pb-8 max-w-2xl mx-auto text-center px-4">
-                  <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight leading-[1.15]">
+                <section className="flex flex-col items-center justify-center pt-14 md:pt-28 pb-8 max-w-xl mx-auto text-center px-4">
+                  <h1 className="text-3xl md:text-[44px] font-extrabold tracking-tight leading-[1.12]">
                     <span className="text-gradient">Compare card offers.</span>
                     <br />
                     <span className="text-primary">Book smarter.</span>
                   </h1>
-                  <p className="mt-4 text-sm md:text-base text-muted-foreground leading-relaxed max-w-lg font-medium">
+                  <p className="mt-4 text-[13px] md:text-sm text-muted-foreground leading-relaxed max-w-md">
                     Make every flight booking cheaper — transparently across platforms.
                   </p>
                 </section>
@@ -298,26 +287,26 @@ const Index = () => {
             {showResults && searchState && (
               <motion.div key="results" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 {/* Summary bar */}
-                <div className="bg-card rounded-2xl card-shadow-lg border border-border/50 p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
-                  <div className="flex items-center gap-2 flex-wrap text-sm md:text-base">
-                    <span className="font-display font-bold text-foreground">
+                <div className="bg-card rounded-2xl card-shadow border border-border/40 p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                  <div className="flex items-center gap-2 flex-wrap text-[13px]">
+                    <span className="font-bold text-foreground">
                       {searchState.from.city}
-                      <span className="text-muted-foreground font-normal text-xs ml-1">({searchState.from.code})</span>
+                      <span className="text-muted-foreground font-normal text-[11px] ml-1">({searchState.from.code})</span>
                     </span>
-                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <ArrowRight className="w-3.5 h-3.5 text-primary" />
+                    <div className="w-6 h-6 rounded-md bg-primary/8 flex items-center justify-center shrink-0">
+                      <ArrowRight className="w-3 h-3 text-primary" />
                     </div>
-                    <span className="font-display font-bold text-foreground">
+                    <span className="font-bold text-foreground">
                       {searchState.to.city}
-                      <span className="text-muted-foreground font-normal text-xs ml-1">({searchState.to.code})</span>
+                      <span className="text-muted-foreground font-normal text-[11px] ml-1">({searchState.to.code})</span>
                     </span>
-                    <span className="text-border hidden sm:inline">|</span>
-                    <span className="font-bold text-foreground text-sm">{format(searchState.date, "dd MMM yyyy")}</span>
+                    <span className="text-border/60 hidden sm:inline">·</span>
+                    <span className="font-semibold text-foreground">{format(searchState.date, "dd MMM yyyy")}</span>
                     {searchState.banks.length > 0 && (
                       <>
-                        <span className="text-border hidden sm:inline">|</span>
+                        <span className="text-border/60 hidden sm:inline">·</span>
                         {searchState.banks.map((b) => (
-                          <span key={b} className="text-xs font-bold bg-primary/10 text-primary px-2.5 py-1 rounded-full">{b}</span>
+                          <span key={b} className="text-[11px] font-medium bg-primary/6 text-primary px-2 py-0.5 rounded-md">{b}</span>
                         ))}
                       </>
                     )}
@@ -325,19 +314,19 @@ const Index = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1.5 font-semibold border-primary/30 text-primary hover:bg-primary/5 rounded-xl shrink-0 self-start sm:self-auto"
+                    className="gap-1.5 font-medium text-[13px] border-border/60 text-foreground hover:bg-muted/40 rounded-lg shrink-0 self-start sm:self-auto h-8"
                     onClick={handleEditSearch}
                   >
-                    <Pencil className="w-3.5 h-3.5" />
-                    Edit Search
+                    <Pencil className="w-3 h-3" />
+                    Edit
                   </Button>
                 </div>
 
                 {/* Loading State */}
                 {searchLoading && (
-                  <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                    <p className="text-sm text-muted-foreground">Fetching best offers for your route...</p>
+                  <div className="flex flex-col items-center justify-center py-20 gap-3">
+                    <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                    <p className="text-[13px] text-muted-foreground">Fetching best offers for your route...</p>
                   </div>
                 )}
 
@@ -371,7 +360,7 @@ const Index = () => {
                       )
                     )}
 
-                    <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
+                    <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
                       Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
                     </p>
                   </>
@@ -382,17 +371,17 @@ const Index = () => {
             {/* ALL OFFERS */}
             {showAllOffers && featureFlags.allOffers && (
               <motion.div key="all-offers" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
-                <h2 className="text-xl md:text-3xl font-display font-bold text-foreground mb-1">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 tracking-tight">
                   All Card Offers
                 </h2>
-                <p className="text-sm text-muted-foreground mb-5">
+                <p className="text-[13px] text-muted-foreground mb-5">
                   Browse every active card offer across major travel platforms.
                 </p>
 
                 {allOffersLoading && (
-                  <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                    <p className="text-sm text-muted-foreground">Loading all offers...</p>
+                  <div className="flex flex-col items-center justify-center py-20 gap-3">
+                    <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                    <p className="text-[13px] text-muted-foreground">Loading all offers...</p>
                   </div>
                 )}
 
@@ -425,7 +414,7 @@ const Index = () => {
                           "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
                         )
                       )}
-                      <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
+                      <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
                         Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
                       </p>
                     </div>
