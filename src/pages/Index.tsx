@@ -19,7 +19,7 @@ import DateStrip from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
 import TrustDisclaimer from "@/components/TrustDisclaimer";
-import skyBg from "@/assets/sky-bg-2.png";
+// Background is now CSS-based sky gradient (no image import needed)
 import { format } from "date-fns";
 import { ArrowRight, Pencil, AlertCircle, Loader2, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
