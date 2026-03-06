@@ -360,7 +360,7 @@ const Index = () => {
                       )
                     )}
 
-                    <p className="text-xs text-muted-foreground/70 text-center mt-8 max-w-lg mx-auto leading-relaxed">
+                    <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
                       Offers sourced from public bank promotions. Final eligibility depends on platform & bank terms.
                     </p>
                   </>
