@@ -259,13 +259,13 @@ const Index = () => {
             {/* HOME */}
             {showHome && !needsProfile && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
-                <section className="flex flex-col items-center justify-center pt-12 md:pt-24 pb-8 max-w-2xl mx-auto text-center px-4">
-                  <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight leading-[1.15]">
+                <section className="flex flex-col items-center justify-center pt-14 md:pt-28 pb-8 max-w-xl mx-auto text-center px-4">
+                  <h1 className="text-3xl md:text-[44px] font-extrabold tracking-tight leading-[1.12]">
                     <span className="text-gradient">Compare card offers.</span>
                     <br />
                     <span className="text-primary">Book smarter.</span>
                   </h1>
-                  <p className="mt-4 text-sm md:text-base text-muted-foreground leading-relaxed max-w-lg font-medium">
+                  <p className="mt-4 text-[13px] md:text-sm text-muted-foreground leading-relaxed max-w-md">
                     Make every flight booking cheaper — transparently across platforms.
                   </p>
                 </section>
