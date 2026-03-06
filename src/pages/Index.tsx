@@ -324,9 +324,9 @@ const Index = () => {
 
                 {/* Loading State */}
                 {searchLoading && (
-                  <div className="flex flex-col items-center justify-center py-20 gap-4">
-                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                    <p className="text-sm text-muted-foreground">Fetching best offers for your route...</p>
+                  <div className="flex flex-col items-center justify-center py-20 gap-3">
+                    <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                    <p className="text-[13px] text-muted-foreground">Fetching best offers for your route...</p>
                   </div>
                 )}
 
