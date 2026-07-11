@@ -2,7 +2,12 @@ import { Check, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useMeta } from "@/contexts/MetaContext";
-import { PAYMENT_METHODS } from "@/constants";
+const PAYMENT_METHOD_IDS = ["CREDIT", "DEBIT", "NO_CARD"] as const;
+const PAYMENT_DISPLAY: Record<string, string> = {
+  CREDIT: "Credit Card",
+  DEBIT: "Debit Card",
+  NO_CARD: "No Card",
+};
 import { Button } from "@/components/ui/button";
 
 interface FilterSelectProps {
@@ -203,9 +208,10 @@ const SidebarFilters = ({
       />
       <FilterSelect
         title="Payment Method"
-        items={PAYMENT_METHODS as unknown as string[]}
+        items={PAYMENT_METHOD_IDS as unknown as string[]}
         selected={paymentFilter}
         onToggle={(t) => toggleItem(paymentFilter, t, onPaymentFilterChange)}
+        displayNames={PAYMENT_DISPLAY}
       />
     </div>
   );
