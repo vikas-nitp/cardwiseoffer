@@ -29,6 +29,9 @@ export const MAX_FREE_OFFERS = 2; // Max offers shown to guest users
 export const MAX_BANK_FILTERS = 2; // Max banks user can select (enforced by UI warning)
 export const API_TIMEOUT_MS = 30000; // 30 seconds
 
+// Booking window: latest confirmed product rule = today .. today + 10 days.
+export const BOOKING_WINDOW_DAYS = 10;
+
 // Price Strip Configuration
 export const STRIP_DAYS_COUNT = 7; // Number of days in price strip (always 7)
 export const DATE_FORMAT = "yyyy-MM-dd"; // ISO date format for API
