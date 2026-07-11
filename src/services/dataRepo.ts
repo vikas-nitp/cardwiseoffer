@@ -1,94 +1,59 @@
 /**
- * Data Repository — API-first with automatic mock fallback
+ * Data repository — mock/api mode is EXPLICIT (VITE_DATA_MODE).
+ * mock  → always local fixtures (never touches the network).
+ * api   → real fetch; on failure, throws — no silent mock fallback.
  */
 
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { log } from "@/lib/logger";
-import type { OfferTile, SearchResponse, FeatureFlags } from "@/services/api";
+import { getDataMode } from "@/config/dataMode";
+import type { OfferViewModel } from "@/types/offer";
+import type { CityOption } from "@/components/CityAutocomplete";
+import { mockSearch, mockAllOffers } from "@/services/mockApi";
 import {
   searchOffers as apiSearch,
   fetchAllOffers as apiFetchAll,
   fetchFeatureFlags as apiFetchFlags,
-  transformSearchResponse,
-  transformAllOffers,
 } from "@/services/api";
-import {
-  fetchSearchResults as mockSearch,
-  fetchAllOffers as mockAll,
-  hashCode,
-  ALL_BANKS,
-  getBankDiscount,
-  CITIES,
-} from "@/services/mockApi";
-import { DEFAULT_FEATURE_FLAGS, STRIP_DAYS_COUNT } from "@/constants";
-import type { CityOption } from "@/components/CityAutocomplete";
+import { mapRawOffer } from "@/domain/offerMapper";
+import { isOfferActive } from "@/domain/offerValidity";
+import { DEFAULT_FEATURE_FLAGS } from "@/constants";
+import type { FeatureFlags } from "@/services/api";
 
-let _isMockMode = true;
-export const isMockMode = () => _isMockMode;
-
-// ── Generate mock 7-day strip — always NEXT 7 days from selected date ──
-function generateMockStrip(date: Date, fromCode: string, toCode: string): Array<{ date: string; price: number }> {
-  return Array.from({ length: STRIP_DAYS_COUNT }, (_, i) => {
-    const d = addDays(date, i);
-    const dateStr = format(d, "yyyy-MM-dd");
-    const seed = hashCode(`${fromCode}-${toCode}-${dateStr}`);
-    let bestPrice = 0;
-    ALL_BANKS.forEach((b) => {
-      const disc = getBankDiscount(seed, b);
-      if (disc > bestPrice) bestPrice = disc;
-    });
-    return { date: dateStr, price: bestPrice || 1600 + (seed % 400) };
-  });
+export interface SearchResult {
+  offers: OfferViewModel[];
+  strip7days: Array<{ date: string; savings: number }>;
 }
 
-// ── Search offers ──────────────────────────────────────────
+export const isMockMode = () => getDataMode() === "mock";
+
+// ── Search offers ─────────────────────────────────────────
 export async function repoSearchOffers(
   from: CityOption,
   to: CityOption,
   date: Date,
   banks: string[],
-  isAuthenticated: boolean
-): Promise<{ offers: OfferTile[]; strip7days: Array<{ date: string; price: number }> }> {
+  _isAuthenticated: boolean
+): Promise<SearchResult> {
+  if (getDataMode() === "mock") return mockSearch(from, to, date, banks);
+
   const dateStr = format(date, "yyyy-MM-dd");
-  
-  try {
-    const response = await apiSearch(from.code, to.code, dateStr, banks, [], isAuthenticated);
-    _isMockMode = false;
-    const offers = transformSearchResponse(response);
-    return { offers, strip7days: response.strip7days || [] };
-  } catch (err) {
-    log.warn("API search failed, using mock data", err);
-    _isMockMode = true;
-    const offers = mockSearch(from, to, date, banks);
-    const strip7days = generateMockStrip(date, from.code, to.code);
-    return { offers, strip7days };
-  }
+  const response = await apiSearch(from.code, to.code, dateStr, banks, [], _isAuthenticated);
+  const offers = (response.offers ?? []).map((o) => mapRawOffer(o as any)).filter((o) => isOfferActive(o));
+  const strip7days = (response.strip7days ?? []).map((d) => ({ date: d.date, savings: d.price }));
+  log.info("API search ok", { offers: offers.length });
+  return { offers, strip7days };
 }
 
-// ── All offers catalog ─────────────────────────────────────
-export async function repoFetchAllOffers(
-  isAuthenticated: boolean
-): Promise<OfferTile[]> {
-  try {
-    const raw = await apiFetchAll(isAuthenticated);
-    _isMockMode = false;
-    return transformAllOffers(raw);
-  } catch (err) {
-    log.warn("API all-offers failed, using mock data", err);
-    _isMockMode = true;
-    return mockAll();
-  }
+// ── All offers catalog ────────────────────────────────────
+export async function repoFetchAllOffers(_isAuthenticated: boolean): Promise<OfferViewModel[]> {
+  if (getDataMode() === "mock") return mockAllOffers();
+  const raw = await apiFetchAll(_isAuthenticated);
+  return raw.map((o) => mapRawOffer(o as any)).filter((o) => isOfferActive(o));
 }
 
-// ── Feature flags ──────────────────────────────────────────
+// ── Feature flags ─────────────────────────────────────────
 export async function repoFetchFeatureFlags(): Promise<FeatureFlags> {
-  try {
-    const flags = await apiFetchFlags();
-    _isMockMode = false;
-    return flags;
-  } catch (err) {
-    log.warn("Feature flags API failed, using defaults", err);
-    _isMockMode = true;
-    return { ...DEFAULT_FEATURE_FLAGS };
-  }
+  if (getDataMode() === "mock") return { ...DEFAULT_FEATURE_FLAGS };
+  return apiFetchFlags();
 }

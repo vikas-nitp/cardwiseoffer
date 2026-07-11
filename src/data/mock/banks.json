@@ -1,0 +1,42 @@
+[
+  {
+    "id": "HDFC",
+    "name": "HDFC Bank"
+  },
+  {
+    "id": "ICICI",
+    "name": "ICICI Bank"
+  },
+  {
+    "id": "SBI",
+    "name": "SBI Card"
+  },
+  {
+    "id": "AXIS",
+    "name": "Axis Bank"
+  },
+  {
+    "id": "AMEX",
+    "name": "American Express"
+  },
+  {
+    "id": "KOTAK",
+    "name": "Kotak Mahindra Bank"
+  },
+  {
+    "id": "YES",
+    "name": "Yes Bank"
+  },
+  {
+    "id": "INDUSIND",
+    "name": "IndusInd Bank"
+  },
+  {
+    "id": "RBL",
+    "name": "RBL Bank"
+  },
+  {
+    "id": "HSBC",
+    "name": "HSBC"
+  }
+]

@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import CityAutocomplete, { type CityOption } from "@/components/CityAutocomplete";
 import BankMultiSelect from "@/components/BankMultiSelect";
 import { useMeta } from "@/contexts/MetaContext";
-import { MAX_BANK_FILTERS } from "@/constants";
+import { MAX_BANK_FILTERS, BOOKING_WINDOW_DAYS } from "@/constants";
 
 const AIRPORT_CODE_PATTERN = /^[A-Z]{3}$/;
 
@@ -109,7 +109,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
-  const maxDate = useMemo(() => addDays(today, 365), [today]);
+  const maxDate = useMemo(() => addDays(today, BOOKING_WINDOW_DAYS), [today]);
 
   const hasError = Object.keys(validation.errors).length > 0;
 

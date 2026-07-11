@@ -1,119 +1,156 @@
-import { ExternalLink, Star, TrendingUp, Gift, CreditCard, Shield, Clock } from "lucide-react";
+import { ExternalLink, Star, TrendingUp, Gift, CreditCard, Shield, Info, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { OfferViewModel } from "@/types/offer";
+import { validityLabel, isOfferExpired, isOfferUpcoming } from "@/domain/offerValidity";
+import { savingsLabel, estimateSavings } from "@/domain/offerCalculation";
 
-const iconMap: Record<string, React.ElementType> = {
-  Star, TrendingUp, Gift, CreditCard,
-};
+type Variant = "primary" | "highlight" | "default" | "neutral";
 
 interface OfferCardProps {
-  id?: string | number;
-  label: string;
-  extraLabel?: string;
-  labelIcon: string | React.ElementType;
-  accentClass: string;
-  accentBorder: string;
-  platform: string;
-  platformUrl: string;
-  card: string | null;
-  bank: string | null;
-  discount: number;
-  conditions: string[];
-  index: number;
-  paymentType?: string;
+  offer: OfferViewModel;
+  variant?: Variant;
+  label?: string;         // e.g. "Best Offer", "Better Alternative"
+  extraLabel?: string;    // e.g. "Save ₹600 more"
+  index?: number;
 }
 
-const OfferCard = ({
-  label, extraLabel, labelIcon, accentClass, accentBorder,
-  platform, platformUrl, card, bank, discount, conditions, paymentType,
-}: OfferCardProps) => {
-  const LabelIcon = typeof labelIcon === "string" ? (iconMap[labelIcon] ?? Star) : labelIcon;
+const VARIANTS: Record<Variant, { chip: string; border: string; icon: React.ElementType }> = {
+  primary:   { chip: "bg-primary text-primary-foreground",     border: "border-primary",   icon: Star },
+  highlight: { chip: "bg-highlight text-highlight-foreground", border: "border-highlight", icon: TrendingUp },
+  default:   { chip: "bg-accent text-accent-foreground",       border: "border-accent",    icon: Gift },
+  neutral:   { chip: "bg-secondary text-secondary-foreground", border: "border-secondary", icon: CreditCard },
+};
+
+const PAYMENT_LABELS: Record<string, string> = {
+  CREDIT: "Credit Card",
+  DEBIT: "Debit Card",
+  NO_CARD: "No Card Required",
+};
+
+const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardProps) => {
+  const v = VARIANTS[variant];
+  const LabelIcon = v.icon;
+
+  const isDemo = offer.sourceType === "demo_excel" || offer.verificationStatus === "demo";
+  const expired = isOfferExpired(offer);
+  const upcoming = isOfferUpcoming(offer);
+  const validity = validityLabel(offer);
+
+  const savings = estimateSavings(offer);
+  const canBook = !!offer.platformUrl && !expired && !upcoming;
 
   return (
     <div
-      className={`bg-card rounded-2xl border border-border/40 flex flex-col h-full border-t-[3px] ${accentBorder} hover:card-shadow-xl hover:-translate-y-0.5 transition-all duration-300 card-shadow`}
+      className={`bg-card rounded-2xl border border-border/40 flex flex-col h-full border-t-[3px] ${v.border} hover:card-shadow-xl hover:-translate-y-0.5 transition-all duration-300 card-shadow`}
     >
       {/* Header */}
-      <div className="px-5 pt-5 pb-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-[0.08em] ${accentClass}`}>
-            <LabelIcon className="w-3 h-3" />
-            {label}
+      <div className="px-5 pt-5 pb-2 flex items-center gap-2 flex-wrap">
+        <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-[0.08em] ${v.chip}`}>
+          <LabelIcon className="w-3 h-3" />
+          {label ?? offer.label}
+        </span>
+        {extraLabel && (
+          <span className="text-[10px] font-bold text-accent bg-savings-soft px-2 py-0.5 rounded-md">
+            {extraLabel}
           </span>
-          {extraLabel && (
-            <span className="text-[10px] font-bold text-accent bg-savings-soft px-2 py-0.5 rounded-md">
-              {extraLabel}
-            </span>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* Savings amount */}
+      {/* Savings */}
       <div className="px-5 pb-3">
         <p className="text-3xl font-extrabold text-foreground tracking-tight leading-none">
-          ₹{discount.toLocaleString()}
+          {offer.discountType === "FLAT" || offer.maxDiscount
+            ? `₹${savings.toLocaleString()}`
+            : savingsLabel(offer)}
         </p>
-        <p className="text-[10px] text-muted-foreground font-medium mt-1 uppercase tracking-[0.08em]">estimated savings</p>
+        <p className="text-[10px] text-muted-foreground font-medium mt-1 uppercase tracking-[0.08em]">
+          {offer.discountType === "PERCENT" ? "up to savings" : "estimated savings"}
+        </p>
+        {offer.discountType === "PERCENT" && (
+          <p className="text-[11px] text-muted-foreground mt-0.5">{savingsLabel(offer)}</p>
+        )}
       </div>
 
-      {/* Bank & Card info */}
-      <div className="px-5 pb-3">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {bank && (
-            <span className="text-[11px] font-semibold bg-muted/60 px-2 py-0.5 rounded-md text-foreground">
-              {bank}
-            </span>
-          )}
-          {card && <span className="text-[11px] text-muted-foreground">{card}</span>}
-          {paymentType && (
-            <span className="text-[10px] font-medium text-muted-foreground bg-muted/40 px-1.5 py-0.5 rounded">
-              {paymentType}
-            </span>
-          )}
-          {!card && !bank && (
-            <span className="text-[11px] text-muted-foreground">Available for all users</span>
-          )}
-        </div>
+      {/* Bank / Card / Payment */}
+      <div className="px-5 pb-3 flex items-center gap-1.5 flex-wrap">
+        {offer.bankDisplay && (
+          <span className="text-[11px] font-semibold bg-muted/60 px-2 py-0.5 rounded-md text-foreground">
+            {offer.bankDisplay}
+          </span>
+        )}
+        {offer.cardName && <span className="text-[11px] text-muted-foreground">{offer.cardName}</span>}
+        <span className="text-[10px] font-medium text-muted-foreground bg-muted/40 px-1.5 py-0.5 rounded">
+          {PAYMENT_LABELS[offer.paymentMethod] ?? offer.paymentMethod}
+        </span>
       </div>
 
       {/* Conditions */}
-      <div className="px-5 pb-4 flex-1">
-        <div className="space-y-1.5">
-          {conditions.map((cond) => (
-            <div key={cond} className="text-[11px] text-muted-foreground flex items-start gap-2 leading-relaxed">
-              <span className="w-1 h-1 rounded-full bg-border mt-1.5 flex-shrink-0" />
-              {cond}
-            </div>
-          ))}
-        </div>
+      <div className="px-5 pb-4 flex-1 space-y-1.5">
+        {offer.minTransaction ? (
+          <Condition text={`Minimum booking ₹${offer.minTransaction.toLocaleString()}`} />
+        ) : null}
+        {offer.maxDiscount ? (
+          <Condition text={`Maximum discount ₹${offer.maxDiscount.toLocaleString()}`} />
+        ) : null}
+        <Condition text={validity} tone={expired ? "danger" : upcoming ? "warn" : "muted"} />
+        {offer.couponCode && (
+          <Condition text={`Coupon: ${offer.couponCode}`} />
+        )}
+        {offer.eligibilityNotes.slice(0, 2).map((n) => (
+          <Condition key={n} text={n} />
+        ))}
       </div>
 
-      {/* Trust indicator */}
-      <div className="px-5 pb-2">
-        <div className="flex items-center gap-3 text-[10px] text-muted-foreground/60">
-          <span className="flex items-center gap-1">
-            <Shield className="w-3 h-3" />
+      {/* Trust row — honest about demo status */}
+      <div className="px-5 pb-2 flex items-center gap-3 text-[10px] text-muted-foreground/70">
+        {isDemo ? (
+          <span className="flex items-center gap-1" title="Sample data, not verified against the platform">
+            <Info className="w-3 h-3" />
+            Demo offer — based on sample data
+          </span>
+        ) : offer.verificationStatus === "verified" ? (
+          <span className="flex items-center gap-1 text-emerald-700">
+            <BadgeCheck className="w-3 h-3" />
             Verified
           </span>
+        ) : (
           <span className="flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            Updated today
+            <Shield className="w-3 h-3" />
+            Unverified
           </span>
-        </div>
+        )}
       </div>
 
       {/* CTA */}
       <div className="px-5 pb-5 pt-1">
-        <a href={platformUrl} target="_blank" rel="noopener noreferrer" className="block">
+        {canBook && offer.platformUrl ? (
+          <a href={offer.platformUrl} target="_blank" rel="noopener noreferrer" className="block">
+            <Button className="gap-2 w-full font-semibold text-[13px] rounded-xl h-10 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md transition-all duration-200">
+              Book on {offer.platform}
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Button>
+          </a>
+        ) : (
           <Button
-            className="gap-2 w-full font-semibold text-[13px] rounded-xl h-10 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md transition-all duration-200"
+            disabled
+            className="gap-2 w-full font-semibold text-[13px] rounded-xl h-10"
+            title={expired ? "Offer expired" : upcoming ? "Offer starts later" : "Choose travel details to book"}
           >
-            Book on {platform}
-            <ExternalLink className="w-3.5 h-3.5" />
+            {expired ? "Offer expired" : upcoming ? "Not yet active" : "Choose travel details to book"}
           </Button>
-        </a>
+        )}
       </div>
     </div>
   );
 };
+
+const Condition = ({ text, tone = "muted" }: { text: string; tone?: "muted" | "warn" | "danger" }) => (
+  <div className={`text-[11px] flex items-start gap-2 leading-relaxed ${
+    tone === "danger" ? "text-destructive" : tone === "warn" ? "text-amber-700" : "text-muted-foreground"
+  }`}>
+    <span className="w-1 h-1 rounded-full bg-border mt-1.5 flex-shrink-0" />
+    {text}
+  </div>
+);
 
 export default OfferCard;
