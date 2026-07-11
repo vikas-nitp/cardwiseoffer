@@ -39,7 +39,7 @@ export async function repoSearchOffers(
 
   const dateStr = format(date, "yyyy-MM-dd");
   const response = await apiSearch(from.code, to.code, dateStr, banks, [], _isAuthenticated);
-  const offers = (response.offers ?? []).map((o) => mapRawOffer(o as any)).filter(isOfferActive);
+  const offers = (response.offers ?? []).map((o) => mapRawOffer(o as any)).filter((o) => isOfferActive(o));
   const strip7days = (response.strip7days ?? []).map((d) => ({ date: d.date, savings: d.price }));
   log.info("API search ok", { offers: offers.length });
   return { offers, strip7days };
@@ -49,7 +49,7 @@ export async function repoSearchOffers(
 export async function repoFetchAllOffers(_isAuthenticated: boolean): Promise<OfferViewModel[]> {
   if (getDataMode() === "mock") return mockAllOffers();
   const raw = await apiFetchAll(_isAuthenticated);
-  return raw.map((o) => mapRawOffer(o as any)).filter(isOfferActive);
+  return raw.map((o) => mapRawOffer(o as any)).filter((o) => isOfferActive(o));
 }
 
 // ── Feature flags ─────────────────────────────────────────

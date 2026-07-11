@@ -125,10 +125,12 @@ async function apiCall<T>(
     throw new APIError(0, "No API URL configured");
   }
 
+  // NOTE: Real auth token/session will be injected here by a future AuthTokenProvider.
+  // The previous `x-user-auth: true` header was a client-only claim and is not real auth.
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    "x-user-auth": isAuthenticated ? "true" : "false",
   };
+  void isAuthenticated;
 
   let lastError: Error | null = null;
   

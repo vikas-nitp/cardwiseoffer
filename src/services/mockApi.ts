@@ -33,7 +33,7 @@ export function mockSearch(
   selectedBanks: string[]
 ): { offers: OfferViewModel[]; strip7days: Array<{ date: string; savings: number }> } {
   const dateStr = format(date, "yyyy-MM-dd");
-  const active = ALL_OFFERS.filter(isOfferActive);
+  const active = ALL_OFFERS.filter((o) => isOfferActive(o));
   const ranked = rankOffers(active, selectedBanks);
   const withUrls = attachRouteUrls(ranked, from.code, to.code, dateStr);
 
@@ -51,7 +51,7 @@ export function mockSearch(
 }
 
 export function mockAllOffers(): OfferViewModel[] {
-  const active = ALL_OFFERS.filter(isOfferActive);
+  const active = ALL_OFFERS.filter((o) => isOfferActive(o));
   const sorted = [...active].sort((a, b) => b.savings - a.savings || b.priorityScore - a.priorityScore);
   return attachCatalogUrls(sorted);
 }
