@@ -8,6 +8,11 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { log } from "@/lib/logger";
+import banksJson from "@/data/mock/banks.json";
+import platformsJson from "@/data/mock/platforms.json";
+import airportsJson from "@/data/mock/airports.json";
+import offersJson from "@/data/mock/offers.json";
+import { getDataMode } from "@/config/dataMode";
 
 // ── Types (match backend /api/v1/meta response) ────────────────────
 
@@ -39,30 +44,22 @@ export interface MetaData {
   supported_platforms: string[];  // Platform IDs currently supported
 }
 
-// ── Safe defaults (fallback if API fails) ──────────────────────────
+// ── Safe defaults built from canonical local fixtures ─────────────
+const OFFER_BANK_IDS = Array.from(
+  new Set((offersJson as Array<{ bank_id: string | null }>).map((o) => o.bank_id).filter(Boolean) as string[])
+);
+const OFFER_PLATFORM_IDS = Array.from(
+  new Set((offersJson as Array<{ platform: string }>).map((o) => o.platform))
+);
+
 const DEFAULT_META: MetaData = {
-  banks: [
-    { id: "HDFC", name: "HDFC Bank" },
-    { id: "ICICI", name: "ICICI Bank" },
-    { id: "SBI", name: "SBI Card" },
-    { id: "AXIS", name: "Axis Bank" },
-    { id: "AMEX", name: "American Express" },
-  ],
-  platforms: [
-    { id: "MakeMyTrip", name: "MakeMyTrip" },
-    { id: "Cleartrip", name: "Cleartrip" },
-    { id: "EaseMyTrip", name: "EaseMyTrip" },
-    { id: "Goibibo", name: "Goibibo" },
-  ],
-  airports: [
-    { code: "BLR", city: "Bengaluru", name: "Kempegowda International Airport", country: "IN", is_domestic_default: true },
-    { code: "DEL", city: "New Delhi", name: "Indira Gandhi International Airport", country: "IN", is_domestic_default: true },
-    { code: "BOM", city: "Mumbai", name: "Chhatrapati Shivaji Maharaj International Airport", country: "IN", is_domestic_default: true },
-  ],
+  banks: banksJson as BankMeta[],
+  platforms: platformsJson as PlatformMeta[],
+  airports: airportsJson as AirportMeta[],
   payment_methods: ["CREDIT", "DEBIT", "NO_CARD"],
   categories: ["flight_domestic", "flight_international", "hotel_domestic", "hotel_international"],
-  supported_banks: ["HDFC", "ICICI", "SBI", "AXIS", "AMEX"],
-  supported_platforms: ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Goibibo"],
+  supported_banks: OFFER_BANK_IDS,          // only banks that have at least one offer
+  supported_platforms: OFFER_PLATFORM_IDS,
 };
 
 // API URL read safely inside fetchMeta — no crash if missing
@@ -96,25 +93,25 @@ interface MetaProviderProps {
 
 export const MetaProvider = ({ children }: MetaProviderProps) => {
   const [meta, setMeta] = useState<MetaData>(DEFAULT_META);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(getDataMode() === "api");
   const [error, setError] = useState<string | null>(null);
 
   const fetchMeta = async () => {
+    // Mock mode: local fixtures are the source of truth. Never touch the network.
+    if (getDataMode() === "mock") {
+      setMeta(DEFAULT_META);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
-
       const apiUrl = (import.meta.env.VITE_API_BASE_URL as string) || "";
-      if (!apiUrl) {
-        log.info("No API URL configured, using default meta");
-        setMeta(DEFAULT_META);
-        return;
-      }
+      if (!apiUrl) throw new Error("VITE_API_BASE_URL not configured");
 
       const response = await fetch(`${apiUrl}/api/v1/meta`, {
         headers: { "Content-Type": "application/json" },
       });
-
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
 
