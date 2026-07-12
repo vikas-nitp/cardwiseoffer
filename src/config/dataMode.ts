@@ -1,8 +1,8 @@
 export type DataMode = "mock" | "api";
 
-/** Resolve the active data mode. Defaults to "mock" unless VITE_DATA_MODE=api. */
+/** Resolve the active data source. VITE_DATA_MODE remains a temporary compatibility alias. */
 export function getDataMode(): DataMode {
-  const raw = (import.meta.env.VITE_DATA_MODE as string | undefined)?.trim().toLowerCase();
+  const raw = ((import.meta.env.VITE_DATA_SOURCE ?? import.meta.env.VITE_DATA_MODE) as string | undefined)?.trim().toLowerCase();
   return raw === "api" ? "api" : "mock";
 }
 

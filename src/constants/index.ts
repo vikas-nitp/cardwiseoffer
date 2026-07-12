@@ -146,5 +146,5 @@ export const DEFAULT_FEATURE_FLAGS = {
   offerLockingEnabled: featureFlagsData.offerLockingEnabled ?? false,
   allOffers: featureFlagsData.allOffers ?? true,
   savedCards: featureFlagsData.savedCards ?? false,
-  dailyVisitorsEnabled: featureFlagsData.dailyVisitorsEnabled ?? true,
+  dailyVisitorsEnabled: featureFlagsData.dailyVisitorsEnabled ?? false,
 } as const;

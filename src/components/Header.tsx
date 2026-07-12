@@ -12,15 +12,16 @@ interface HeaderProps {
   activeSection: ActiveSection;
   onSectionChange: (section: ActiveSection) => void;
   authEnabled?: boolean;
+  allOffersEnabled?: boolean;
 }
 
-const Header = ({ activeSection, onSectionChange, authEnabled = true }: HeaderProps) => {
+const Header = ({ activeSection, onSectionChange, authEnabled = true, allOffersEnabled = true }: HeaderProps) => {
   const { isLoggedIn, user, logout } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems: { label: string; section: ActiveSection }[] = [
-    { label: "All Offers", section: "all-offers" },
+    ...(allOffersEnabled ? [{ label: "All Offers", section: "all-offers" as ActiveSection }] : []),
     { label: "How It Works", section: "how-it-works" },
     { label: "About", section: "about" },
     { label: "Contact", section: "contact" },

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
 import type { ActiveSection } from "@/components/Header";
@@ -62,34 +62,50 @@ const Index = () => {
   const [allOffersLoading, setAllOffersLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [allOffersError, setAllOffersError] = useState<string | null>(null);
+  const searchController = useRef<AbortController | null>(null);
+  const offersController = useRef<AbortController | null>(null);
 
   const hasSearched = searchState !== null;
   const authEnabled = featureFlags.authEnabled;
   const offerLockingEnabled = featureFlags.offerLockingEnabled;
 
-  const handleAllOffersClick = async () => {
+  useEffect(() => () => {
+    searchController.current?.abort();
+    offersController.current?.abort();
+  }, []);
+
+  const handleAllOffersClick = useCallback(async () => {
+    offersController.current?.abort();
+    const controller = new AbortController();
+    offersController.current = controller;
     setAllOffersLoading(true);
     setAllOffersError(null);
     try {
-      const offers = await repoFetchAllOffers(isLoggedIn);
+      const offers = await repoFetchAllOffers(isLoggedIn, {
+        bank: bankFilter,
+        platform: platformFilter,
+        payment_method: paymentFilter,
+      }, controller.signal);
+      if (controller.signal.aborted) return;
       setAllOffers(offers);
     } catch (err) {
+      if (controller.signal.aborted) return;
       setAllOffersError(err instanceof Error ? err.message : "Failed to fetch offers.");
       setAllOffers([]);
     } finally {
-      setAllOffersLoading(false);
+      if (offersController.current === controller) setAllOffersLoading(false);
     }
-  };
+  }, [bankFilter, isLoggedIn, paymentFilter, platformFilter]);
 
   useEffect(() => {
-    if (activeSection === "all-offers" && allOffers.length === 0 && !allOffersLoading) {
+    if (featureFlags.allOffers && activeSection === "all-offers") {
       handleAllOffersClick();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSection]);
+  }, [activeSection, featureFlags.allOffers, handleAllOffersClick]);
 
   // OR within each category, AND across categories. Canonical IDs (CREDIT/DEBIT/NO_CARD, bank code, platform id).
   const filteredAllOffers = useMemo(() => {
+    if (!isMockMode()) return allOffers;
     return allOffers.filter((o) => {
       if (bankFilter.length > 0 && (!o.bank || !bankFilter.includes(o.bank))) return false;
       if (platformFilter.length > 0 && !platformFilter.includes(o.platform)) return false;
@@ -103,6 +119,9 @@ const Index = () => {
   };
 
   const handleSearch = async (from: CityOption, to: CityOption, date: Date, banks: string[]) => {
+    searchController.current?.abort();
+    const controller = new AbortController();
+    searchController.current = controller;
     setSearchState({ from, to, date, banks });
     setActiveSection("results");
     handleResetFilters();
@@ -110,16 +129,18 @@ const Index = () => {
     setSearchLoading(true);
     setStrip7days([]);
     try {
-      const result = await repoSearchOffers(from, to, date, banks, isLoggedIn);
+      const result = await repoSearchOffers(from, to, date, banks, isLoggedIn, controller.signal);
+      if (controller.signal.aborted) return;
       setSearchResults(result.offers);
       setStrip7days(result.strip7days);
       log.info("Search completed", { offers: result.offers.length, mock: isMockMode() });
     } catch (err) {
+      if (controller.signal.aborted) return;
       setSearchError(err instanceof Error ? err.message : "Failed to fetch offers.");
       setSearchResults([]);
       setStrip7days([]);
     } finally {
-      setSearchLoading(false);
+      if (searchController.current === controller) setSearchLoading(false);
     }
   };
 
@@ -127,17 +148,22 @@ const Index = () => {
 
   const handleDateChange = async (newDate: Date) => {
     if (!searchState) return;
+    searchController.current?.abort();
+    const controller = new AbortController();
+    searchController.current = controller;
     setSearchState({ ...searchState, date: newDate });
     setSearchLoading(true);
     setSearchError(null);
     try {
-      const result = await repoSearchOffers(searchState.from, searchState.to, newDate, searchState.banks, isLoggedIn);
+      const result = await repoSearchOffers(searchState.from, searchState.to, newDate, searchState.banks, isLoggedIn, controller.signal);
+      if (controller.signal.aborted) return;
       setSearchResults(result.offers);
       setStrip7days(result.strip7days);
     } catch (err) {
+      if (controller.signal.aborted) return;
       setSearchError(err instanceof Error ? err.message : "Failed to fetch offers.");
     } finally {
-      setSearchLoading(false);
+      if (searchController.current === controller) setSearchLoading(false);
     }
   };
 
@@ -151,6 +177,20 @@ const Index = () => {
   // Variant + label helpers for search result tiles.
   const decorateResults = (offers: OfferViewModel[]) => {
     if (offers.length === 0) return [];
+    if (!isMockMode()) {
+      return offers.map((offer) => ({
+        offer,
+        variant: offer.label === "Best Offer" || offer.label === "Your Card Offer"
+          ? "primary" as const
+          : offer.label === "Better Alternative"
+            ? "highlight" as const
+            : offer.label.includes("Default")
+              ? "default" as const
+              : "neutral" as const,
+        label: offer.label,
+        extraLabel: undefined as string | undefined,
+      }));
+    }
     const primary = offers[0];
     return offers.map((o, i) => {
       let variant: "primary" | "highlight" | "default" | "neutral" = "neutral";
@@ -231,7 +271,7 @@ const Index = () => {
 
       <div className="relative z-10 flex flex-col min-h-screen">
         <DemoModeBanner />
-        <Header activeSection={activeSection} onSectionChange={setActiveSection} authEnabled={authEnabled} />
+        <Header activeSection={activeSection} onSectionChange={setActiveSection} authEnabled={authEnabled} allOffersEnabled={featureFlags.allOffers} />
 
         <main className="flex-1 flex flex-col items-center px-4 md:px-8 pb-10">
           <AnimatePresence mode="wait">

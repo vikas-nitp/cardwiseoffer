@@ -44,7 +44,14 @@ src/
 
 The frontend connects to the FastAPI backend at `http://localhost:8001`.
 
-Set `VITE_API_BASE_URL` in `.env` to override.
+Set the following in `.env` for backend API mode:
+
+```env
+VITE_DATA_SOURCE=api
+VITE_API_BASE_URL=https://api.example.com
+```
+
+`VITE_DATA_MODE=api` remains a temporary compatibility alias.
 
 ## Feature Flags
 
@@ -53,6 +60,7 @@ The app respects feature flags from the backend:
 - `offerLockingEnabled` - Lock offers for guests
 - `allOffers` - Enable All Offers section
 - `savedCards` - Enable Saved Cards feature
+- `dailyVisitorsEnabled` - Enable the visitor indicator and stats request
 
 ## License
 

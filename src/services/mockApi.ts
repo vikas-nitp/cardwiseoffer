@@ -6,13 +6,13 @@
 import { format } from "date-fns";
 import type { CityOption } from "@/components/CityAutocomplete";
 import type { OfferViewModel } from "@/types/offer";
-import { mapRawOffer } from "@/domain/offerMapper";
+import { mapLocalOffer, type LocalRawOffer } from "@/domain/offerMapper";
 import { isOfferActive } from "@/domain/offerValidity";
 import { rankOffers } from "@/domain/offerRanking";
 import { buildFlightSearchUrl, platformHomeUrl } from "@/domain/platformUrlBuilder";
 import offersJson from "@/data/mock/offers.json";
 
-const ALL_OFFERS: OfferViewModel[] = (offersJson as any[]).map(mapRawOffer);
+const ALL_OFFERS: OfferViewModel[] = (offersJson as LocalRawOffer[]).map(mapLocalOffer);
 
 function attachRouteUrls(offers: OfferViewModel[], from: string, to: string, date: string): OfferViewModel[] {
   return offers.map((o) => ({

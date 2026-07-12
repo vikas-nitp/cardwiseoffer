@@ -1,5 +1,5 @@
 /**
- * Data repository — mock/api mode is EXPLICIT (VITE_DATA_MODE).
+ * Data repository — local/api mode is explicit (VITE_DATA_SOURCE; VITE_DATA_MODE is a compatibility alias).
  * mock  → always local fixtures (never touches the network).
  * api   → real fetch; on failure, throws — no silent mock fallback.
  */
@@ -15,10 +15,9 @@ import {
   fetchAllOffers as apiFetchAll,
   fetchFeatureFlags as apiFetchFlags,
 } from "@/services/api";
-import { mapRawOffer } from "@/domain/offerMapper";
-import { isOfferActive } from "@/domain/offerValidity";
+import { mapApiOffer } from "@/domain/offerMapper";
 import { DEFAULT_FEATURE_FLAGS } from "@/constants";
-import type { FeatureFlags } from "@/services/api";
+import type { FeatureFlags, OfferFilters } from "@/services/api";
 
 export interface SearchResult {
   offers: OfferViewModel[];
@@ -33,23 +32,28 @@ export async function repoSearchOffers(
   to: CityOption,
   date: Date,
   banks: string[],
-  _isAuthenticated: boolean
+  _isAuthenticated: boolean,
+  signal?: AbortSignal
 ): Promise<SearchResult> {
   if (getDataMode() === "mock") return mockSearch(from, to, date, banks);
 
   const dateStr = format(date, "yyyy-MM-dd");
-  const response = await apiSearch(from.code, to.code, dateStr, banks, [], _isAuthenticated);
-  const offers = (response.offers ?? []).map((o) => mapRawOffer(o as any)).filter((o) => isOfferActive(o));
-  const strip7days = (response.strip7days ?? []).map((d) => ({ date: d.date, savings: d.price }));
+  const response = await apiSearch(from.code, to.code, dateStr, banks, [], _isAuthenticated, signal);
+  const offers = response.offers.map(mapApiOffer);
+  const strip7days: SearchResult["strip7days"] = [];
   log.info("API search ok", { offers: offers.length });
   return { offers, strip7days };
 }
 
 // ── All offers catalog ────────────────────────────────────
-export async function repoFetchAllOffers(_isAuthenticated: boolean): Promise<OfferViewModel[]> {
+export async function repoFetchAllOffers(
+  _isAuthenticated: boolean,
+  filters: OfferFilters = {},
+  signal?: AbortSignal
+): Promise<OfferViewModel[]> {
   if (getDataMode() === "mock") return mockAllOffers();
-  const raw = await apiFetchAll(_isAuthenticated);
-  return raw.map((o) => mapRawOffer(o as any)).filter((o) => isOfferActive(o));
+  const raw = await apiFetchAll(_isAuthenticated, filters, signal);
+  return raw.map(mapApiOffer);
 }
 
 // ── Feature flags ─────────────────────────────────────────

@@ -5,17 +5,14 @@
  * Provides safe defaults if API fails.
  */
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { log } from "@/lib/logger";
+import { getDataMode } from "@/config/dataMode";
+import type { FeatureFlags as ApiFeatureFlags } from "@/services/api";
+import { repoFetchFeatureFlags } from "@/services/dataRepo";
 
 // ── Types (match backend feature_flags.json) ───────────────────────
-export interface FeatureFlags {
-  authEnabled: boolean;
-  offerLockingEnabled: boolean;
-  allOffers: boolean;
-  savedCards: boolean;
-  dailyVisitorsEnabled: boolean;
-}
+export type FeatureFlags = Omit<ApiFeatureFlags, "config_version">;
 
 // ── Safe defaults (fail-safe if API is down) ───────────────────────
 const DEFAULT_FLAGS: FeatureFlags = {
@@ -24,6 +21,11 @@ const DEFAULT_FLAGS: FeatureFlags = {
   allOffers: true,              // Show all offers
   savedCards: false,            // Feature not ready
   dailyVisitorsEnabled: false,  // Don't show visitors if API fails
+};
+
+const API_FAIL_CLOSED_FLAGS: FeatureFlags = {
+  ...DEFAULT_FLAGS,
+  allOffers: false,
 };
 
 // Remove direct API_BASE_URL usage — dataRepo handles fallback
@@ -52,34 +54,42 @@ interface FeatureFlagProviderProps {
 }
 
 export const FeatureFlagProvider = ({ children }: FeatureFlagProviderProps) => {
-  const [flags, setFlags] = useState<FeatureFlags>(DEFAULT_FLAGS);
+  const [flags, setFlags] = useState<FeatureFlags>(
+    getDataMode() === "api" ? API_FAIL_CLOSED_FLAGS : DEFAULT_FLAGS
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchFlags = async () => {
+  const fetchFlags = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const { repoFetchFeatureFlags } = await import("@/services/dataRepo");
       const data = await repoFetchFeatureFlags();
-      const mergedFlags: FeatureFlags = { ...DEFAULT_FLAGS, ...data };
+      const apiFlags: FeatureFlags = {
+        authEnabled: data.authEnabled,
+        offerLockingEnabled: data.offerLockingEnabled,
+        allOffers: data.allOffers,
+        savedCards: data.savedCards,
+        dailyVisitorsEnabled: data.dailyVisitorsEnabled,
+      };
+      const mergedFlags: FeatureFlags = { ...DEFAULT_FLAGS, ...apiFlags };
       setFlags(mergedFlags);
-      log.info("Feature flags loaded", flags);
+      log.info("Feature flags loaded", mergedFlags);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
-      log.warn("Failed to load feature flags, using defaults", { error: message });
+      log.warn("Failed to load feature flags", { error: message });
       setError(message);
-      setFlags(DEFAULT_FLAGS);
+      setFlags(getDataMode() === "api" ? API_FAIL_CLOSED_FLAGS : DEFAULT_FLAGS);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Load flags on mount
   useEffect(() => {
     fetchFlags();
-  }, []);
+  }, [fetchFlags]);
 
   return (
     <FeatureFlagContext.Provider value={{ flags, loading, error, refetch: fetchFlags }}>

@@ -13,6 +13,7 @@ import platformsJson from "@/data/mock/platforms.json";
 import airportsJson from "@/data/mock/airports.json";
 import offersJson from "@/data/mock/offers.json";
 import { getDataMode } from "@/config/dataMode";
+import { fetchMetadata } from "@/services/api";
 
 // ── Types (match backend /api/v1/meta response) ────────────────────
 
@@ -62,6 +63,16 @@ const DEFAULT_META: MetaData = {
   supported_platforms: OFFER_PLATFORM_IDS,
 };
 
+const EMPTY_META: MetaData = {
+  banks: [],
+  platforms: [],
+  airports: [],
+  payment_methods: [],
+  categories: [],
+  supported_banks: [],
+  supported_platforms: [],
+};
+
 // API URL read safely inside fetchMeta — no crash if missing
 
 // ── Context ────────────────────────────────────────────────────────
@@ -92,7 +103,7 @@ interface MetaProviderProps {
 }
 
 export const MetaProvider = ({ children }: MetaProviderProps) => {
-  const [meta, setMeta] = useState<MetaData>(DEFAULT_META);
+  const [meta, setMeta] = useState<MetaData>(getDataMode() === "api" ? EMPTY_META : DEFAULT_META);
   const [loading, setLoading] = useState(getDataMode() === "api");
   const [error, setError] = useState<string | null>(null);
 
@@ -106,14 +117,7 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
     try {
       setLoading(true);
       setError(null);
-      const apiUrl = (import.meta.env.VITE_API_BASE_URL as string) || "";
-      if (!apiUrl) throw new Error("VITE_API_BASE_URL not configured");
-
-      const response = await fetch(`${apiUrl}/api/v1/meta`, {
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
+      const data = await fetchMetadata();
 
       const mergedMeta: MetaData = {
         banks: data.banks || DEFAULT_META.banks,
@@ -121,16 +125,16 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
         airports: data.airports || DEFAULT_META.airports,
         payment_methods: data.payment_methods || DEFAULT_META.payment_methods,
         categories: data.categories || DEFAULT_META.categories,
-        supported_banks: data.supported_banks || DEFAULT_META.supported_banks,
-        supported_platforms: data.supported_platforms || DEFAULT_META.supported_platforms,
+        supported_banks: data.banks.map((bank) => bank.id),
+        supported_platforms: data.platforms.map((platform) => platform.id),
       };
       setMeta(mergedMeta);
       log.info("Meta data loaded from API");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
-      log.warn("Failed to load meta, using defaults", { error: message });
+      log.warn("Failed to load API metadata", { error: message });
       setError(message);
-      setMeta(DEFAULT_META);
+      setMeta(EMPTY_META);
     } finally {
       setLoading(false);
     }
