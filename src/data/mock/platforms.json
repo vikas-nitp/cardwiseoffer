@@ -1,18 +1,4 @@
 [
-  {
-    "id": "MakeMyTrip",
-    "name": "MakeMyTrip"
-  },
-  {
-    "id": "Cleartrip",
-    "name": "Cleartrip"
-  },
-  {
-    "id": "EaseMyTrip",
-    "name": "EaseMyTrip"
-  },
-  {
-    "id": "Goibibo",
-    "name": "Goibibo"
-  }
+  { "id": "MAKEMYTRIP", "name": "MakeMyTrip" },
+  { "id": "CLEARTRIP", "name": "Cleartrip" }
 ]
