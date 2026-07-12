@@ -36,7 +36,7 @@ export interface OfferViewModel {
 
   couponCode?: string | null;
   validFrom: string;           // ISO yyyy-MM-dd
-  validTo: string;             // ISO yyyy-MM-dd
+  expiryDate: string;          // ISO yyyy-MM-dd
 
   eligibilityNotes: string[];
   category: string;

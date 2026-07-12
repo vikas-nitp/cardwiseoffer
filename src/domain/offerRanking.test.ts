@@ -9,16 +9,15 @@ const offer = (
   payment: "CREDIT" | "NO_CARD" = "CREDIT",
   pri = 50
 ): OfferViewModel => ({
-  id, label: "x", title: "x",
-  platformId: "MAKEMYTRIP", platformName: "MakeMyTrip", platform: "MakeMyTrip",
-  bankId: bank, bankName: bank, bank, bankDisplay: bank, cardName: null,
+  id, label: "x", offerTitle: "x",
+  platformName: "MakeMyTrip", platform: "MAKEMYTRIP",
+  bank, bankDisplay: bank, cardName: null,
   paymentMethod: payment, category: "FLIGHT_DOMESTIC", bookingChannel: "WEB_AND_APP",
   discountType: "FLAT", discountValue: savings, maxDiscount: null, minTransaction: null, savings,
-  couponCode: null, validFrom: "2026-01-01", validTo: "2030-01-01",
-  usageLimit: null, newUserOnly: false, loginRequired: false, eligibilityNotes: [],
-  termsUrl: null, sourceUrl: "https://example.com/", bookingUrl: null, platformUrl: null,
+  couponCode: null, validFrom: "2026-01-01", expiryDate: "2030-01-01",
+  newUserOnly: false, eligibilityNotes: [], platformUrl: null,
   sourceType: "demo_excel", evidenceStatus: "UNVERIFIED", publishStatus: "READY", isActive: true,
-  verificationStatus: "demo", lastVerifiedAt: null, priorityScore: pri, extra: {},
+  verificationStatus: "demo", priorityScore: pri,
 });
 
 describe("offerRanking", () => {

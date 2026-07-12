@@ -11,4 +11,5 @@ await cp(source, destination, { recursive: true, force: true });
 await mkdir(publicDestination, { recursive: true });
 await cp(resolve(source, "offers.json"), resolve(publicDestination, "offers.local.json"), { force: true });
 await cp(backendContract, resolve(root, "contracts/openapi.json"), { force: true });
+await cp(resolve(root, "../cwo_backend/contracts/examples"), resolve(root, "contracts/examples"), { recursive: true, force: true });
 console.log(`Synchronized standalone bundle from ${source}`);

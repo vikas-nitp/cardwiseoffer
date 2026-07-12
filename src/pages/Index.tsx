@@ -21,10 +21,11 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { CityOption } from "@/components/CityAutocomplete";
 import type { OfferViewModel } from "@/types/offer";
-import { repoSearchOffers, repoFetchAllOffers, isLocalMode } from "@/services/dataRepo";
+import { repoSearchOffers, repoFetchAllOffersPage, isLocalMode } from "@/services/dataRepo";
 import { filterCatalogueOffers } from "@/domain/offerFiltering";
 import { log } from "@/lib/logger";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
+import { analytics } from "@/services/analytics";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -53,6 +54,8 @@ const Index = () => {
   const [searchResults, setSearchResults] = useState<OfferViewModel[]>([]);
   const [strip7days, setStrip7days] = useState<StripDay[]>([]);
   const [allOffers, setAllOffers] = useState<OfferViewModel[]>([]);
+  const [offersPage, setOffersPage] = useState(1);
+  const [offersTotalPages, setOffersTotalPages] = useState(1);
   const [searchLoading, setSearchLoading] = useState(false);
   const [allOffersLoading, setAllOffersLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -62,25 +65,31 @@ const Index = () => {
 
   const hasSearched = searchState !== null;
 
+  useEffect(() => analytics.configure(capabilities.analytics), [capabilities.analytics]);
+
   useEffect(() => () => {
     searchController.current?.abort();
     offersController.current?.abort();
   }, []);
 
   const handleAllOffersClick = useCallback(async () => {
+    analytics.track("all_offers");
     offersController.current?.abort();
     const controller = new AbortController();
     offersController.current = controller;
     setAllOffersLoading(true);
     setAllOffersError(null);
     try {
-      const offers = await repoFetchAllOffers(false, {
+      const result = await repoFetchAllOffersPage({
         bank: bankFilter,
         platform: platformFilter,
         payment_method: paymentFilter,
+        page: offersPage,
+        limit: 20,
       }, controller.signal);
       if (controller.signal.aborted) return;
-      setAllOffers(offers);
+      setAllOffers(result.offers);
+      setOffersTotalPages(result.pagination.total_pages);
     } catch (err) {
       if (controller.signal.aborted) return;
       setAllOffersError(err instanceof Error ? err.message : "Failed to fetch offers.");
@@ -88,7 +97,7 @@ const Index = () => {
     } finally {
       if (offersController.current === controller) setAllOffersLoading(false);
     }
-  }, [bankFilter, paymentFilter, platformFilter]);
+  }, [bankFilter, paymentFilter, platformFilter, offersPage]);
 
   useEffect(() => {
     if (capabilities.publicAllOffers && activeSection === "all-offers") {
@@ -108,9 +117,11 @@ const Index = () => {
 
   const handleResetFilters = () => {
     setBankFilter([]); setPlatformFilter([]); setPaymentFilter([]);
+    setOffersPage(1);
   };
 
   const handleSearch = async (from: CityOption, to: CityOption, date: Date, banks: string[], bookingAmount?: number) => {
+    analytics.track("search", { from: from.code, to: to.code, date: format(date, "yyyy-MM-dd") });
     searchController.current?.abort();
     const controller = new AbortController();
     searchController.current = controller;
@@ -139,6 +150,7 @@ const Index = () => {
   const handleEditSearch = () => setActiveSection("home");
 
   const handleDateChange = async (newDate: Date) => {
+    analytics.track("date_selection", { date: format(newDate, "yyyy-MM-dd") });
     if (!searchState) return;
     searchController.current?.abort();
     const controller = new AbortController();
@@ -357,6 +369,11 @@ const Index = () => {
                       ) : (
                         renderOfferTiles(filteredAllOffers, "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4", "catalog")
                       )}
+                      <div className="mt-6 flex items-center justify-center gap-3">
+                        <Button variant="outline" disabled={offersPage <= 1} onClick={() => setOffersPage((page) => page - 1)}>Previous</Button>
+                        <span className="text-sm text-muted-foreground">Page {offersPage} of {offersTotalPages}</span>
+                        <Button variant="outline" disabled={offersPage >= offersTotalPages} onClick={() => setOffersPage((page) => page + 1)}>Next</Button>
+                      </div>
                       <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
                         Offers sourced from public bank promotions. Final eligibility depends on platform &amp; bank terms.
                       </p>

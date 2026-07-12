@@ -3,16 +3,15 @@ import { estimateSavings, savingsLabel } from "@/domain/offerCalculation";
 import type { OfferViewModel } from "@/types/offer";
 
 const base: OfferViewModel = {
-  id: "x", label: "x", title: "x",
-  platformId: "MAKEMYTRIP", platformName: "MakeMyTrip", platform: "MakeMyTrip",
-  bankId: "HDFC", bankName: "HDFC", bank: "HDFC", bankDisplay: "HDFC", cardName: null,
+  id: "x", label: "x", offerTitle: "x",
+  platformName: "MakeMyTrip", platform: "MAKEMYTRIP",
+  bank: "HDFC", bankDisplay: "HDFC", cardName: null,
   paymentMethod: "CREDIT", category: "FLIGHT_DOMESTIC", bookingChannel: "WEB_AND_APP",
   discountType: "FLAT", discountValue: 0, maxDiscount: null, minTransaction: null, savings: 0,
-  couponCode: null, validFrom: "2026-01-01", validTo: "2030-01-01",
-  usageLimit: null, newUserOnly: false, loginRequired: false, eligibilityNotes: [],
-  termsUrl: null, sourceUrl: "https://example.com/", bookingUrl: null, platformUrl: null,
+  couponCode: null, validFrom: "2026-01-01", expiryDate: "2030-01-01",
+  newUserOnly: false, eligibilityNotes: [], platformUrl: null,
   sourceType: "demo_excel", evidenceStatus: "UNVERIFIED", publishStatus: "READY", isActive: true,
-  verificationStatus: "demo", lastVerifiedAt: null, priorityScore: 0, extra: {},
+  verificationStatus: "demo", priorityScore: 0,
 };
 
 describe("offerCalculation", () => {

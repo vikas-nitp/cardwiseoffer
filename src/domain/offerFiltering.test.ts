@@ -3,7 +3,7 @@ import generatedOffers from "@/data/generated/offers.json";
 import { mapApiOffer, type ApiOffer } from "@/domain/offerMapper";
 import { filterCatalogueOffers } from "@/domain/offerFiltering";
 
-const offers = (generatedOffers as ApiOffer[]).map(mapApiOffer);
+const offers = (generatedOffers as unknown as ApiOffer[]).map(mapApiOffer);
 const empty = { bank: [], platform: [], paymentMethod: [] };
 
 describe("filterCatalogueOffers", () => {

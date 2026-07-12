@@ -2,19 +2,22 @@
  * Offline offer repository backed by the backend-generated canonical bundle.
  */
 
-import { format } from "date-fns";
+import { addDays, format } from "date-fns";
 import type { CityOption } from "@/components/CityAutocomplete";
 import type { OfferViewModel } from "@/types/offer";
 import { mapApiOffer, type ApiOffer } from "@/domain/offerMapper";
 import { isOfferEligible } from "@/domain/offerValidity";
 import { rankOffers } from "@/domain/offerRanking";
 import { buildFlightSearchUrl, platformHomeUrl } from "@/domain/platformUrlBuilder";
-import { bookingWindowDates } from "@/domain/bookingWindow";
 import { estimateSavings } from "@/domain/offerCalculation";
 import offersJson from "@/data/generated/offers.json";
+import featureFlags from "@/data/generated/featureFlags.json";
 import type { OfferRepository, OfferSearchResult } from "./OfferRepository";
 
-const ALL_OFFERS: OfferViewModel[] = (offersJson as ApiOffer[]).map(mapApiOffer);
+const ALL_OFFERS: OfferViewModel[] = (offersJson as unknown as ApiOffer[]).map(mapApiOffer).map((offer) => ({
+  ...offer,
+  couponCode: featureFlags.couponCodeEnabled ? offer.couponCode : null,
+}));
 
 function attachRouteUrls(offers: OfferViewModel[], from: string, to: string, date: string): OfferViewModel[] {
   return offers.map((o) => ({
@@ -35,6 +38,9 @@ export function searchLocalOffers(
   selectedBanks: string[],
   bookingAmount?: number
 ): { offers: OfferViewModel[]; strip7days: Array<{ date: string; displayText: string }> } {
+  if (bookingAmount !== undefined && !featureFlags.bookingAmountComparisonEnabled) {
+    throw new Error("BOOKING_COMPARISON_DISABLED");
+  }
   const dateStr = format(date, "yyyy-MM-dd");
   const active = ALL_OFFERS.filter((o) => isOfferEligible(o, date));
   const compared = active.map((offer) => {
@@ -59,7 +65,7 @@ export function searchLocalOffers(
   const withUrls = attachRouteUrls(withComparison, from.code, to.code, dateStr);
 
   // The strip communicates offer availability, never synthetic fares or savings.
-  const strip = bookingWindowDates().map((d) => {
+  const strip = Array.from({ length: 7 }, (_, index) => addDays(date, index)).map((d) => {
     const isoDate = format(d, "yyyy-MM-dd");
     const activeThatDay = ALL_OFFERS.filter((o) => isOfferEligible(o, new Date(isoDate)));
     const cappedAmounts = activeThatDay

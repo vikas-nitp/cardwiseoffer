@@ -9,7 +9,7 @@ import type { components } from "@/types/generated-api";
 
 export type MetaData = components["schemas"]["OfferMetadata"];
 export type FeatureFlags = components["schemas"]["FeatureFlagsResponse"];
-export type ApiOffer = components["schemas"]["Offer"];
+export type ApiOffer = components["schemas"]["PublicOffer"];
 export type ApiSearchOffer = components["schemas"]["SearchOffer"];
 export type SearchResponse = components["schemas"]["SearchResponse"];
 export type OffersResponse = components["schemas"]["OffersResponse"];
@@ -164,3 +164,11 @@ export async function fetchAllOffers(
   );
   return response.offers;
 }
+
+export const fetchAllOffersPage = (
+  filters: OfferFilters = {},
+  signal?: AbortSignal,
+) => apiCall<OffersResponse>(
+  `${API_ENDPOINTS.OFFERS}${buildOffersQuery(filters)}`,
+  { signal },
+);

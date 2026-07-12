@@ -10,3 +10,9 @@
 8. Do not restore demo authentication or localStorage sessions.
 9. Do not put secrets in `VITE_` variables.
 10. Regenerate OpenAPI types and run parity tests after contract changes.
+11. Date availability comes only from `valid_from` and `expiry_date`.
+12. Never add a fixed 7-, 10-, or 11-day range; seven visible cards are UI pagination only.
+13. Backend owns feature configuration; never maintain a frontend flag list.
+14. Local and API repositories must return identical results.
+15. API mode must never silently fall back to local data.
+16. Run data, contract, and parity checks before completing work.

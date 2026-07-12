@@ -14,7 +14,7 @@ export interface LocalRawOffer {
   min_transaction?: number;
   coupon_code?: string | null;
   valid_from: string;
-  valid_to: string;
+  expiry_date: string;
   channels?: string;
   eligibility_notes?: string;
   priority_score?: number;
@@ -23,19 +23,12 @@ export interface LocalRawOffer {
 }
 
 export type ApiOffer =
-  | components["schemas"]["Offer"]
+  | components["schemas"]["PublicOffer"]
   | components["schemas"]["SearchOffer"];
 
-const verificationStatus = (
-  status: ApiOffer["evidence_status"]
-): OfferViewModel["verificationStatus"] => {
-  if (status === "VERIFIED") return "verified";
-  return "unverified";
-};
-
 export function mapApiOffer(raw: ApiOffer): OfferViewModel {
-  const discountValue = raw.discount_value ?? 0;
-  const maxDiscount = raw.max_discount ?? undefined;
+  const discountValue = Number(raw.discount_value ?? 0);
+  const maxDiscount = raw.max_discount == null ? undefined : Number(raw.max_discount);
   const estimatedSavings =
     "estimated_savings" in raw ? raw.estimated_savings ?? undefined : undefined;
   const displayKind = "display_kind" in raw ? raw.display_kind : undefined;
@@ -61,7 +54,7 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     platformUrl: raw.booking_url ?? null,
     finalPrice:
       "estimated_final_amount" in raw
-        ? raw.estimated_final_amount ?? undefined
+        ? raw.estimated_final_amount == null ? undefined : Number(raw.estimated_final_amount)
         : undefined,
     amountEligible: "amount_eligible" in raw ? raw.amount_eligible ?? null : null,
     comparisonText: "comparison_text" in raw ? raw.comparison_text ?? null : null,
@@ -74,19 +67,19 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     discountType: raw.discount_type,
     discountValue,
     maxDiscount,
-    minTransaction: raw.min_transaction ?? undefined,
+    minTransaction: raw.min_transaction == null ? undefined : Number(raw.min_transaction),
     couponCode: raw.coupon_code ?? null,
     validFrom: raw.valid_from,
-    validTo: raw.valid_to,
+    expiryDate: raw.expiry_date,
     eligibilityNotes: raw.eligibility_notes ?? [],
     category: raw.category,
     sourceType: "api",
-    verificationStatus: verificationStatus(raw.evidence_status),
-    isActive: raw.is_active,
-    publishStatus: raw.publish_status,
-    evidenceStatus: raw.evidence_status,
-    priorityScore: raw.priority_score,
-    lastUpdatedAt: raw.last_verified_at ?? undefined,
+    verificationStatus: "verified",
+    isActive: true,
+    publishStatus: "READY",
+    evidenceStatus: "VERIFIED",
+    priorityScore: 0,
+    lastUpdatedAt: raw.updated_at,
   };
 }
 
@@ -113,7 +106,7 @@ export function mapLocalOffer(raw: LocalRawOffer): OfferViewModel {
     minTransaction: raw.min_transaction,
     couponCode: raw.coupon_code,
     validFrom: raw.valid_from,
-    validTo: raw.valid_to,
+    expiryDate: raw.expiry_date,
     eligibilityNotes: notes,
     category: raw.category,
     sourceType: "demo_excel",

@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+    "/api/v1/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Availability */
+        get: operations["availability_api_v1_availability_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/feature-flags": {
         parameters: {
             query?: never;
@@ -123,6 +140,40 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** AvailabilityDay */
+        AvailabilityDay: {
+            /** Available */
+            available: boolean;
+            /** Benefit Type */
+            benefit_type: string | null;
+            /** Benefit Value */
+            benefit_value: number | null;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Display Text */
+            display_text: string;
+            /** Offer Count */
+            offer_count: number;
+        };
+        /** AvailabilityResponse */
+        AvailabilityResponse: {
+            /** Availability End */
+            availability_end: string | null;
+            /** Availability Start */
+            availability_start: string | null;
+            /** Data Version */
+            data_version: string;
+            /**
+             * Dataset Last Updated At
+             * Format: date
+             */
+            dataset_last_updated_at: string;
+            /** Days */
+            days?: components["schemas"]["AvailabilityDay"][];
+        };
         /** BankMetadata */
         BankMetadata: {
             /** Id */
@@ -189,8 +240,61 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
-        /** Offer */
-        Offer: {
+        /** OfferMetadata */
+        OfferMetadata: {
+            /** Airports */
+            airports?: components["schemas"]["AirportMetadata"][];
+            /** Availability End */
+            availability_end?: string | null;
+            /** Availability Start */
+            availability_start?: string | null;
+            /** Banks */
+            banks: components["schemas"]["BankMetadata"][];
+            /** Booking Channels */
+            booking_channels: ("WEB" | "APP" | "WEB_AND_APP")[];
+            /** Categories */
+            categories: "FLIGHT_DOMESTIC"[];
+            /** Data Version */
+            data_version: string;
+            /**
+             * Dataset Last Updated At
+             * Format: date
+             */
+            dataset_last_updated_at: string;
+            /** Payment Methods */
+            payment_methods: ("CREDIT" | "DEBIT" | "NO_CARD")[];
+            /** Platforms */
+            platforms: components["schemas"]["PlatformMetadata"][];
+        };
+        /** OffersResponse */
+        OffersResponse: {
+            /** Data Version */
+            data_version: string;
+            facets: components["schemas"]["CatalogueFacets"];
+            /** Offers */
+            offers: components["schemas"]["PublicOffer"][];
+            pagination: components["schemas"]["Pagination"];
+        };
+        /** Pagination */
+        Pagination: {
+            /** Limit */
+            limit: number;
+            /** Page */
+            page: number;
+            /** Total */
+            total: number;
+            /** Total Pages */
+            total_pages: number;
+        };
+        /** PlatformMetadata */
+        PlatformMetadata: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+        };
+        /** PublicOffer */
+        PublicOffer: {
             /** Bank Id */
             bank_id?: string | null;
             /** Bank Name */
@@ -217,38 +321,19 @@ export interface components {
              */
             discount_type: "PERCENT" | "FLAT";
             /** Discount Value */
-            discount_value: number;
+            discount_value: string;
             /** Eligibility Notes */
-            eligibility_notes?: string[];
+            eligibility_notes: string[];
             /**
-             * Evidence Status
-             * @enum {string}
+             * Expiry Date
+             * Format: date
              */
-            evidence_status: "VERIFIED" | "PARTIAL" | "UNVERIFIED";
-            /** Extra */
-            extra?: {
-                [key: string]: unknown;
-            };
-            /**
-             * Is Active
-             * @default true
-             */
-            is_active: boolean;
-            /** Last Verified At */
-            last_verified_at?: string | null;
-            /**
-             * Login Required
-             * @default false
-             */
-            login_required: boolean;
+            expiry_date: string;
             /** Max Discount */
-            max_discount?: number | null;
+            max_discount?: string | null;
             /** Min Transaction */
-            min_transaction?: number | null;
-            /**
-             * New User Only
-             * @default false
-             */
+            min_transaction?: string | null;
+            /** New User Only */
             new_user_only: boolean;
             /** Offer Id */
             offer_id: string;
@@ -263,27 +348,15 @@ export interface components {
             platform_id: string;
             /** Platform Name */
             platform_name: string;
-            /**
-             * Priority Score
-             * @default 0
-             */
-            priority_score: number;
-            /**
-             * Publish Status
-             * @enum {string}
-             */
-            publish_status: "READY" | "DRAFT" | "HIDDEN";
-            /** Source Type */
-            source_type?: string | null;
-            /**
-             * Source Url
-             * Format: uri
-             */
-            source_url: string;
             /** Supported Cards */
             supported_cards?: string[];
             /** Terms Url */
             terms_url?: string | null;
+            /**
+             * Updated At
+             * Format: date
+             */
+            updated_at: string;
             /** Usage Limit */
             usage_limit?: string | null;
             /**
@@ -291,58 +364,11 @@ export interface components {
              * Format: date
              */
             valid_from: string;
-            /**
-             * Valid To
-             * Format: date
-             */
-            valid_to: string;
-        };
-        /** OfferMetadata */
-        OfferMetadata: {
-            /** Airports */
-            airports?: components["schemas"]["AirportMetadata"][];
-            /** Banks */
-            banks: components["schemas"]["BankMetadata"][];
-            /** Booking Channels */
-            booking_channels: ("WEB" | "APP" | "WEB_AND_APP")[];
-            /** Categories */
-            categories: "FLIGHT_DOMESTIC"[];
-            /** Data Version */
-            data_version: string;
-            /** Payment Methods */
-            payment_methods: ("CREDIT" | "DEBIT" | "NO_CARD")[];
-            /** Platforms */
-            platforms: components["schemas"]["PlatformMetadata"][];
-        };
-        /** OffersResponse */
-        OffersResponse: {
-            /** Data Version */
-            data_version: string;
-            facets: components["schemas"]["CatalogueFacets"];
-            /** Offers */
-            offers: components["schemas"]["Offer"][];
-            pagination: components["schemas"]["Pagination"];
-        };
-        /** Pagination */
-        Pagination: {
-            /** Limit */
-            limit: number;
-            /** Page */
-            page: number;
-            /** Total */
-            total: number;
-            /** Total Pages */
-            total_pages: number;
-        };
-        /** PlatformMetadata */
-        PlatformMetadata: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
         };
         /** SearchDateBenefit */
         SearchDateBenefit: {
+            /** Available */
+            available: boolean;
             /** Benefit Type */
             benefit_type: string | null;
             /** Benefit Value */
@@ -354,6 +380,8 @@ export interface components {
             date: string;
             /** Display Text */
             display_text: string;
+            /** Offer Count */
+            offer_count: number;
         };
         /** SearchOffer */
         SearchOffer: {
@@ -387,46 +415,27 @@ export interface components {
              */
             discount_type: "PERCENT" | "FLAT";
             /** Discount Value */
-            discount_value: number;
+            discount_value: string;
             /** Display Kind */
             display_kind: string;
             /** Display Rank */
             display_rank: number;
             /** Eligibility Notes */
-            eligibility_notes?: string[];
+            eligibility_notes: string[];
             /** Estimated Final Amount */
             estimated_final_amount: number | null;
             /** Estimated Savings */
             estimated_savings: number | null;
             /**
-             * Evidence Status
-             * @enum {string}
+             * Expiry Date
+             * Format: date
              */
-            evidence_status: "VERIFIED" | "PARTIAL" | "UNVERIFIED";
-            /** Extra */
-            extra?: {
-                [key: string]: unknown;
-            };
-            /**
-             * Is Active
-             * @default true
-             */
-            is_active: boolean;
-            /** Last Verified At */
-            last_verified_at?: string | null;
-            /**
-             * Login Required
-             * @default false
-             */
-            login_required: boolean;
+            expiry_date: string;
             /** Max Discount */
-            max_discount?: number | null;
+            max_discount?: string | null;
             /** Min Transaction */
-            min_transaction?: number | null;
-            /**
-             * New User Only
-             * @default false
-             */
+            min_transaction?: string | null;
+            /** New User Only */
             new_user_only: boolean;
             /** Offer Id */
             offer_id: string;
@@ -441,31 +450,19 @@ export interface components {
             platform_id: string;
             /** Platform Name */
             platform_name: string;
-            /**
-             * Priority Score
-             * @default 0
-             */
-            priority_score: number;
-            /**
-             * Publish Status
-             * @enum {string}
-             */
-            publish_status: "READY" | "DRAFT" | "HIDDEN";
             /** Savings Delta */
             savings_delta: number | null;
             /** Savings Label */
             savings_label: string;
-            /** Source Type */
-            source_type?: string | null;
-            /**
-             * Source Url
-             * Format: uri
-             */
-            source_url: string;
             /** Supported Cards */
             supported_cards?: string[];
             /** Terms Url */
             terms_url?: string | null;
+            /**
+             * Updated At
+             * Format: date
+             */
+            updated_at: string;
             /** Usage Limit */
             usage_limit?: string | null;
             /**
@@ -473,11 +470,6 @@ export interface components {
              * Format: date
              */
             valid_from: string;
-            /**
-             * Valid To
-             * Format: date
-             */
-            valid_to: string;
         };
         /** SearchRequest */
         SearchRequest: {
@@ -549,6 +541,38 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    availability_api_v1_availability_get: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailabilityResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     feature_flags_api_v1_feature_flags_get: {
         parameters: {
             query?: never;

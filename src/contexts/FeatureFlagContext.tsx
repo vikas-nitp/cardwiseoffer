@@ -1,43 +1,17 @@
-/**
- * Feature Flag Context
- * 
- * Global context for feature flags loaded from backend.
- * Provides safe defaults if API fails.
- */
-
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
-import { log } from "@/lib/logger";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import generatedFlags from "@/data/generated/featureFlags.json";
+import type { components } from "@/types/generated-api";
 import { getDataMode } from "@/config/dataMode";
 import { repoFetchFeatureFlags } from "@/services/dataRepo";
 
-// ── Types (match backend feature_flags.json) ───────────────────────
-export interface FeatureFlags {
-  phase2UserFeaturesEnabled: boolean;
-  publicAllOffersEnabled: boolean;
-  couponCodeEnabled: boolean;
-  analyticsEnabled: boolean;
-  bookingAmountComparisonEnabled: boolean;
-}
+type FeatureFlagsResponse = components["schemas"]["FeatureFlagsResponse"];
+export type ProductFeatureFlags = Omit<FeatureFlagsResponse, "config_version">;
+export type FeatureFlags = ProductFeatureFlags;
 
-// ── Safe defaults (fail-safe if API is down) ───────────────────────
-const DEFAULT_FLAGS: FeatureFlags = {
-  phase2UserFeaturesEnabled: false,
-  publicAllOffersEnabled: true,
-  couponCodeEnabled: false,
-  analyticsEnabled: true,
-  bookingAmountComparisonEnabled: false,
-};
+const LOCAL_FLAGS: ProductFeatureFlags = generatedFlags;
 
-const API_FAIL_CLOSED_FLAGS: FeatureFlags = {
-  ...DEFAULT_FLAGS,
-  publicAllOffersEnabled: false,
-};
-
-// Remove direct API_BASE_URL usage — dataRepo handles fallback
-
-// ── Context ────────────────────────────────────────────────────────
 interface FeatureFlagContextValue {
-  flags: FeatureFlags;
+  flags: ProductFeatureFlags;
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
@@ -46,58 +20,48 @@ interface FeatureFlagContextValue {
 const FeatureFlagContext = createContext<FeatureFlagContextValue | null>(null);
 
 export const useFeatureFlags = () => {
-  const ctx = useContext(FeatureFlagContext);
-  if (!ctx) {
-    throw new Error("useFeatureFlags must be used within FeatureFlagProvider");
-  }
-  return ctx;
+  const value = useContext(FeatureFlagContext);
+  if (!value) throw new Error("useFeatureFlags must be used within FeatureFlagProvider");
+  return value;
 };
 
-// ── Provider ───────────────────────────────────────────────────────
-interface FeatureFlagProviderProps {
-  children: ReactNode;
-}
-
-export const FeatureFlagProvider = ({ children }: FeatureFlagProviderProps) => {
-  const [flags, setFlags] = useState<FeatureFlags>(
-    getDataMode() === "api" ? API_FAIL_CLOSED_FLAGS : DEFAULT_FLAGS
-  );
-  const [loading, setLoading] = useState(true);
+export const FeatureFlagProvider = ({ children }: { children: ReactNode }) => {
+  const local = getDataMode() === "local";
+  const [flags, setFlags] = useState<ProductFeatureFlags | null>(local ? LOCAL_FLAGS : null);
+  const [loading, setLoading] = useState(!local);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchFlags = useCallback(async () => {
+  const refetch = useCallback(async () => {
+    if (local) return;
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-
-      const data = await repoFetchFeatureFlags();
-      const apiFlags: FeatureFlags = {
-        phase2UserFeaturesEnabled: data.phase2UserFeaturesEnabled,
-        publicAllOffersEnabled: data.publicAllOffersEnabled,
-        couponCodeEnabled: data.couponCodeEnabled,
-        analyticsEnabled: data.analyticsEnabled,
-        bookingAmountComparisonEnabled: data.bookingAmountComparisonEnabled,
-      };
-      const mergedFlags: FeatureFlags = { ...DEFAULT_FLAGS, ...apiFlags };
-      setFlags(mergedFlags);
-      log.info("Feature flags loaded", mergedFlags);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      log.warn("Failed to load feature flags", { error: message });
-      setError(message);
-      setFlags(getDataMode() === "api" ? API_FAIL_CLOSED_FLAGS : DEFAULT_FLAGS);
+      const response = await repoFetchFeatureFlags();
+      const { config_version: _version, ...productFlags } = response;
+      setFlags(productFlags);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Feature configuration unavailable");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [local]);
 
-  // Load flags on mount
-  useEffect(() => {
-    fetchFlags();
-  }, [fetchFlags]);
+  useEffect(() => { void refetch(); }, [refetch]);
+
+  if (!flags) {
+    return (
+      <main className="min-h-screen grid place-items-center p-6 text-center">
+        <div>
+          <h1 className="text-xl font-semibold">Feature configuration unavailable</h1>
+          <p className="mt-2 text-muted-foreground">{loading ? "Loading configuration…" : error}</p>
+          {!loading && <button className="mt-4 underline" onClick={() => void refetch()}>Retry</button>}
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <FeatureFlagContext.Provider value={{ flags, loading, error, refetch: fetchFlags }}>
+    <FeatureFlagContext.Provider value={{ flags, loading, error, refetch }}>
       {children}
     </FeatureFlagContext.Provider>
   );

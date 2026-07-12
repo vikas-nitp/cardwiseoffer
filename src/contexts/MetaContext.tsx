@@ -40,6 +40,9 @@ export interface MetaData {
   categories: string[];
   supported_banks: string[];      // Bank IDs currently supported
   supported_platforms: string[];  // Platform IDs currently supported
+  availability_start: string | null;
+  availability_end: string | null;
+  dataset_last_updated_at: string;
 }
 
 // ── Safe defaults built from canonical local fixtures ─────────────
@@ -49,6 +52,9 @@ const LOCAL_METADATA = metadataJson as {
   airports: AirportMeta[];
   payment_methods: string[];
   categories: string[];
+  availability_start: string | null;
+  availability_end: string | null;
+  dataset_last_updated_at: string;
 };
 
 const DEFAULT_META: MetaData = {
@@ -59,6 +65,9 @@ const DEFAULT_META: MetaData = {
   categories: LOCAL_METADATA.categories,
   supported_banks: LOCAL_METADATA.banks.map((bank) => bank.id),
   supported_platforms: LOCAL_METADATA.platforms.map((platform) => platform.id),
+  availability_start: LOCAL_METADATA.availability_start,
+  availability_end: LOCAL_METADATA.availability_end,
+  dataset_last_updated_at: LOCAL_METADATA.dataset_last_updated_at,
 };
 
 // API URL read safely inside fetchMeta — no crash if missing
@@ -117,6 +126,9 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
         categories: data.categories || DEFAULT_META.categories,
         supported_banks: data.banks.map((bank) => bank.id),
         supported_platforms: data.platforms.map((platform) => platform.id),
+        availability_start: data.availability_start,
+        availability_end: data.availability_end,
+        dataset_last_updated_at: data.dataset_last_updated_at,
       };
       setMeta(mergedMeta);
       log.info("Meta data loaded from API");
@@ -124,7 +136,6 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
       const message = err instanceof Error ? err.message : "Unknown error";
       log.warn("Failed to load API metadata", { error: message });
       setError(message);
-      setMeta(DEFAULT_META);
     } finally {
       setLoading(false);
     }

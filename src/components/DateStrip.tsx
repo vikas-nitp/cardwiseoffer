@@ -3,7 +3,6 @@ import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DATE_STRIP_NAVIGATION_STEP_DAYS, DATE_STRIP_VISIBLE_DAYS } from "@/constants";
-import { stripWindowOffset } from "@/domain/bookingWindow";
 
 export interface StripDay {
   date: string;
@@ -17,13 +16,14 @@ interface DateStripProps {
 }
 
 const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) => {
-  const [offset, setOffset] = useState(() => stripWindowOffset(selectedDate, strip7days.length));
+  const [offset, setOffset] = useState(0);
 
   const selectedDateStr = useMemo(() => format(selectedDate, "yyyy-MM-dd"), [selectedDate]);
 
   useEffect(() => {
-    setOffset(stripWindowOffset(selectedDate, strip7days.length));
-  }, [selectedDate, strip7days.length]);
+    const selectedIndex = strip7days.findIndex((day) => day.date === format(selectedDate, "yyyy-MM-dd"));
+    setOffset(Math.max(0, selectedIndex));
+  }, [selectedDate, strip7days]);
 
   const maxOffset = Math.max(0, strip7days.length - DATE_STRIP_VISIBLE_DAYS);
   const visibleDays = strip7days.slice(offset, offset + DATE_STRIP_VISIBLE_DAYS);

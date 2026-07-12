@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { isOfferActive, isOfferEligible, isOfferExpired, isOfferUpcoming, validityLabel } from "@/domain/offerValidity";
 
-const mk = (from: string, to: string) => ({ validFrom: from, validTo: to });
+const mk = (from: string, to: string) => ({ validFrom: from, expiryDate: to });
 
 describe("offerValidity", () => {
   const now = new Date("2026-07-10T00:00:00Z");

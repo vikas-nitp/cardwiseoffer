@@ -4,7 +4,6 @@
  */
 
 import airportsData from "@/data/generated/airports.json";
-import featureFlagsData from "@/data/generated/featureFlags.json";
 
 // ────────────────────────────────────────────────────────────────────
 // API & Environment
@@ -35,7 +34,6 @@ export const MAX_BANK_FILTERS = 2; // Max banks user can select (enforced by UI 
 export const API_TIMEOUT_MS = 30000; // 30 seconds
 
 // Booking window: latest confirmed product rule = today .. today + 10 days.
-export const BOOKING_WINDOW_DAYS = 10;
 export const MAX_BOOKING_AMOUNT = 1_000_000;
 export const DATE_STRIP_VISIBLE_DAYS = 7;
 export const DATE_STRIP_NAVIGATION_STEP_DAYS = 1;
@@ -143,16 +141,4 @@ export const ERROR_MESSAGES = {
   OFFERS_FAILED: "Failed to load offers.",
   INVALID_SEARCH: "Please fill in all search fields.",
   SAME_CITY_ERROR: "Source and destination cannot be the same.",
-} as const;
-
-// ────────────────────────────────────────────────────────────────────
-// Default Feature Flags (loaded from featureFlags.json mock data)
-// ────────────────────────────────────────────────────────────────────
-
-export const DEFAULT_FEATURE_FLAGS = {
-  phase2UserFeaturesEnabled: featureFlagsData.phase2UserFeaturesEnabled ?? false,
-  publicAllOffersEnabled: featureFlagsData.publicAllOffersEnabled ?? true,
-  couponCodeEnabled: featureFlagsData.couponCodeEnabled ?? false,
-  analyticsEnabled: featureFlagsData.analyticsEnabled ?? true,
-  bookingAmountComparisonEnabled: featureFlagsData.bookingAmountComparisonEnabled ?? false,
 } as const;

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Calendar as CalendarIcon, Search, AlertCircle } from "lucide-react";
-import { format } from "date-fns";
+import { format, parseISO, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -13,7 +13,6 @@ import { MAX_BOOKING_AMOUNT } from "@/constants";
 import { Input } from "@/components/ui/input";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
-import { bookingWindowEnd, bookingWindowStart, isWithinBookingWindow } from "@/domain/bookingWindow";
 
 const AIRPORT_CODE_PATTERN = /^[A-Z]{3}$/;
 
@@ -89,8 +88,8 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
 
     if (!departDate) {
       isValid = false;
-    } else if (!isWithinBookingWindow(departDate)) {
-      newErrors.date = "Choose a date within the available booking window";
+    } else if (!meta.availability_start || !meta.availability_end || departDate < parseISO(meta.availability_start) || departDate > parseISO(meta.availability_end)) {
+      newErrors.date = "Choose a date with available offers";
       isValid = false;
     }
 
@@ -107,16 +106,23 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
     }
 
     return { errors: newErrors, isValid };
-  }, [fromAirport, toAirport, departDate, banks, bookingAmount, capabilities.bookingAmountComparison]);
+  }, [fromAirport, toAirport, departDate, banks, bookingAmount, capabilities.bookingAmountComparison, meta.availability_start, meta.availability_end]);
 
   const handleSearch = () => {
     setErrors(validation.errors);
     if (!validation.isValid || !fromAirport || !toAirport || !departDate) return;
-    onSearch(fromAirport, toAirport, departDate, banks, bookingAmount ? Number(bookingAmount) : undefined);
+    const effectiveBookingAmount = capabilities.bookingAmountComparison && bookingAmount
+      ? Number(bookingAmount)
+      : undefined;
+    onSearch(fromAirport, toAirport, departDate, banks, effectiveBookingAmount);
   };
 
-  const today = useMemo(() => bookingWindowStart(), []);
-  const maxDate = useMemo(() => bookingWindowEnd(), []);
+  const minDate = useMemo(() => meta.availability_start ? parseISO(meta.availability_start) : startOfDay(new Date()), [meta.availability_start]);
+  const maxDate = useMemo(() => meta.availability_end ? parseISO(meta.availability_end) : minDate, [meta.availability_end, minDate]);
+
+  useEffect(() => {
+    if (!capabilities.bookingAmountComparison) setBookingAmount("");
+  }, [capabilities.bookingAmountComparison]);
 
   const hasError = Object.keys(validation.errors).length > 0;
 
@@ -185,7 +191,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
                     setDepartDate(date);
                     setCalendarOpen(false);
                   }}
-                  disabled={(d) => d < today || d > maxDate}
+                  disabled={(d) => d < minDate || d > maxDate}
                   initialFocus
                   className={cn("p-3 pointer-events-auto")}
                 />

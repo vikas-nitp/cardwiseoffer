@@ -14,9 +14,11 @@ import {
   searchOffers as apiSearch,
   fetchAllOffers as apiFetchAll,
   fetchFeatureFlags as apiFetchFlags,
+  fetchAllOffersPage,
 } from "@/services/api";
 import { mapApiOffer } from "@/domain/offerMapper";
-import { DEFAULT_FEATURE_FLAGS } from "@/constants";
+import generatedFlags from "@/data/generated/featureFlags.json";
+import generatedManifest from "@/data/generated/manifest.json";
 import type { FeatureFlags, OfferFilters } from "@/services/api";
 
 export interface SearchResult {
@@ -60,8 +62,30 @@ export async function repoFetchAllOffers(
   return raw.map(mapApiOffer);
 }
 
+export async function repoFetchAllOffersPage(
+  filters: OfferFilters = {},
+  signal?: AbortSignal,
+) {
+  if (isLocalMode()) {
+    const offers = getLocalOffers();
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 20;
+    const start = (page - 1) * limit;
+    return {
+      offers: offers.slice(start, start + limit),
+      pagination: { page, limit, total: offers.length, total_pages: Math.ceil(offers.length / limit) },
+      facets: null,
+    };
+  }
+  const response = await fetchAllOffersPage(filters, signal);
+  return { ...response, offers: response.offers.map(mapApiOffer) };
+}
+
 // ── Feature flags ─────────────────────────────────────────
 export async function repoFetchFeatureFlags(): Promise<FeatureFlags> {
-  if (isLocalMode()) return { ...DEFAULT_FEATURE_FLAGS };
+  if (isLocalMode()) return {
+    ...generatedFlags,
+    config_version: generatedManifest.feature_config_version,
+  };
   return apiFetchFlags();
 }
