@@ -3,7 +3,7 @@
  * All hardcoded values, configuration, and mock data centralized here
  */
 
-import airportsData from "@/data/mock/airports.json";
+import airportsData from "@/data/generated/airports.json";
 import featureFlagsData from "@/data/generated/featureFlags.json";
 
 // ────────────────────────────────────────────────────────────────────
@@ -31,15 +31,14 @@ export const API_ENDPOINTS = {
 // UI Constants
 // ────────────────────────────────────────────────────────────────────
 
-export const MAX_FREE_OFFERS = 2; // Max offers shown to guest users
 export const MAX_BANK_FILTERS = 2; // Max banks user can select (enforced by UI warning)
 export const API_TIMEOUT_MS = 30000; // 30 seconds
 
 // Booking window: latest confirmed product rule = today .. today + 10 days.
 export const BOOKING_WINDOW_DAYS = 10;
+export const MAX_BOOKING_AMOUNT = 1_000_000;
 export const DATE_STRIP_VISIBLE_DAYS = 7;
 export const DATE_STRIP_NAVIGATION_STEP_DAYS = 1;
-export const AUTH_PROVIDER = ((import.meta.env.VITE_AUTH_PROVIDER as string) || "none").trim().toLowerCase();
 
 // Price Strip Configuration
 export const STRIP_DAYS_COUNT = 7; // Number of days in price strip (always 7)
@@ -151,10 +150,9 @@ export const ERROR_MESSAGES = {
 // ────────────────────────────────────────────────────────────────────
 
 export const DEFAULT_FEATURE_FLAGS = {
-  authEnabled: featureFlagsData.authEnabled ?? false,
-  offerLockingEnabled: featureFlagsData.offerLockingEnabled ?? false,
-  allOffers: featureFlagsData.allOffers ?? true,
-  savedCards: featureFlagsData.savedCards ?? false,
-  dailyVisitorsEnabled: featureFlagsData.dailyVisitorsEnabled ?? false,
+  phase2UserFeaturesEnabled: featureFlagsData.phase2UserFeaturesEnabled ?? false,
+  publicAllOffersEnabled: featureFlagsData.publicAllOffersEnabled ?? true,
   couponCodeEnabled: featureFlagsData.couponCodeEnabled ?? false,
+  analyticsEnabled: featureFlagsData.analyticsEnabled ?? true,
+  bookingAmountComparisonEnabled: featureFlagsData.bookingAmountComparisonEnabled ?? false,
 } as const;

@@ -102,7 +102,14 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
           )
           .slice(0, 2)
           .map((note) => <Condition key={note} text={note} />)}
+        {offer.amountEligible === false && <Condition text="Booking amount does not meet the minimum transaction" tone="warn" />}
+        {offer.amountEligible && offer.savings > 0 && <Condition text={`Estimated saving: ₹${offer.savings.toLocaleString()}`} strong />}
+        {offer.amountEligible && offer.finalPrice !== undefined && <Condition text={`Estimated payable: ₹${offer.finalPrice.toLocaleString()}`} strong />}
       </div>
+
+      {offer.amountEligible !== null && offer.amountEligible !== undefined && (
+        <p className="px-5 pb-3 text-[10px] leading-relaxed text-muted-foreground">Estimated values are based on advertised terms. Verify final price and eligibility on the booking platform.</p>
+      )}
 
       {/* Trust row — honest about demo status */}
       <div className="px-5 pb-2 flex items-center gap-3 text-[10px] text-muted-foreground/70">

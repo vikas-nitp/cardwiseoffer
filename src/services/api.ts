@@ -113,7 +113,8 @@ export async function searchOffers(
   banks: string[] = [],
   platforms: string[] = [],
   _isAuthenticated = false,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  bookingAmount?: number
 ): Promise<SearchResponse> {
   return apiCall<SearchResponse>(API_ENDPOINTS.SEARCH, {
     method: "POST",
@@ -124,6 +125,7 @@ export async function searchOffers(
       date: travelDate,
       banks: [...new Set(banks)],
       platforms: [...new Set(platforms)],
+      ...(bookingAmount === undefined ? {} : { booking_amount: bookingAmount }),
     },
   });
 }

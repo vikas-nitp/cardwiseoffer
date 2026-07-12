@@ -8,25 +8,29 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { log } from "@/lib/logger";
 import { getDataMode } from "@/config/dataMode";
-import type { FeatureFlags as ApiFeatureFlags } from "@/services/api";
 import { repoFetchFeatureFlags } from "@/services/dataRepo";
 
 // ── Types (match backend feature_flags.json) ───────────────────────
-export type FeatureFlags = Omit<ApiFeatureFlags, "config_version">;
+export interface FeatureFlags {
+  phase2UserFeaturesEnabled: boolean;
+  publicAllOffersEnabled: boolean;
+  couponCodeEnabled: boolean;
+  analyticsEnabled: boolean;
+  bookingAmountComparisonEnabled: boolean;
+}
 
 // ── Safe defaults (fail-safe if API is down) ───────────────────────
 const DEFAULT_FLAGS: FeatureFlags = {
-  authEnabled: false,           // Disable auth by default (no gating)
-  offerLockingEnabled: false,   // No locking by default
-  allOffers: true,              // Show all offers
-  savedCards: false,            // Feature not ready
-  dailyVisitorsEnabled: false,  // Don't show visitors if API fails
-  couponCodeEnabled: false,     // Coupon values remain data-only unless enabled
+  phase2UserFeaturesEnabled: false,
+  publicAllOffersEnabled: true,
+  couponCodeEnabled: false,
+  analyticsEnabled: true,
+  bookingAmountComparisonEnabled: false,
 };
 
 const API_FAIL_CLOSED_FLAGS: FeatureFlags = {
   ...DEFAULT_FLAGS,
-  allOffers: false,
+  publicAllOffersEnabled: false,
 };
 
 // Remove direct API_BASE_URL usage — dataRepo handles fallback
@@ -68,12 +72,11 @@ export const FeatureFlagProvider = ({ children }: FeatureFlagProviderProps) => {
 
       const data = await repoFetchFeatureFlags();
       const apiFlags: FeatureFlags = {
-        authEnabled: data.authEnabled,
-        offerLockingEnabled: data.offerLockingEnabled,
-        allOffers: data.allOffers,
-        savedCards: data.savedCards,
-        dailyVisitorsEnabled: data.dailyVisitorsEnabled,
+        phase2UserFeaturesEnabled: data.phase2UserFeaturesEnabled,
+        publicAllOffersEnabled: data.publicAllOffersEnabled,
         couponCodeEnabled: data.couponCodeEnabled,
+        analyticsEnabled: data.analyticsEnabled,
+        bookingAmountComparisonEnabled: data.bookingAmountComparisonEnabled,
       };
       const mergedFlags: FeatureFlags = { ...DEFAULT_FLAGS, ...apiFlags };
       setFlags(mergedFlags);

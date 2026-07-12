@@ -2,6 +2,8 @@
 
 A React + TypeScript application for comparing credit card offers across travel platforms.
 
+Lovable contributors must follow [LOVABLE.md](LOVABLE.md).
+
 ## Quick Start
 
 ```sh

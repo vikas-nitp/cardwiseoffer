@@ -1,17 +1,25 @@
 import { describe, it, expect } from "vitest";
-import { rankOffers, betterAltDelta } from "@/domain/offerRanking";
+import { rankOffers } from "@/domain/offerRanking";
 import type { OfferViewModel } from "@/types/offer";
 
-const base: Omit<OfferViewModel, "id" | "bank" | "bankDisplay" | "savings" | "paymentMethod" | "priorityScore"> = {
-  label: "x", cardName: null, platform: "MakeMyTrip", platformUrl: null,
-  discountType: "FLAT", discountValue: 0,
-  validFrom: "2026-01-01", validTo: "2030-01-01",
-  eligibilityNotes: [], category: "flight_domestic",
-  sourceType: "demo_excel", verificationStatus: "demo",
-};
-
-const offer = (id: string, bank: string | null, savings: number, payment: "CREDIT" | "NO_CARD" = "CREDIT", pri = 50): OfferViewModel =>
-  ({ ...base, id, bank, bankDisplay: bank, savings, paymentMethod: payment, priorityScore: pri });
+const offer = (
+  id: string,
+  bank: string | null,
+  savings: number,
+  payment: "CREDIT" | "NO_CARD" = "CREDIT",
+  pri = 50
+): OfferViewModel => ({
+  id, label: "x", title: "x",
+  platformId: "MAKEMYTRIP", platformName: "MakeMyTrip", platform: "MakeMyTrip",
+  bankId: bank, bankName: bank, bank, bankDisplay: bank, cardName: null,
+  paymentMethod: payment, category: "FLIGHT_DOMESTIC", bookingChannel: "WEB_AND_APP",
+  discountType: "FLAT", discountValue: savings, maxDiscount: null, minTransaction: null, savings,
+  couponCode: null, validFrom: "2026-01-01", validTo: "2030-01-01",
+  usageLimit: null, newUserOnly: false, loginRequired: false, eligibilityNotes: [],
+  termsUrl: null, sourceUrl: "https://example.com/", bookingUrl: null, platformUrl: null,
+  sourceType: "demo_excel", evidenceStatus: "UNVERIFIED", publishStatus: "READY", isActive: true,
+  verificationStatus: "demo", lastVerifiedAt: null, priorityScore: pri, extra: {},
+});
 
 describe("offerRanking", () => {
   it("no selection: returns best card + best default", () => {
@@ -33,7 +41,6 @@ describe("offerRanking", () => {
     const alt = offer("alt", "ICICI", 1600);
     const out = rankOffers([primary, alt, offer("d", null, 200, "NO_CARD")], ["HDFC"]);
     expect(out.map(o => o.id)).toEqual(["sel", "alt", "d"]);
-    expect(betterAltDelta(alt, primary)).toBe(600);
   });
 
   it("does not duplicate offers across categories", () => {

@@ -1,6 +1,6 @@
 /**
  * Data repository — local/api mode is explicit (VITE_DATA_SOURCE; VITE_DATA_MODE is a compatibility alias).
- * mock  → always local fixtures (never touches the network).
+ * local → generated synchronized fixtures (never touches the network).
  * api   → real fetch; on failure, throws — no silent mock fallback.
  */
 
@@ -9,7 +9,7 @@ import { log } from "@/lib/logger";
 import { getDataMode } from "@/config/dataMode";
 import type { OfferViewModel } from "@/types/offer";
 import type { CityOption } from "@/components/CityAutocomplete";
-import { mockSearch, mockAllOffers } from "@/services/mockApi";
+import { getLocalOffers, searchLocalOffers } from "@/data/repositories/LocalOfferRepository";
 import {
   searchOffers as apiSearch,
   fetchAllOffers as apiFetchAll,
@@ -21,10 +21,10 @@ import type { FeatureFlags, OfferFilters } from "@/services/api";
 
 export interface SearchResult {
   offers: OfferViewModel[];
-  strip7days: Array<{ date: string; bestBenefit: number | null }>;
+  strip7days: Array<{ date: string; displayText: string }>;
 }
 
-export const isMockMode = () => getDataMode() === "mock";
+export const isLocalMode = () => getDataMode() === "local";
 
 // ── Search offers ─────────────────────────────────────────
 export async function repoSearchOffers(
@@ -33,16 +33,17 @@ export async function repoSearchOffers(
   date: Date,
   banks: string[],
   _isAuthenticated: boolean,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  bookingAmount?: number
 ): Promise<SearchResult> {
-  if (getDataMode() === "mock") return mockSearch(from, to, date, banks);
+  if (isLocalMode()) return searchLocalOffers(from, to, date, banks, bookingAmount);
 
   const dateStr = format(date, "yyyy-MM-dd");
-  const response = await apiSearch(from.code, to.code, dateStr, banks, [], _isAuthenticated, signal);
+  const response = await apiSearch(from.code, to.code, dateStr, banks, [], _isAuthenticated, signal, bookingAmount);
   const offers = response.offers.map(mapApiOffer);
   const strip7days: SearchResult["strip7days"] = (response.date_strip ?? []).map((day) => ({
     date: day.date,
-    bestBenefit: day.best_benefit ?? null,
+    displayText: day.display_text,
   }));
   log.info("API search ok", { offers: offers.length });
   return { offers, strip7days };
@@ -54,13 +55,13 @@ export async function repoFetchAllOffers(
   filters: OfferFilters = {},
   signal?: AbortSignal
 ): Promise<OfferViewModel[]> {
-  if (getDataMode() === "mock") return mockAllOffers();
+  if (isLocalMode()) return getLocalOffers();
   const raw = await apiFetchAll(_isAuthenticated, filters, signal);
   return raw.map(mapApiOffer);
 }
 
 // ── Feature flags ─────────────────────────────────────────
 export async function repoFetchFeatureFlags(): Promise<FeatureFlags> {
-  if (getDataMode() === "mock") return { ...DEFAULT_FEATURE_FLAGS };
+  if (isLocalMode()) return { ...DEFAULT_FEATURE_FLAGS };
   return apiFetchFlags();
 }

@@ -5,6 +5,16 @@
   "accepted_row_count": 6,
   "rejected_row_count": 0,
   "warning_count": 0,
+  "generated_at": "2026-07-11T00:00:00+00:00",
+  "sources": [
+    {
+      "path": "offers.csv",
+      "format": "csv",
+      "row_count": 6,
+      "accepted_count": 6,
+      "rejected_count": 0
+    }
+  ],
   "errors": [],
   "warnings": []
 }

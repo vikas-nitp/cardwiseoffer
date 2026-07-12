@@ -22,6 +22,8 @@ export interface OfferViewModel {
   // Money
   originalPrice?: number;
   finalPrice?: number;
+  amountEligible?: boolean | null;
+  comparisonText?: string | null;
   savings: number;             // best-effort estimated savings amount
 
   paymentMethod: PaymentMethod;

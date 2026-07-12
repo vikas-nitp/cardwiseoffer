@@ -9,6 +9,10 @@ import CityAutocomplete, { type CityOption } from "@/components/CityAutocomplete
 import BankMultiSelect from "@/components/BankMultiSelect";
 import { useMeta } from "@/contexts/MetaContext";
 import { MAX_BANK_FILTERS } from "@/constants";
+import { MAX_BOOKING_AMOUNT } from "@/constants";
+import { Input } from "@/components/ui/input";
+import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
+import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
 import { bookingWindowEnd, bookingWindowStart, isWithinBookingWindow } from "@/domain/bookingWindow";
 
 const AIRPORT_CODE_PATTERN = /^[A-Z]{3}$/;
@@ -18,7 +22,7 @@ const validateAirportCode = (code: string): boolean => {
 };
 
 interface SearchCardProps {
-  onSearch: (from: CityOption, to: CityOption, date: Date, banks: string[]) => void;
+  onSearch: (from: CityOption, to: CityOption, date: Date, banks: string[], bookingAmount?: number) => void;
   initialFrom?: CityOption | null;
   initialTo?: CityOption | null;
   initialDate?: Date;
@@ -27,6 +31,8 @@ interface SearchCardProps {
 
 const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBanks }: SearchCardProps) => {
   const { meta } = useMeta();
+  const { flags } = useFeatureFlags();
+  const capabilities = resolveFeatureCapabilities(flags);
   
   const cities: CityOption[] = useMemo(() => {
     return meta.airports.map((airport) => ({
@@ -41,12 +47,14 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
   const [departDate, setDepartDate] = useState<Date | undefined>(initialDate ?? undefined);
   const [banks, setBanks] = useState<string[]>(initialBanks ?? []);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [bookingAmount, setBookingAmount] = useState("");
 
   const [errors, setErrors] = useState<{
     from?: string;
     to?: string;
     date?: string;
     banks?: string;
+    bookingAmount?: string;
   }>({});
 
   useEffect(() => {
@@ -90,14 +98,21 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
       newErrors.banks = `Maximum ${MAX_BANK_FILTERS} banks allowed`;
       isValid = false;
     }
+    if (capabilities.bookingAmountComparison && bookingAmount) {
+      const amount = Number(bookingAmount);
+      if (!Number.isFinite(amount) || amount <= 0 || amount > MAX_BOOKING_AMOUNT) {
+        newErrors.bookingAmount = `Enter an amount from ₹1 to ₹${MAX_BOOKING_AMOUNT.toLocaleString()}`;
+        isValid = false;
+      }
+    }
 
     return { errors: newErrors, isValid };
-  }, [fromAirport, toAirport, departDate, banks]);
+  }, [fromAirport, toAirport, departDate, banks, bookingAmount, capabilities.bookingAmountComparison]);
 
   const handleSearch = () => {
     setErrors(validation.errors);
     if (!validation.isValid || !fromAirport || !toAirport || !departDate) return;
-    onSearch(fromAirport, toAirport, departDate, banks);
+    onSearch(fromAirport, toAirport, departDate, banks, bookingAmount ? Number(bookingAmount) : undefined);
   };
 
   const today = useMemo(() => bookingWindowStart(), []);
@@ -190,6 +205,15 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
           )}
         </div>
       </div>
+
+      {capabilities.bookingAmountComparison && (
+        <div className="mt-4 max-w-md">
+          <label htmlFor="booking-amount" className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em]">Expected booking amount</label>
+          <p className="text-[11px] text-muted-foreground mb-1.5">Optional — enter an estimated fare to compare actual savings.</p>
+          <Input id="booking-amount" inputMode="decimal" value={bookingAmount} onChange={(event) => setBookingAmount(event.target.value.replace(/[^0-9.]/g, ""))} placeholder="e.g. ₹8,000" className="h-12 rounded-xl bg-muted/40" />
+          {errors.bookingAmount && <p className="text-xs text-destructive mt-1">{errors.bookingAmount}</p>}
+        </div>
+      )}
 
       {/* General error display */}
       {hasError && Object.keys(errors).length === 0 && (

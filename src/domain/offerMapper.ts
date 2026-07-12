@@ -63,6 +63,8 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
       "estimated_final_amount" in raw
         ? raw.estimated_final_amount ?? undefined
         : undefined,
+    amountEligible: "amount_eligible" in raw ? raw.amount_eligible ?? null : null,
+    comparisonText: "comparison_text" in raw ? raw.comparison_text ?? null : null,
     savings:
       estimatedSavings ??
       (raw.discount_type === "FLAT" ? discountValue : maxDiscount ?? 0),

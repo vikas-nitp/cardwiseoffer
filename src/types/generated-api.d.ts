@@ -157,15 +157,15 @@ export interface components {
         /** FeatureFlagsResponse */
         FeatureFlagsResponse: {
             /**
-             * Alloffers
+             * Analyticsenabled
              * @default true
              */
-            allOffers: boolean;
+            analyticsEnabled: boolean;
             /**
-             * Authenabled
+             * Bookingamountcomparisonenabled
              * @default false
              */
-            authEnabled: boolean;
+            bookingAmountComparisonEnabled: boolean;
             /** Config Version */
             config_version: string;
             /**
@@ -174,20 +174,15 @@ export interface components {
              */
             couponCodeEnabled: boolean;
             /**
-             * Dailyvisitorsenabled
+             * Phase2Userfeaturesenabled
              * @default false
              */
-            dailyVisitorsEnabled: boolean;
+            phase2UserFeaturesEnabled: boolean;
             /**
-             * Offerlockingenabled
-             * @default false
+             * Publicalloffersenabled
+             * @default true
              */
-            offerLockingEnabled: boolean;
-            /**
-             * Savedcards
-             * @default false
-             */
-            savedCards: boolean;
+            publicAllOffersEnabled: boolean;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -264,11 +259,8 @@ export interface components {
              * @enum {string}
              */
             payment_method: "CREDIT" | "DEBIT" | "NO_CARD";
-            /**
-             * Platform Id
-             * @enum {string}
-             */
-            platform_id: "MAKEMYTRIP" | "CLEARTRIP";
+            /** Platform Id */
+            platform_id: string;
             /** Platform Name */
             platform_name: string;
             /**
@@ -288,6 +280,8 @@ export interface components {
              * Format: uri
              */
             source_url: string;
+            /** Supported Cards */
+            supported_cards?: string[];
             /** Terms Url */
             terms_url?: string | null;
             /** Usage Limit */
@@ -342,26 +336,29 @@ export interface components {
         };
         /** PlatformMetadata */
         PlatformMetadata: {
-            /**
-             * Id
-             * @enum {string}
-             */
-            id: "MAKEMYTRIP" | "CLEARTRIP";
+            /** Id */
+            id: string;
             /** Name */
             name: string;
         };
         /** SearchDateBenefit */
         SearchDateBenefit: {
-            /** Best Benefit */
-            best_benefit: number | null;
+            /** Benefit Type */
+            benefit_type: string | null;
+            /** Benefit Value */
+            benefit_value: number | null;
             /**
              * Date
              * Format: date
              */
             date: string;
+            /** Display Text */
+            display_text: string;
         };
         /** SearchOffer */
         SearchOffer: {
+            /** Amount Eligible */
+            amount_eligible?: boolean | null;
             /** Bank Id */
             bank_id?: string | null;
             /** Bank Name */
@@ -380,6 +377,8 @@ export interface components {
              * @constant
              */
             category: "FLIGHT_DOMESTIC";
+            /** Comparison Text */
+            comparison_text?: string | null;
             /** Coupon Code */
             coupon_code?: string | null;
             /**
@@ -438,11 +437,8 @@ export interface components {
              * @enum {string}
              */
             payment_method: "CREDIT" | "DEBIT" | "NO_CARD";
-            /**
-             * Platform Id
-             * @enum {string}
-             */
-            platform_id: "MAKEMYTRIP" | "CLEARTRIP";
+            /** Platform Id */
+            platform_id: string;
             /** Platform Name */
             platform_name: string;
             /**
@@ -466,6 +462,8 @@ export interface components {
              * Format: uri
              */
             source_url: string;
+            /** Supported Cards */
+            supported_cards?: string[];
             /** Terms Url */
             terms_url?: string | null;
             /** Usage Limit */
@@ -501,7 +499,7 @@ export interface components {
             /** From */
             from: string;
             /** Platforms */
-            platforms?: ("MAKEMYTRIP" | "CLEARTRIP")[];
+            platforms?: string[];
             /** To */
             to: string;
         };

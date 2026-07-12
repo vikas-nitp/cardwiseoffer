@@ -99,7 +99,7 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
 
   const fetchMeta = async () => {
     // Local mode: the generated bundle is the source of truth. Never touch the network.
-    if (getDataMode() === "mock") {
+    if (getDataMode() === "local") {
       setMeta(DEFAULT_META);
       setLoading(false);
       return;

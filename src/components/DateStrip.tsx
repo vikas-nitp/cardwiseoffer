@@ -7,7 +7,7 @@ import { stripWindowOffset } from "@/domain/bookingWindow";
 
 export interface StripDay {
   date: string;
-  bestBenefit: number | null;
+  displayText: string;
 }
 
 interface DateStripProps {
@@ -73,12 +73,10 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
                 <span
                   className={cn(
                     "text-[11px] font-bold mt-1",
-                    isSelected ? "text-primary-foreground/90" : day.bestBenefit ? "text-accent" : "text-muted-foreground"
+                    isSelected ? "text-primary-foreground/90" : day.displayText !== "No offers" ? "text-accent" : "text-muted-foreground"
                   )}
                 >
-                  {day.bestBenefit
-                    ? `Up to ₹${day.bestBenefit.toLocaleString()}`
-                    : "No offers"}
+                  {day.displayText}
                 </span>
               </button>
             );

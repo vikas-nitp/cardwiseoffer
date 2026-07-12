@@ -10,10 +10,6 @@ import AboutSection from "@/components/AboutSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import ContactSection from "@/components/ContactSection";
 import FAQSection from "@/components/FAQSection";
-import ProfileSetup from "@/components/ProfileSetup";
-import GlobalLoginGate from "@/components/GlobalLoginGate";
-import AuthModal from "@/components/AuthModal";
-import { useAuth } from "@/contexts/AuthContext";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import DateStrip, { type StripDay } from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
@@ -24,10 +20,8 @@ import { ArrowRight, Pencil, AlertCircle, Loader2, SearchX } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { CityOption } from "@/components/CityAutocomplete";
-import { MAX_FREE_OFFERS } from "@/constants";
 import type { OfferViewModel } from "@/types/offer";
-import { repoSearchOffers, repoFetchAllOffers, isMockMode } from "@/services/dataRepo";
-import { betterAltDelta } from "@/domain/offerRanking";
+import { repoSearchOffers, repoFetchAllOffers, isLocalMode } from "@/services/dataRepo";
 import { filterCatalogueOffers } from "@/domain/offerFiltering";
 import { log } from "@/lib/logger";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
@@ -43,15 +37,14 @@ interface SearchState {
   to: CityOption;
   date: Date;
   banks: string[];
+  bookingAmount?: number;
 }
 
 const Index = () => {
-  const { needsProfile, isLoggedIn } = useAuth();
   const { flags: featureFlags } = useFeatureFlags();
   const capabilities = useMemo(() => resolveFeatureCapabilities(featureFlags), [featureFlags]);
   const [activeSection, setActiveSection] = useState<ActiveSection>("home");
   const [searchState, setSearchState] = useState<SearchState | null>(null);
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [bankFilter, setBankFilter] = useState<string[]>([]);
   const [platformFilter, setPlatformFilter] = useState<string[]>([]);
@@ -68,8 +61,6 @@ const Index = () => {
   const offersController = useRef<AbortController | null>(null);
 
   const hasSearched = searchState !== null;
-  const authEnabled = capabilities.auth;
-  const offerLockingEnabled = capabilities.offerLocking;
 
   useEffect(() => () => {
     searchController.current?.abort();
@@ -83,7 +74,7 @@ const Index = () => {
     setAllOffersLoading(true);
     setAllOffersError(null);
     try {
-      const offers = await repoFetchAllOffers(isLoggedIn, {
+      const offers = await repoFetchAllOffers(false, {
         bank: bankFilter,
         platform: platformFilter,
         payment_method: paymentFilter,
@@ -97,17 +88,17 @@ const Index = () => {
     } finally {
       if (offersController.current === controller) setAllOffersLoading(false);
     }
-  }, [bankFilter, isLoggedIn, paymentFilter, platformFilter]);
+  }, [bankFilter, paymentFilter, platformFilter]);
 
   useEffect(() => {
-    if (capabilities.allOffers && activeSection === "all-offers") {
+    if (capabilities.publicAllOffers && activeSection === "all-offers") {
       handleAllOffersClick();
     }
-  }, [activeSection, capabilities.allOffers, handleAllOffersClick]);
+  }, [activeSection, capabilities.publicAllOffers, handleAllOffersClick]);
 
   // OR within each category, AND across categories. Canonical IDs (CREDIT/DEBIT/NO_CARD, bank code, platform id).
   const filteredAllOffers = useMemo(() => {
-    if (!isMockMode()) return allOffers;
+    if (!isLocalMode()) return allOffers;
     return filterCatalogueOffers(allOffers, {
       bank: bankFilter,
       platform: platformFilter,
@@ -119,22 +110,22 @@ const Index = () => {
     setBankFilter([]); setPlatformFilter([]); setPaymentFilter([]);
   };
 
-  const handleSearch = async (from: CityOption, to: CityOption, date: Date, banks: string[]) => {
+  const handleSearch = async (from: CityOption, to: CityOption, date: Date, banks: string[], bookingAmount?: number) => {
     searchController.current?.abort();
     const controller = new AbortController();
     searchController.current = controller;
-    setSearchState({ from, to, date, banks });
+    setSearchState({ from, to, date, banks, bookingAmount });
     setActiveSection("results");
     handleResetFilters();
     setSearchError(null);
     setSearchLoading(true);
     setStrip7days([]);
     try {
-      const result = await repoSearchOffers(from, to, date, banks, isLoggedIn, controller.signal);
+      const result = await repoSearchOffers(from, to, date, banks, false, controller.signal, bookingAmount);
       if (controller.signal.aborted) return;
       setSearchResults(result.offers);
       setStrip7days(result.strip7days);
-      log.info("Search completed", { offers: result.offers.length, mock: isMockMode() });
+      log.info("Search completed", { offers: result.offers.length, mode: isLocalMode() ? "local" : "api" });
     } catch (err) {
       if (controller.signal.aborted) return;
       setSearchError(err instanceof Error ? err.message : "Failed to fetch offers.");
@@ -156,7 +147,7 @@ const Index = () => {
     setSearchLoading(true);
     setSearchError(null);
     try {
-      const result = await repoSearchOffers(searchState.from, searchState.to, newDate, searchState.banks, isLoggedIn, controller.signal);
+      const result = await repoSearchOffers(searchState.from, searchState.to, newDate, searchState.banks, false, controller.signal, searchState.bookingAmount);
       if (controller.signal.aborted) return;
       setSearchResults(result.offers);
       setStrip7days(result.strip7days);
@@ -178,65 +169,23 @@ const Index = () => {
   // Variant + label helpers for search result tiles.
   const decorateResults = (offers: OfferViewModel[]) => {
     if (offers.length === 0) return [];
-    if (!isMockMode()) {
-      return offers.map((offer) => ({
-        offer,
-        variant: offer.label === "Best Offer" || offer.label === "Your Card Offer"
-          ? "primary" as const
-          : offer.label === "Better Alternative"
-            ? "highlight" as const
-            : offer.label.includes("Default")
-              ? "default" as const
-              : "neutral" as const,
-        label: offer.label,
-        extraLabel: undefined as string | undefined,
-      }));
-    }
-    const primary = offers[0];
-    return offers.map((o, i) => {
-      let variant: "primary" | "highlight" | "default" | "neutral" = "neutral";
-      let label = o.label;
-      let extraLabel: string | undefined;
-      if (i === 0) {
-        variant = "primary";
-        label = "Best Offer";
-      } else if (o.bank === null || o.paymentMethod === "NO_CARD") {
-        variant = "default";
-        label = "Default Offer (No Card)";
-      } else if (o.savings > primary.savings) {
-        variant = "highlight";
-        label = "Better Alternative";
-        extraLabel = `Save ₹${betterAltDelta(o, primary).toLocaleString()} more`;
-      } else {
-        variant = "neutral";
-      }
-      return { offer: o, variant, label, extraLabel };
-    });
+    return offers.map((offer) => ({
+      offer,
+      variant: offer.label === "Best Offer" || offer.label === "Your Card Offer"
+        ? "primary" as const
+        : offer.label === "Better Alternative"
+          ? "highlight" as const
+          : offer.label.includes("Default") ? "default" as const : "neutral" as const,
+      label: offer.label,
+      extraLabel: offer.comparisonText ?? undefined,
+    }));
   };
 
   const renderOfferTiles = (offers: OfferViewModel[], wrapperClass: string, kind: "results" | "catalog") => {
-    const shouldShowLoginGate = authEnabled && offerLockingEnabled && !isLoggedIn;
     const decorated = kind === "results"
       ? decorateResults(offers)
       : offers.map((o) => ({ offer: o, variant: "neutral" as const, label: o.label, extraLabel: undefined as string | undefined }));
 
-    if (shouldShowLoginGate) {
-      const preview = decorated.slice(0, MAX_FREE_OFFERS);
-      return (
-        <>
-          <div className={wrapperClass}>
-            {preview.map((d, i) => (
-              <motion.div key={d.offer.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08, duration: 0.3 }}>
-                <OfferCard offer={d.offer} variant={d.variant} label={d.label} extraLabel={d.extraLabel} />
-              </motion.div>
-            ))}
-          </div>
-          {offers.length > MAX_FREE_OFFERS && (
-            <GlobalLoginGate onLoginClick={() => setShowLoginModal(true)} totalOffers={offers.length} />
-          )}
-        </>
-      );
-    }
     return (
       <div className={wrapperClass}>
         {decorated.map((d, i) => (
@@ -271,17 +220,11 @@ const Index = () => {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header activeSection={activeSection} onSectionChange={setActiveSection} authEnabled={authEnabled} allOffersEnabled={capabilities.allOffers} />
+        <Header activeSection={activeSection} onSectionChange={setActiveSection} allOffersEnabled={capabilities.publicAllOffers} />
 
         <main className="flex-1 flex flex-col items-center px-4 md:px-8 pb-10">
           <AnimatePresence mode="wait">
-            {needsProfile && (
-              <motion.div key="profile" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full">
-                <ProfileSetup />
-              </motion.div>
-            )}
-
-            {showHome && !needsProfile && (
+            {showHome && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
                 <section className="flex flex-col items-center justify-center pt-14 md:pt-28 pb-8 max-w-xl mx-auto text-center px-4">
                   <h1 className="text-3xl md:text-[44px] font-extrabold tracking-tight leading-[1.12]">
@@ -373,7 +316,7 @@ const Index = () => {
               </motion.div>
             )}
 
-            {showAllOffers && capabilities.allOffers && (
+            {showAllOffers && capabilities.publicAllOffers && (
               <motion.div key="all-offers" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 tracking-tight">All Card Offers</h2>
                 <p className="text-[13px] text-muted-foreground mb-5">Browse every active card offer across major travel platforms.</p>
@@ -423,7 +366,7 @@ const Index = () => {
               </motion.div>
             )}
 
-            {showAllOffers && !capabilities.allOffers && (
+            {showAllOffers && !capabilities.publicAllOffers && (
               <motion.div key="all-offers-disabled" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
@@ -443,7 +386,7 @@ const Index = () => {
             )}
           </AnimatePresence>
 
-          {showHome && !needsProfile && (
+          {showHome && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.35 }} className="w-full max-w-6xl mx-auto mt-12 mb-4">
               <FAQSection />
             </motion.div>
@@ -454,7 +397,6 @@ const Index = () => {
         <Footer />
       </div>
 
-      <AuthModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
   );
 };
