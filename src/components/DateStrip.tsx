@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface StripDay {
   date: string;
-  savings: number;
+  count: number;
 }
 
 interface DateStripProps {
@@ -42,18 +42,15 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
     }
   }, [strip7days]);
 
-  const scroll = (direction: "left" | "right") => {
+  const scroll = (direction: "left" | "right") =>
     scrollRef.current?.scrollBy({ left: direction === "left" ? -200 : 200, behavior: "smooth" });
-  };
 
   if (!strip7days || strip7days.length === 0) return null;
-
-  const bestSavings = Math.max(...strip7days.map((d) => d.savings));
 
   return (
     <div>
       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground mb-1.5 text-center">
-        Best estimated savings by date
+        Active offers by date
       </p>
       <div className="flex items-center gap-1.5 w-full justify-center relative">
         {canScrollLeft && (
@@ -73,9 +70,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
         >
           {strip7days.map((day) => {
             const isSelected = day.date === selectedDateStr;
-            const isBest = day.savings === bestSavings && bestSavings > 0;
             const dateObj = parseISO(day.date);
-
             return (
               <button
                 key={day.date}
@@ -94,11 +89,11 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
                 <span className="text-xs font-bold mt-0.5">{format(dateObj, "dd MMM")}</span>
                 <span
                   className={cn(
-                    "text-[11px] font-bold mt-1",
-                    isSelected ? "text-primary-foreground/90" : isBest ? "text-accent" : "text-muted-foreground"
+                    "text-[11px] font-medium mt-1",
+                    isSelected ? "text-primary-foreground/90" : "text-muted-foreground"
                   )}
                 >
-                  {day.savings > 0 ? `save ₹${day.savings.toLocaleString()}` : "—"}
+                  {day.count > 0 ? `${day.count} offer${day.count === 1 ? "" : "s"}` : "—"}
                 </span>
               </button>
             );
@@ -115,6 +110,9 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
           </button>
         )}
       </div>
+      <p className="text-[10px] text-muted-foreground/70 text-center mt-2">
+        Fare-based savings are unavailable — counts reflect currently active offers.
+      </p>
     </div>
   );
 };

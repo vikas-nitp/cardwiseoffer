@@ -17,6 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import DateStrip, { type StripDay } from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
+import MobileOfferFilters from "@/components/MobileOfferFilters";
 import OfferCard from "@/components/OfferCard";
 import TrustDisclaimer from "@/components/TrustDisclaimer";
 import DemoModeBanner from "@/components/DemoModeBanner";
@@ -26,9 +27,11 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { CityOption } from "@/components/CityAutocomplete";
 import { MAX_FREE_OFFERS } from "@/constants";
-import type { OfferViewModel } from "@/types/offer";
-import { repoSearchOffers, repoFetchAllOffers, isMockMode } from "@/services/dataRepo";
+import type { OfferViewModel, PlatformId, PaymentMethod, BookingChannel } from "@/types/offer";
+import { repoSearchOffers, repoFetchAllOffers, isLocalMode } from "@/services/dataRepo";
 import { betterAltDelta } from "@/domain/offerRanking";
+import { filterOffers, EMPTY_FILTERS } from "@/domain/offerFiltering";
+import { calculateFacets, type FacetUniverse } from "@/domain/offerFacets";
 import { log } from "@/lib/logger";
 
 const pageVariants = {
@@ -54,6 +57,7 @@ const Index = () => {
   const [bankFilter, setBankFilter] = useState<string[]>([]);
   const [platformFilter, setPlatformFilter] = useState<string[]>([]);
   const [paymentFilter, setPaymentFilter] = useState<string[]>([]);
+  const [channelFilter, setChannelFilter] = useState<string[]>([]);
 
   const [searchResults, setSearchResults] = useState<OfferViewModel[]>([]);
   const [strip7days, setStrip7days] = useState<StripDay[]>([]);
@@ -88,18 +92,47 @@ const Index = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSection]);
 
-  // OR within each category, AND across categories. Canonical IDs (CREDIT/DEBIT/NO_CARD, bank code, platform id).
-  const filteredAllOffers = useMemo(() => {
-    return allOffers.filter((o) => {
-      if (bankFilter.length > 0 && (!o.bank || !bankFilter.includes(o.bank))) return false;
-      if (platformFilter.length > 0 && !platformFilter.includes(o.platform)) return false;
-      if (paymentFilter.length > 0 && !paymentFilter.includes(o.paymentMethod)) return false;
-      return true;
-    });
-  }, [allOffers, bankFilter, platformFilter, paymentFilter]);
+  // Canonical filter object (OR-within-group, AND-across-groups; strict bank in catalog).
+  const filters = useMemo(
+    () => ({
+      ...EMPTY_FILTERS,
+      platformIds: platformFilter as PlatformId[],
+      bankIds: bankFilter,
+      paymentMethods: paymentFilter as PaymentMethod[],
+      bookingChannels: channelFilter as BookingChannel[],
+    }),
+    [platformFilter, bankFilter, paymentFilter, channelFilter]
+  );
+
+  const filteredAllOffers = useMemo(() => filterOffers(allOffers, filters), [allOffers, filters]);
+
+  const facetUniverse: FacetUniverse = useMemo(
+    () => ({
+      platforms: [
+        { id: "MAKEMYTRIP", name: "MakeMyTrip" },
+        { id: "CLEARTRIP", name: "Cleartrip" },
+      ],
+      banks: Array.from(
+        new Map(allOffers.filter((o) => o.bankId).map((o) => [o.bankId as string, o.bankName ?? o.bankId!])).entries()
+      ).map(([id, name]) => ({ id, name })),
+      paymentMethods: [
+        { id: "CREDIT", name: "Credit Card" },
+        { id: "DEBIT", name: "Debit Card" },
+        { id: "NO_CARD", name: "No Card" },
+      ],
+      bookingChannels: [
+        { id: "WEB", name: "Web" },
+        { id: "APP", name: "App" },
+        { id: "WEB_AND_APP", name: "Web + App" },
+      ],
+    }),
+    [allOffers]
+  );
+
+  const facets = useMemo(() => calculateFacets(allOffers, filters, facetUniverse), [allOffers, filters, facetUniverse]);
 
   const handleResetFilters = () => {
-    setBankFilter([]); setPlatformFilter([]); setPaymentFilter([]);
+    setBankFilter([]); setPlatformFilter([]); setPaymentFilter([]); setChannelFilter([]);
   };
 
   const handleSearch = async (from: CityOption, to: CityOption, date: Date, banks: string[]) => {
@@ -113,7 +146,7 @@ const Index = () => {
       const result = await repoSearchOffers(from, to, date, banks, isLoggedIn);
       setSearchResults(result.offers);
       setStrip7days(result.strip7days);
-      log.info("Search completed", { offers: result.offers.length, mock: isMockMode() });
+      log.info("Search completed", { offers: result.offers.length, local: isLocalMode() });
     } catch (err) {
       setSearchError(err instanceof Error ? err.message : "Failed to fetch offers.");
       setSearchResults([]);
@@ -351,26 +384,40 @@ const Index = () => {
                   </Alert>
                 )}
                 {!allOffersLoading && !allOffersError && (
-                  <div className="flex flex-col lg:flex-row gap-5">
-                    <div className="hidden lg:block w-64 shrink-0">
-                      <SidebarFilters
+                  <>
+                    <div className="lg:hidden mb-3">
+                      <MobileOfferFilters
                         bankFilter={bankFilter} onBankFilterChange={setBankFilter}
                         platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
                         paymentFilter={paymentFilter} onPaymentFilterChange={setPaymentFilter}
+                        channelFilter={channelFilter} onChannelFilterChange={setChannelFilter}
+                        facets={facets}
                         onResetAll={handleResetFilters}
                       />
                     </div>
-                    <div className="flex-1">
-                      {filteredAllOffers.length === 0 ? (
-                        <EmptyState onReset={handleResetFilters} />
-                      ) : (
-                        renderOfferTiles(filteredAllOffers, "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4", "catalog")
-                      )}
-                      <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
-                        Offers sourced from public bank promotions. Final eligibility depends on platform &amp; bank terms.
-                      </p>
+                    <div className="flex flex-col lg:flex-row gap-5">
+                      <div className="hidden lg:block w-64 shrink-0">
+                        <SidebarFilters
+                          bankFilter={bankFilter} onBankFilterChange={setBankFilter}
+                          platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
+                          paymentFilter={paymentFilter} onPaymentFilterChange={setPaymentFilter}
+                          channelFilter={channelFilter} onChannelFilterChange={setChannelFilter}
+                          facets={facets}
+                          onResetAll={handleResetFilters}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        {filteredAllOffers.length === 0 ? (
+                          <EmptyState onReset={handleResetFilters} message={allOffers.length === 0 ? "Offers are currently unavailable." : "No offers match the selected filters."} />
+                        ) : (
+                          renderOfferTiles(filteredAllOffers, "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4", "catalog")
+                        )}
+                        <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
+                          Offer details may change. Please verify eligibility and terms on the booking platform before payment.
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  </>
                 )}
               </motion.div>
             )}

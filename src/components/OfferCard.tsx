@@ -31,13 +31,13 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
   const v = VARIANTS[variant];
   const LabelIcon = v.icon;
 
-  const isDemo = offer.sourceType === "demo_excel" || offer.verificationStatus === "demo";
   const expired = isOfferExpired(offer);
   const upcoming = isOfferUpcoming(offer);
   const validity = validityLabel(offer);
+  const bookingUrl = offer.bookingUrl ?? offer.platformUrl;
 
   const savings = estimateSavings(offer);
-  const canBook = !!offer.platformUrl && !expired && !upcoming;
+  const canBook = !!bookingUrl && !expired && !upcoming;
 
   return (
     <div
@@ -101,32 +101,32 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
         ))}
       </div>
 
-      {/* Trust row — honest about demo status */}
+      {/* Evidence row */}
       <div className="px-5 pb-2 flex items-center gap-3 text-[10px] text-muted-foreground/70">
-        {isDemo ? (
-          <span className="flex items-center gap-1" title="Sample data, not verified against the platform">
-            <Info className="w-3 h-3" />
-            Demo offer — based on sample data
-          </span>
-        ) : offer.verificationStatus === "verified" ? (
+        {offer.evidenceStatus === "VERIFIED" ? (
           <span className="flex items-center gap-1 text-emerald-700">
             <BadgeCheck className="w-3 h-3" />
-            Verified
+            Verified against platform
           </span>
-        ) : (
+        ) : offer.evidenceStatus === "PARTIAL" ? (
           <span className="flex items-center gap-1">
             <Shield className="w-3 h-3" />
-            Unverified
+            Partially verified
+          </span>
+        ) : (
+          <span className="flex items-center gap-1" title="Verify terms on the booking platform before payment">
+            <Info className="w-3 h-3" />
+            Verify terms before booking
           </span>
         )}
       </div>
 
       {/* CTA */}
       <div className="px-5 pb-5 pt-1">
-        {canBook && offer.platformUrl ? (
-          <a href={offer.platformUrl} target="_blank" rel="noopener noreferrer" className="block">
+        {canBook && bookingUrl ? (
+          <a href={bookingUrl} target="_blank" rel="noopener noreferrer" className="block">
             <Button className="gap-2 w-full font-semibold text-[13px] rounded-xl h-10 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md transition-all duration-200">
-              Book on {offer.platform}
+              Book on {offer.platformName ?? offer.platform}
               <ExternalLink className="w-3.5 h-3.5" />
             </Button>
           </a>
