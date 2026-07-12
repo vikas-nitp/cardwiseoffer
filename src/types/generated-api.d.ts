@@ -169,6 +169,11 @@ export interface components {
             /** Config Version */
             config_version: string;
             /**
+             * Couponcodeenabled
+             * @default false
+             */
+            couponCodeEnabled: boolean;
+            /**
              * Dailyvisitorsenabled
              * @default false
              */
@@ -345,6 +350,16 @@ export interface components {
             /** Name */
             name: string;
         };
+        /** SearchDateBenefit */
+        SearchDateBenefit: {
+            /** Best Benefit */
+            best_benefit: number | null;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+        };
         /** SearchOffer */
         SearchOffer: {
             /** Bank Id */
@@ -494,6 +509,8 @@ export interface components {
         SearchResponse: {
             /** Data Version */
             data_version: string;
+            /** Date Strip */
+            date_strip?: components["schemas"]["SearchDateBenefit"][];
             /** Offers */
             offers: components["schemas"]["SearchOffer"][];
             summary: components["schemas"]["SearchSummary"];

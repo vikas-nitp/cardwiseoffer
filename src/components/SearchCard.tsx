@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Calendar as CalendarIcon, Search, AlertCircle } from "lucide-react";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -8,18 +8,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import CityAutocomplete, { type CityOption } from "@/components/CityAutocomplete";
 import BankMultiSelect from "@/components/BankMultiSelect";
 import { useMeta } from "@/contexts/MetaContext";
-import { MAX_BANK_FILTERS, BOOKING_WINDOW_DAYS } from "@/constants";
+import { MAX_BANK_FILTERS } from "@/constants";
+import { bookingWindowEnd, bookingWindowStart, isWithinBookingWindow } from "@/domain/bookingWindow";
 
 const AIRPORT_CODE_PATTERN = /^[A-Z]{3}$/;
 
 const validateAirportCode = (code: string): boolean => {
   return AIRPORT_CODE_PATTERN.test(code.toUpperCase());
-};
-
-const validateDate = (date: Date): boolean => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return date >= today;
 };
 
 interface SearchCardProps {
@@ -45,6 +40,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
   const [toAirport, setToAirport] = useState<CityOption | null>(initialTo ?? null);
   const [departDate, setDepartDate] = useState<Date | undefined>(initialDate ?? undefined);
   const [banks, setBanks] = useState<string[]>(initialBanks ?? []);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const [errors, setErrors] = useState<{
     from?: string;
@@ -85,8 +81,8 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
 
     if (!departDate) {
       isValid = false;
-    } else if (!validateDate(departDate)) {
-      newErrors.date = "Date must be today or later";
+    } else if (!isWithinBookingWindow(departDate)) {
+      newErrors.date = "Choose a date within the available booking window";
       isValid = false;
     }
 
@@ -104,12 +100,8 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
     onSearch(fromAirport, toAirport, departDate, banks);
   };
 
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
-  const maxDate = useMemo(() => addDays(today, BOOKING_WINDOW_DAYS), [today]);
+  const today = useMemo(() => bookingWindowStart(), []);
+  const maxDate = useMemo(() => bookingWindowEnd(), []);
 
   const hasError = Object.keys(validation.errors).length > 0;
 
@@ -147,22 +139,25 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
         <div className="space-y-1">
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em]">Departure</label>
-            <Popover>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <button 
                   className={cn(
-                    "w-full bg-muted/40 border border-border/30 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left flex items-center relative hover:border-primary/20 transition-all duration-200",
+                    "w-full bg-muted/40 border border-border/30 h-14 text-sm pl-10 pr-3 rounded-xl text-left flex items-center relative hover:border-primary/20 transition-all duration-200",
                     errors.date && "ring-2 ring-destructive"
                   )}
                 >
                   <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   {departDate ? (
-                    <div>
+                    <div className="grid h-9 grid-rows-2 content-center">
                       <span className="font-bold text-foreground block text-[13px]">{format(departDate, "dd MMM yyyy")}</span>
                       <span className="text-[10px] text-muted-foreground">{format(departDate, "EEEE")}</span>
                     </div>
                   ) : (
-                    <span className="text-muted-foreground text-[13px]">Select date</span>
+                    <div className="grid h-9 grid-rows-2 content-center">
+                      <span className="text-muted-foreground text-[13px] font-medium">Select date</span>
+                      <span className="text-[10px] text-muted-foreground">Choose travel date</span>
+                    </div>
                   )}
                 </button>
               </PopoverTrigger>
@@ -170,7 +165,11 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
                 <Calendar
                   mode="single"
                   selected={departDate}
-                  onSelect={(d) => d && setDepartDate(d)}
+                  onSelect={(date) => {
+                    if (!date) return;
+                    setDepartDate(date);
+                    setCalendarOpen(false);
+                  }}
                   disabled={(d) => d < today || d > maxDate}
                   initialFocus
                   className={cn("p-3 pointer-events-auto")}

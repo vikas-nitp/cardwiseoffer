@@ -6,13 +6,14 @@
 import { format } from "date-fns";
 import type { CityOption } from "@/components/CityAutocomplete";
 import type { OfferViewModel } from "@/types/offer";
-import { mapLocalOffer, type LocalRawOffer } from "@/domain/offerMapper";
-import { isOfferActive } from "@/domain/offerValidity";
+import { mapApiOffer, type ApiOffer } from "@/domain/offerMapper";
+import { isOfferEligible } from "@/domain/offerValidity";
 import { rankOffers } from "@/domain/offerRanking";
 import { buildFlightSearchUrl, platformHomeUrl } from "@/domain/platformUrlBuilder";
-import offersJson from "@/data/mock/offers.json";
+import { bookingWindowDates } from "@/domain/bookingWindow";
+import offersJson from "@/data/generated/offers.json";
 
-const ALL_OFFERS: OfferViewModel[] = (offersJson as LocalRawOffer[]).map(mapLocalOffer);
+const ALL_OFFERS: OfferViewModel[] = (offersJson as ApiOffer[]).map(mapApiOffer);
 
 function attachRouteUrls(offers: OfferViewModel[], from: string, to: string, date: string): OfferViewModel[] {
   return offers.map((o) => ({
@@ -31,27 +32,25 @@ export function mockSearch(
   to: CityOption,
   date: Date,
   selectedBanks: string[]
-): { offers: OfferViewModel[]; strip7days: Array<{ date: string; savings: number }> } {
+): { offers: OfferViewModel[]; strip7days: Array<{ date: string; bestBenefit: number | null }> } {
   const dateStr = format(date, "yyyy-MM-dd");
-  const active = ALL_OFFERS.filter((o) => isOfferActive(o));
+  const active = ALL_OFFERS.filter((o) => isOfferEligible(o, date));
   const ranked = rankOffers(active, selectedBanks);
   const withUrls = attachRouteUrls(ranked, from.code, to.code, dateStr);
 
-  // Strip = best available savings for each of the next 7 dates (uses same offer pool).
-  const strip = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(date);
-    d.setDate(d.getDate() + i);
+  // The strip communicates offer availability, never synthetic fares or savings.
+  const strip = bookingWindowDates().map((d) => {
     const isoDate = format(d, "yyyy-MM-dd");
-    const activeThatDay = ALL_OFFERS.filter((o) => isOfferActive(o, new Date(isoDate)));
-    const best = activeThatDay.reduce((m, o) => Math.max(m, o.savings), 0);
-    return { date: isoDate, savings: best };
+    const activeThatDay = ALL_OFFERS.filter((o) => isOfferEligible(o, new Date(isoDate)));
+    const bestBenefit = activeThatDay.reduce((best, offer) => Math.max(best, offer.savings), 0);
+    return { date: isoDate, bestBenefit: bestBenefit > 0 ? bestBenefit : null };
   });
 
   return { offers: withUrls, strip7days: strip };
 }
 
 export function mockAllOffers(): OfferViewModel[] {
-  const active = ALL_OFFERS.filter((o) => isOfferActive(o));
+  const active = ALL_OFFERS.filter((o) => isOfferEligible(o));
   const sorted = [...active].sort((a, b) => b.savings - a.savings || b.priorityScore - a.priorityScore);
   return attachCatalogUrls(sorted);
 }

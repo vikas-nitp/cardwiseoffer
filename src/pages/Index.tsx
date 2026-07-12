@@ -19,7 +19,6 @@ import DateStrip, { type StripDay } from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
 import TrustDisclaimer from "@/components/TrustDisclaimer";
-import DemoModeBanner from "@/components/DemoModeBanner";
 import { format } from "date-fns";
 import { ArrowRight, Pencil, AlertCircle, Loader2, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,7 +28,9 @@ import { MAX_FREE_OFFERS } from "@/constants";
 import type { OfferViewModel } from "@/types/offer";
 import { repoSearchOffers, repoFetchAllOffers, isMockMode } from "@/services/dataRepo";
 import { betterAltDelta } from "@/domain/offerRanking";
+import { filterCatalogueOffers } from "@/domain/offerFiltering";
 import { log } from "@/lib/logger";
+import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -47,6 +48,7 @@ interface SearchState {
 const Index = () => {
   const { needsProfile, isLoggedIn } = useAuth();
   const { flags: featureFlags } = useFeatureFlags();
+  const capabilities = useMemo(() => resolveFeatureCapabilities(featureFlags), [featureFlags]);
   const [activeSection, setActiveSection] = useState<ActiveSection>("home");
   const [searchState, setSearchState] = useState<SearchState | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -66,8 +68,8 @@ const Index = () => {
   const offersController = useRef<AbortController | null>(null);
 
   const hasSearched = searchState !== null;
-  const authEnabled = featureFlags.authEnabled;
-  const offerLockingEnabled = featureFlags.offerLockingEnabled;
+  const authEnabled = capabilities.auth;
+  const offerLockingEnabled = capabilities.offerLocking;
 
   useEffect(() => () => {
     searchController.current?.abort();
@@ -98,19 +100,18 @@ const Index = () => {
   }, [bankFilter, isLoggedIn, paymentFilter, platformFilter]);
 
   useEffect(() => {
-    if (featureFlags.allOffers && activeSection === "all-offers") {
+    if (capabilities.allOffers && activeSection === "all-offers") {
       handleAllOffersClick();
     }
-  }, [activeSection, featureFlags.allOffers, handleAllOffersClick]);
+  }, [activeSection, capabilities.allOffers, handleAllOffersClick]);
 
   // OR within each category, AND across categories. Canonical IDs (CREDIT/DEBIT/NO_CARD, bank code, platform id).
   const filteredAllOffers = useMemo(() => {
     if (!isMockMode()) return allOffers;
-    return allOffers.filter((o) => {
-      if (bankFilter.length > 0 && (!o.bank || !bankFilter.includes(o.bank))) return false;
-      if (platformFilter.length > 0 && !platformFilter.includes(o.platform)) return false;
-      if (paymentFilter.length > 0 && !paymentFilter.includes(o.paymentMethod)) return false;
-      return true;
+    return filterCatalogueOffers(allOffers, {
+      bank: bankFilter,
+      platform: platformFilter,
+      paymentMethod: paymentFilter,
     });
   }, [allOffers, bankFilter, platformFilter, paymentFilter]);
 
@@ -263,15 +264,14 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <div className="fixed inset-0 z-0 sky-gradient airplane-trail cloud-decoration">
-        <div className="absolute top-16 left-[8%] w-[500px] h-[500px] rounded-full bg-primary/[0.03] blur-[80px]" />
-        <div className="absolute bottom-16 right-[8%] w-[400px] h-[400px] rounded-full bg-accent/[0.03] blur-[80px]" />
+    <div className="min-h-screen w-full min-w-0 overflow-x-clip flex flex-col relative">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden z-0 sky-gradient airplane-trail cloud-decoration">
+        <div className="absolute top-16 left-[8%] w-[min(500px,90vw)] h-[min(500px,90vw)] rounded-full bg-primary/[0.03] blur-[80px]" />
+        <div className="absolute bottom-16 right-[8%] w-[min(400px,85vw)] h-[min(400px,85vw)] rounded-full bg-accent/[0.03] blur-[80px]" />
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <DemoModeBanner />
-        <Header activeSection={activeSection} onSectionChange={setActiveSection} authEnabled={authEnabled} allOffersEnabled={featureFlags.allOffers} />
+        <Header activeSection={activeSection} onSectionChange={setActiveSection} authEnabled={authEnabled} allOffersEnabled={capabilities.allOffers} />
 
         <main className="flex-1 flex flex-col items-center px-4 md:px-8 pb-10">
           <AnimatePresence mode="wait">
@@ -373,7 +373,7 @@ const Index = () => {
               </motion.div>
             )}
 
-            {showAllOffers && featureFlags.allOffers && (
+            {showAllOffers && capabilities.allOffers && (
               <motion.div key="all-offers" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 tracking-tight">All Card Offers</h2>
                 <p className="text-[13px] text-muted-foreground mb-5">Browse every active card offer across major travel platforms.</p>
@@ -391,7 +391,15 @@ const Index = () => {
                   </Alert>
                 )}
                 {!allOffersLoading && !allOffersError && (
-                  <div className="flex flex-col lg:flex-row gap-5">
+                  <div className="flex min-w-0 flex-col lg:flex-row gap-5">
+                    <div className="lg:hidden">
+                      <SidebarFilters
+                        bankFilter={bankFilter} onBankFilterChange={setBankFilter}
+                        platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
+                        paymentFilter={paymentFilter} onPaymentFilterChange={setPaymentFilter}
+                        onResetAll={handleResetFilters}
+                      />
+                    </div>
                     <div className="hidden lg:block w-64 shrink-0">
                       <SidebarFilters
                         bankFilter={bankFilter} onBankFilterChange={setBankFilter}
@@ -400,7 +408,7 @@ const Index = () => {
                         onResetAll={handleResetFilters}
                       />
                     </div>
-                    <div className="flex-1">
+                    <div className="min-w-0 flex-1">
                       {filteredAllOffers.length === 0 ? (
                         <EmptyState onReset={handleResetFilters} />
                       ) : (
@@ -415,7 +423,7 @@ const Index = () => {
               </motion.div>
             )}
 
-            {showAllOffers && !featureFlags.allOffers && (
+            {showAllOffers && !capabilities.allOffers && (
               <motion.div key="all-offers-disabled" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 <Alert>
                   <AlertCircle className="h-4 w-4" />

@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.1",
+  "contract_version": "1.1",
+  "source_owner": "frontend",
+  "source_file": "data/source/offers.csv",
+  "source_hash": "sha256:8056dd37f15e3d5edf40d474b57977a7708abe435e7b981b96462870a9e9e08a",
+  "data_version": "2026-07-11-baa9893eaadb",
+  "source_count": 1,
+  "source_row_count": 6,
+  "accepted_row_count": 6,
+  "rejected_row_count": 0,
+  "supported_platforms": [
+    "CLEARTRIP",
+    "MAKEMYTRIP"
+  ]
+}

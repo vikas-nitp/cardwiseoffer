@@ -1,8 +1,10 @@
-import { ExternalLink, Star, TrendingUp, Gift, CreditCard, Shield, Info, BadgeCheck } from "lucide-react";
+import { ExternalLink, Star, TrendingUp, Gift, CreditCard, Shield, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { OfferViewModel } from "@/types/offer";
 import { validityLabel, isOfferExpired, isOfferUpcoming } from "@/domain/offerValidity";
-import { savingsLabel, estimateSavings } from "@/domain/offerCalculation";
+import { savingsLabel } from "@/domain/offerCalculation";
+import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
+import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
 
 type Variant = "primary" | "highlight" | "default" | "neutral";
 
@@ -28,16 +30,21 @@ const PAYMENT_LABELS: Record<string, string> = {
 };
 
 const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardProps) => {
+  const { flags } = useFeatureFlags();
+  const capabilities = resolveFeatureCapabilities(flags);
   const v = VARIANTS[variant];
   const LabelIcon = v.icon;
 
-  const isDemo = offer.sourceType === "demo_excel" || offer.verificationStatus === "demo";
   const expired = isOfferExpired(offer);
   const upcoming = isOfferUpcoming(offer);
   const validity = validityLabel(offer);
 
-  const savings = estimateSavings(offer);
   const canBook = !!offer.platformUrl && !expired && !upcoming;
+  const isNoCard = offer.paymentMethod === "NO_CARD" || offer.bank === null;
+  const badgeLabel = label ?? offer.label;
+  const badgeAlreadyNamesBank = Boolean(
+    offer.bankDisplay && badgeLabel.toLowerCase().includes(offer.bankDisplay.toLowerCase())
+  );
 
   return (
     <div
@@ -47,7 +54,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
       <div className="px-5 pt-5 pb-2 flex items-center gap-2 flex-wrap">
         <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-[0.08em] ${v.chip}`}>
           <LabelIcon className="w-3 h-3" />
-          {label ?? offer.label}
+          {badgeLabel}
         </span>
         {extraLabel && (
           <span className="text-[10px] font-bold text-accent bg-savings-soft px-2 py-0.5 rounded-md">
@@ -56,59 +63,50 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
         )}
       </div>
 
-      {/* Savings */}
+      {!isNoCard && offer.bankDisplay && !badgeAlreadyNamesBank && (
+        <div className="px-5 pb-2">
+          <p className="text-sm font-bold text-foreground">{offer.bankDisplay}</p>
+        </div>
+      )}
+
+      {/* Discount appears once; a percentage is not presented as exact savings. */}
       <div className="px-5 pb-3">
-        <p className="text-3xl font-extrabold text-foreground tracking-tight leading-none">
-          {offer.discountType === "FLAT" || offer.maxDiscount
-            ? `₹${savings.toLocaleString()}`
-            : savingsLabel(offer)}
+        <p className="text-xl font-extrabold text-foreground tracking-tight">
+          {savingsLabel(offer)}
         </p>
-        <p className="text-[10px] text-muted-foreground font-medium mt-1 uppercase tracking-[0.08em]">
-          {offer.discountType === "PERCENT" ? "up to savings" : "estimated savings"}
-        </p>
-        {offer.discountType === "PERCENT" && (
-          <p className="text-[11px] text-muted-foreground mt-0.5">{savingsLabel(offer)}</p>
-        )}
       </div>
 
-      {/* Bank / Card / Payment */}
-      <div className="px-5 pb-3 flex items-center gap-1.5 flex-wrap">
-        {offer.bankDisplay && (
-          <span className="text-[11px] font-semibold bg-muted/60 px-2 py-0.5 rounded-md text-foreground">
-            {offer.bankDisplay}
+      {!isNoCard && (
+        <div className="px-5 pb-3">
+          <span className="inline-flex text-[11px] font-bold text-foreground bg-muted/40 px-2 py-1 rounded">
+            {PAYMENT_LABELS[offer.paymentMethod] ?? offer.paymentMethod}
           </span>
-        )}
-        {offer.cardName && <span className="text-[11px] text-muted-foreground">{offer.cardName}</span>}
-        <span className="text-[10px] font-medium text-muted-foreground bg-muted/40 px-1.5 py-0.5 rounded">
-          {PAYMENT_LABELS[offer.paymentMethod] ?? offer.paymentMethod}
-        </span>
-      </div>
+        </div>
+      )}
 
       {/* Conditions */}
       <div className="px-5 pb-4 flex-1 space-y-1.5">
         {offer.minTransaction ? (
           <Condition text={`Minimum booking ₹${offer.minTransaction.toLocaleString()}`} />
         ) : null}
-        {offer.maxDiscount ? (
+        {offer.discountType === "FLAT" && offer.maxDiscount && offer.maxDiscount !== offer.discountValue ? (
           <Condition text={`Maximum discount ₹${offer.maxDiscount.toLocaleString()}`} />
         ) : null}
         <Condition text={validity} tone={expired ? "danger" : upcoming ? "warn" : "muted"} />
-        {offer.couponCode && (
-          <Condition text={`Coupon: ${offer.couponCode}`} />
-        )}
-        {offer.eligibilityNotes.slice(0, 2).map((n) => (
-          <Condition key={n} text={n} />
-        ))}
+        {capabilities.couponCode && offer.couponCode && <Condition text={`Coupon: ${offer.couponCode}`} />}
+        <Condition text={offer.bookingChannel === "APP" ? "Mobile app" : offer.bookingChannel === "WEB" ? "Website" : "Website and mobile app"} strong />
+        {offer.newUserOnly && <Condition text="New users only" strong />}
+        {offer.eligibilityNotes
+          .filter((note) =>
+            !/no card|required|new users?|selected .* cards?/i.test(note)
+          )
+          .slice(0, 2)
+          .map((note) => <Condition key={note} text={note} />)}
       </div>
 
       {/* Trust row — honest about demo status */}
       <div className="px-5 pb-2 flex items-center gap-3 text-[10px] text-muted-foreground/70">
-        {isDemo ? (
-          <span className="flex items-center gap-1" title="Sample data, not verified against the platform">
-            <Info className="w-3 h-3" />
-            Demo offer — based on sample data
-          </span>
-        ) : offer.verificationStatus === "verified" ? (
+        {offer.verificationStatus === "verified" ? (
           <span className="flex items-center gap-1 text-emerald-700">
             <BadgeCheck className="w-3 h-3" />
             Verified
@@ -144,9 +142,9 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
   );
 };
 
-const Condition = ({ text, tone = "muted" }: { text: string; tone?: "muted" | "warn" | "danger" }) => (
+const Condition = ({ text, tone = "muted", strong = false }: { text: string; tone?: "muted" | "warn" | "danger"; strong?: boolean }) => (
   <div className={`text-[11px] flex items-start gap-2 leading-relaxed ${
-    tone === "danger" ? "text-destructive" : tone === "warn" ? "text-amber-700" : "text-muted-foreground"
+    tone === "danger" ? "text-destructive" : tone === "warn" ? "text-amber-700" : strong ? "font-semibold text-foreground" : "text-muted-foreground"
   }`}>
     <span className="w-1 h-1 rounded-full bg-border mt-1.5 flex-shrink-0" />
     {text}

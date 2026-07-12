@@ -4,13 +4,19 @@
  */
 
 import airportsData from "@/data/mock/airports.json";
-import featureFlagsData from "@/data/mock/featureFlags.json";
+import featureFlagsData from "@/data/generated/featureFlags.json";
 
 // ────────────────────────────────────────────────────────────────────
 // API & Environment
 // ────────────────────────────────────────────────────────────────────
 
-export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || "";
+const configuredApiBaseUrl = ((import.meta.env.VITE_API_BASE_URL as string) || "")
+  .trim()
+  .replace(/\/+$/, "");
+
+// Endpoint constants below own the `/api/v1` prefix. Accept either the API
+// origin or the documented `/api/v1` URL without producing `/api/v1/api/v1`.
+export const API_BASE_URL = configuredApiBaseUrl.replace(/\/api\/v1$/i, "");
 
 export const API_ENDPOINTS = {
   HEALTH: "/health",
@@ -31,6 +37,9 @@ export const API_TIMEOUT_MS = 30000; // 30 seconds
 
 // Booking window: latest confirmed product rule = today .. today + 10 days.
 export const BOOKING_WINDOW_DAYS = 10;
+export const DATE_STRIP_VISIBLE_DAYS = 7;
+export const DATE_STRIP_NAVIGATION_STEP_DAYS = 1;
+export const AUTH_PROVIDER = ((import.meta.env.VITE_AUTH_PROVIDER as string) || "none").trim().toLowerCase();
 
 // Price Strip Configuration
 export const STRIP_DAYS_COUNT = 7; // Number of days in price strip (always 7)
@@ -147,4 +156,5 @@ export const DEFAULT_FEATURE_FLAGS = {
   allOffers: featureFlagsData.allOffers ?? true,
   savedCards: featureFlagsData.savedCards ?? false,
   dailyVisitorsEnabled: featureFlagsData.dailyVisitorsEnabled ?? false,
+  couponCodeEnabled: featureFlagsData.couponCodeEnabled ?? false,
 } as const;

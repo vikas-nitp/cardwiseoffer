@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isOfferActive, isOfferExpired, isOfferUpcoming, validityLabel } from "@/domain/offerValidity";
+import { isOfferActive, isOfferEligible, isOfferExpired, isOfferUpcoming, validityLabel } from "@/domain/offerValidity";
 
 const mk = (from: string, to: string) => ({ validFrom: from, validTo: to });
 
@@ -24,5 +24,20 @@ describe("offerValidity", () => {
     expect(validityLabel(mk("2026-07-01", "2026-12-31"), now)).toMatch(/Valid until/);
     expect(validityLabel(mk("2026-03-01", "2026-03-31"), now)).toBe("Expired");
     expect(validityLabel(mk("2026-08-01", "2026-08-31"), now)).toMatch(/Starts on/);
+  });
+
+  it("requires active, ready, verified domestic offers", () => {
+    const base = {
+      ...mk("2026-07-01", "2026-12-31"),
+      isActive: true,
+      publishStatus: "READY",
+      evidenceStatus: "VERIFIED",
+      category: "FLIGHT_DOMESTIC",
+    };
+    expect(isOfferEligible(base, now)).toBe(true);
+    expect(isOfferEligible({ ...base, isActive: false }, now)).toBe(false);
+    expect(isOfferEligible({ ...base, publishStatus: "DRAFT" }, now)).toBe(false);
+    expect(isOfferEligible({ ...base, evidenceStatus: "UNVERIFIED" }, now)).toBe(false);
+    expect(isOfferEligible({ ...base, category: "HOTEL" }, now)).toBe(false);
   });
 });

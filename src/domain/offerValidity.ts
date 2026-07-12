@@ -19,6 +19,17 @@ export function isOfferActive(offer: Pick<OfferViewModel, "validFrom" | "validTo
   return !isOfferExpired(offer, now) && !isOfferUpcoming(offer, now);
 }
 
+export function isOfferEligible(
+  offer: Pick<OfferViewModel, "validFrom" | "validTo" | "isActive" | "publishStatus" | "evidenceStatus" | "category">,
+  date = startOfToday()
+): boolean {
+  return offer.isActive &&
+    offer.publishStatus === "READY" &&
+    offer.evidenceStatus === "VERIFIED" &&
+    offer.category === "FLIGHT_DOMESTIC" &&
+    isOfferActive(offer, date);
+}
+
 export function validityLabel(offer: Pick<OfferViewModel, "validFrom" | "validTo">, now = startOfToday()): string {
   if (isOfferExpired(offer, now)) return "Expired";
   if (isOfferUpcoming(offer, now)) return `Starts on ${format(parseISO(offer.validFrom), "dd MMM yyyy")}`;

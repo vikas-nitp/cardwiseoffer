@@ -15,6 +15,8 @@ export interface OfferViewModel {
   bankDisplay: string | null;  // resolved display name
   cardName: string | null;
   platform: string;
+  platformName: string;
+  offerTitle: string;
   platformUrl: string | null;  // null = no route context; UI must disable CTA
 
   // Money
@@ -23,6 +25,8 @@ export interface OfferViewModel {
   savings: number;             // best-effort estimated savings amount
 
   paymentMethod: PaymentMethod;
+  bookingChannel: string;
+  newUserOnly: boolean;
   discountType: DiscountType;
   discountValue: number;       // rupees for FLAT, percent for PERCENT
   maxDiscount?: number;
@@ -37,6 +41,9 @@ export interface OfferViewModel {
 
   sourceType: SourceType;
   verificationStatus: VerificationStatus;
+  isActive: boolean;
+  publishStatus: string;
+  evidenceStatus: string;
   priorityScore: number;
   lastUpdatedAt?: string;
 }

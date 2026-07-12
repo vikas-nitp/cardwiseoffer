@@ -1,11 +1,13 @@
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { DATE_STRIP_NAVIGATION_STEP_DAYS, DATE_STRIP_VISIBLE_DAYS } from "@/constants";
+import { stripWindowOffset } from "@/domain/bookingWindow";
 
 export interface StripDay {
   date: string;
-  savings: number;
+  bestBenefit: number | null;
 }
 
 interface DateStripProps {
@@ -15,72 +17,48 @@ interface DateStripProps {
 }
 
 const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [offset, setOffset] = useState(() => stripWindowOffset(selectedDate, strip7days.length));
 
   const selectedDateStr = useMemo(() => format(selectedDate, "yyyy-MM-dd"), [selectedDate]);
 
-  const updateScrollButtons = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
-    }
-  };
-
   useEffect(() => {
-    updateScrollButtons();
-    const el = scrollRef.current;
-    if (el) {
-      el.addEventListener("scroll", updateScrollButtons);
-      window.addEventListener("resize", updateScrollButtons);
-      return () => {
-        el.removeEventListener("scroll", updateScrollButtons);
-        window.removeEventListener("resize", updateScrollButtons);
-      };
-    }
-  }, [strip7days]);
+    setOffset(stripWindowOffset(selectedDate, strip7days.length));
+  }, [selectedDate, strip7days.length]);
 
-  const scroll = (direction: "left" | "right") => {
-    scrollRef.current?.scrollBy({ left: direction === "left" ? -200 : 200, behavior: "smooth" });
-  };
+  const maxOffset = Math.max(0, strip7days.length - DATE_STRIP_VISIBLE_DAYS);
+  const visibleDays = strip7days.slice(offset, offset + DATE_STRIP_VISIBLE_DAYS);
+  const move = (direction: -1 | 1) => setOffset((current) =>
+    Math.min(maxOffset, Math.max(0, current + direction * DATE_STRIP_NAVIGATION_STEP_DAYS))
+  );
 
   if (!strip7days || strip7days.length === 0) return null;
-
-  const bestSavings = Math.max(...strip7days.map((d) => d.savings));
 
   return (
     <div>
       <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground mb-1.5 text-center">
-        Best estimated savings by date
+        Eligible offers by date
       </p>
       <div className="flex items-center gap-1.5 w-full justify-center relative">
-        {canScrollLeft && (
-          <button
-            onClick={() => scroll("left")}
-            className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors z-10 shrink-0"
-            aria-label="Scroll left"
-          >
-            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-          </button>
-        )}
+        <button
+          onClick={() => move(-1)}
+          disabled={offset === 0}
+          className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors z-10 shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
+          aria-label="Previous eligible dates"
+        >
+          <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+        </button>
 
         <div
-          ref={scrollRef}
-          className="flex gap-2 overflow-x-auto scrollbar-hide py-1 scroll-smooth"
-          style={{ scrollSnapType: "x mandatory" }}
+          className="flex min-w-0 gap-2 overflow-x-auto scrollbar-hide py-1"
         >
-          {strip7days.map((day) => {
+          {visibleDays.map((day) => {
             const isSelected = day.date === selectedDateStr;
-            const isBest = day.savings === bestSavings && bestSavings > 0;
             const dateObj = parseISO(day.date);
 
             return (
               <button
                 key={day.date}
                 onClick={() => onDateChange(dateObj)}
-                style={{ scrollSnapAlign: "start" }}
                 className={cn(
                   "flex flex-col items-center px-3 py-2.5 rounded-xl border transition-all duration-200 min-w-[88px] shrink-0",
                   isSelected
@@ -95,25 +73,26 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
                 <span
                   className={cn(
                     "text-[11px] font-bold mt-1",
-                    isSelected ? "text-primary-foreground/90" : isBest ? "text-accent" : "text-muted-foreground"
+                    isSelected ? "text-primary-foreground/90" : day.bestBenefit ? "text-accent" : "text-muted-foreground"
                   )}
                 >
-                  {day.savings > 0 ? `save ₹${day.savings.toLocaleString()}` : "—"}
+                  {day.bestBenefit
+                    ? `Up to ₹${day.bestBenefit.toLocaleString()}`
+                    : "No offers"}
                 </span>
               </button>
             );
           })}
         </div>
 
-        {canScrollRight && (
-          <button
-            onClick={() => scroll("right")}
-            className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors z-10 shrink-0"
-            aria-label="Scroll right"
-          >
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-          </button>
-        )}
+        <button
+          onClick={() => move(1)}
+          disabled={offset === maxOffset}
+          className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors z-10 shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
+          aria-label="Next eligible dates"
+        >
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </button>
       </div>
     </div>
   );

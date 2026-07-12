@@ -169,6 +169,13 @@ const SidebarFilters = ({
 
   const bankIds = useMemo(() => meta.banks.map((b) => b.id), [meta.banks]);
   const platformIds = useMemo(() => meta.platforms.map((p) => p.id), [meta.platforms]);
+  const platformDisplayNames = useMemo(() => {
+    const names: Record<string, string> = {};
+    meta.platforms.forEach((platform) => {
+      names[platform.id] = platform.name;
+    });
+    return names;
+  }, [meta.platforms]);
 
   const toggleItem = (arr: string[], item: string, setter: (v: string[]) => void) => {
     setter(arr.includes(item) ? arr.filter((i) => i !== item) : [...arr, item]);
@@ -205,6 +212,7 @@ const SidebarFilters = ({
         selected={platformFilter}
         onToggle={(p) => toggleItem(platformFilter, p, onPlatformFilterChange)}
         searchable
+        displayNames={platformDisplayNames}
       />
       <FilterSelect
         title="Payment Method"

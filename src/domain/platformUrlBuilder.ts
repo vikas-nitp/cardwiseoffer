@@ -12,7 +12,9 @@ const ALLOWED_HOSTS = new Set([
 
 const HOMES: Record<string, string> = {
   MakeMyTrip: "https://www.makemytrip.com/",
+  MAKEMYTRIP: "https://www.makemytrip.com/",
   Cleartrip: "https://www.cleartrip.com/",
+  CLEARTRIP: "https://www.cleartrip.com/",
   EaseMyTrip: "https://www.easemytrip.com/",
   Goibibo: "https://www.goibibo.com/",
 };
@@ -29,9 +31,11 @@ export function buildFlightSearchUrl(platform: string, ctx: FlightSearchContext)
   let url: string;
   switch (platform) {
     case "MakeMyTrip":
+    case "MAKEMYTRIP":
       url = `https://www.makemytrip.com/flight/search?itinerary=${from}-${to}-${date}&tripType=O&paxType=A-1_C-0_I-0&cabinClass=E`;
       break;
     case "Cleartrip":
+    case "CLEARTRIP":
       url = `https://www.cleartrip.com/flights/${from}-${to}-${date}`;
       break;
     case "EaseMyTrip":

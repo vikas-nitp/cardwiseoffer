@@ -21,6 +21,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   allOffers: true,              // Show all offers
   savedCards: false,            // Feature not ready
   dailyVisitorsEnabled: false,  // Don't show visitors if API fails
+  couponCodeEnabled: false,     // Coupon values remain data-only unless enabled
 };
 
 const API_FAIL_CLOSED_FLAGS: FeatureFlags = {
@@ -72,6 +73,7 @@ export const FeatureFlagProvider = ({ children }: FeatureFlagProviderProps) => {
         allOffers: data.allOffers,
         savedCards: data.savedCards,
         dailyVisitorsEnabled: data.dailyVisitorsEnabled,
+        couponCodeEnabled: data.couponCodeEnabled,
       };
       const mergedFlags: FeatureFlags = { ...DEFAULT_FLAGS, ...apiFlags };
       setFlags(mergedFlags);

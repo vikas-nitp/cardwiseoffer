@@ -51,11 +51,13 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     id: raw.offer_id,
     label:
       (displayKind && labelByKind[displayKind]) ??
-      (raw.bank_id ? `${raw.bank_name ?? raw.bank_id} Offer` : "Default Offer"),
+      (raw.bank_id ? `${raw.bank_name ?? raw.bank_id} Offer` : "Default Offer (No Card)"),
     bank: raw.bank_id ?? null,
     bankDisplay: raw.bank_name ?? raw.bank_id ?? null,
-    cardName: raw.card_name ?? null,
+    cardName: raw.payment_method === "NO_CARD" ? null : raw.card_name ?? null,
     platform: raw.platform_id,
+    platformName: raw.platform_name,
+    offerTitle: raw.offer_title,
     platformUrl: raw.booking_url ?? null,
     finalPrice:
       "estimated_final_amount" in raw
@@ -65,6 +67,8 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
       estimatedSavings ??
       (raw.discount_type === "FLAT" ? discountValue : maxDiscount ?? 0),
     paymentMethod: raw.payment_method,
+    bookingChannel: raw.booking_channel,
+    newUserOnly: raw.new_user_only,
     discountType: raw.discount_type,
     discountValue,
     maxDiscount,
@@ -76,6 +80,9 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     category: raw.category,
     sourceType: "api",
     verificationStatus: verificationStatus(raw.evidence_status),
+    isActive: raw.is_active,
+    publishStatus: raw.publish_status,
+    evidenceStatus: raw.evidence_status,
     priorityScore: raw.priority_score,
     lastUpdatedAt: raw.last_verified_at ?? undefined,
   };
@@ -91,9 +98,13 @@ export function mapLocalOffer(raw: LocalRawOffer): OfferViewModel {
     bankDisplay: raw.bank_id,
     cardName: raw.card_name ?? null,
     platform: raw.platform,
+    platformName: raw.platform,
+    offerTitle: raw.bank_id ? `${raw.bank_id} offer` : `${raw.platform} offer`,
     platformUrl: null,
     savings: raw.discount_type === "FLAT" ? raw.discount_value : raw.max_discount ?? 0,
     paymentMethod: raw.payment_method as OfferViewModel["paymentMethod"],
+    bookingChannel: raw.channels ?? "WEB_AND_APP",
+    newUserOnly: false,
     discountType: raw.discount_type as OfferViewModel["discountType"],
     discountValue: raw.discount_value,
     maxDiscount: raw.max_discount,
@@ -105,6 +116,9 @@ export function mapLocalOffer(raw: LocalRawOffer): OfferViewModel {
     category: raw.category,
     sourceType: "demo_excel",
     verificationStatus: "demo",
+    isActive: true,
+    publishStatus: "READY",
+    evidenceStatus: "VERIFIED",
     priorityScore: raw.priority_score ?? 0,
   };
 }

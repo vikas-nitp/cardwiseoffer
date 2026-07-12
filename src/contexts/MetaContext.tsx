@@ -8,10 +8,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { log } from "@/lib/logger";
-import banksJson from "@/data/mock/banks.json";
-import platformsJson from "@/data/mock/platforms.json";
-import airportsJson from "@/data/mock/airports.json";
-import offersJson from "@/data/mock/offers.json";
+import metadataJson from "@/data/generated/metadata.json";
 import { getDataMode } from "@/config/dataMode";
 import { fetchMetadata } from "@/services/api";
 
@@ -46,31 +43,22 @@ export interface MetaData {
 }
 
 // ── Safe defaults built from canonical local fixtures ─────────────
-const OFFER_BANK_IDS = Array.from(
-  new Set((offersJson as Array<{ bank_id: string | null }>).map((o) => o.bank_id).filter(Boolean) as string[])
-);
-const OFFER_PLATFORM_IDS = Array.from(
-  new Set((offersJson as Array<{ platform: string }>).map((o) => o.platform))
-);
-
-const DEFAULT_META: MetaData = {
-  banks: banksJson as BankMeta[],
-  platforms: platformsJson as PlatformMeta[],
-  airports: airportsJson as AirportMeta[],
-  payment_methods: ["CREDIT", "DEBIT", "NO_CARD"],
-  categories: ["flight_domestic", "flight_international", "hotel_domestic", "hotel_international"],
-  supported_banks: OFFER_BANK_IDS,          // only banks that have at least one offer
-  supported_platforms: OFFER_PLATFORM_IDS,
+const LOCAL_METADATA = metadataJson as {
+  banks: BankMeta[];
+  platforms: PlatformMeta[];
+  airports: AirportMeta[];
+  payment_methods: string[];
+  categories: string[];
 };
 
-const EMPTY_META: MetaData = {
-  banks: [],
-  platforms: [],
-  airports: [],
-  payment_methods: [],
-  categories: [],
-  supported_banks: [],
-  supported_platforms: [],
+const DEFAULT_META: MetaData = {
+  banks: LOCAL_METADATA.banks,
+  platforms: LOCAL_METADATA.platforms,
+  airports: LOCAL_METADATA.airports,
+  payment_methods: LOCAL_METADATA.payment_methods,
+  categories: LOCAL_METADATA.categories,
+  supported_banks: LOCAL_METADATA.banks.map((bank) => bank.id),
+  supported_platforms: LOCAL_METADATA.platforms.map((platform) => platform.id),
 };
 
 // API URL read safely inside fetchMeta — no crash if missing
@@ -103,12 +91,14 @@ interface MetaProviderProps {
 }
 
 export const MetaProvider = ({ children }: MetaProviderProps) => {
-  const [meta, setMeta] = useState<MetaData>(getDataMode() === "api" ? EMPTY_META : DEFAULT_META);
+  // The generated bundle is the bootstrap in both modes. API mode refreshes it,
+  // but a transient API failure must not blank navigation and search controls.
+  const [meta, setMeta] = useState<MetaData>(DEFAULT_META);
   const [loading, setLoading] = useState(getDataMode() === "api");
   const [error, setError] = useState<string | null>(null);
 
   const fetchMeta = async () => {
-    // Mock mode: local fixtures are the source of truth. Never touch the network.
+    // Local mode: the generated bundle is the source of truth. Never touch the network.
     if (getDataMode() === "mock") {
       setMeta(DEFAULT_META);
       setLoading(false);
@@ -134,7 +124,7 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
       const message = err instanceof Error ? err.message : "Unknown error";
       log.warn("Failed to load API metadata", { error: message });
       setError(message);
-      setMeta(EMPTY_META);
+      setMeta(DEFAULT_META);
     } finally {
       setLoading(false);
     }

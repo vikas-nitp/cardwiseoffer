@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ShieldCheck, RefreshCw, Scale, Users } from "lucide-react";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
+import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
 import { log } from "@/lib/logger";
 import { API_BASE_URL } from "@/constants";
 
@@ -12,10 +13,11 @@ interface DailyVisitorsResponse {
 
 const TrustIndicators = () => {
   const { flags } = useFeatureFlags();
+  const capabilities = resolveFeatureCapabilities(flags);
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!flags.dailyVisitorsEnabled) {
+    if (!capabilities.dailyVisitors) {
       setVisitorCount(null);
       return;
     }
@@ -35,7 +37,7 @@ const TrustIndicators = () => {
     };
 
     fetchVisitors();
-  }, [flags.dailyVisitorsEnabled]);
+  }, [capabilities.dailyVisitors]);
 
   const indicators = [
     { icon: ShieldCheck, label: "No booking bias" },
@@ -43,7 +45,7 @@ const TrustIndicators = () => {
     { icon: Scale, label: "Independent comparison" },
   ];
 
-  if (flags.dailyVisitorsEnabled && visitorCount !== null && visitorCount > 0) {
+  if (capabilities.dailyVisitors && visitorCount !== null && visitorCount > 0) {
     indicators.push({
       icon: Users,
       label: `${visitorCount.toLocaleString()} visitors today`,

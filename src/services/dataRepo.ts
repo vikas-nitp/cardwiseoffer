@@ -21,7 +21,7 @@ import type { FeatureFlags, OfferFilters } from "@/services/api";
 
 export interface SearchResult {
   offers: OfferViewModel[];
-  strip7days: Array<{ date: string; savings: number }>;
+  strip7days: Array<{ date: string; bestBenefit: number | null }>;
 }
 
 export const isMockMode = () => getDataMode() === "mock";
@@ -40,7 +40,10 @@ export async function repoSearchOffers(
   const dateStr = format(date, "yyyy-MM-dd");
   const response = await apiSearch(from.code, to.code, dateStr, banks, [], _isAuthenticated, signal);
   const offers = response.offers.map(mapApiOffer);
-  const strip7days: SearchResult["strip7days"] = [];
+  const strip7days: SearchResult["strip7days"] = (response.date_strip ?? []).map((day) => ({
+    date: day.date,
+    bestBenefit: day.best_benefit ?? null,
+  }));
   log.info("API search ok", { offers: offers.length });
   return { offers, strip7days };
 }
