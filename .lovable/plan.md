@@ -1,84 +1,115 @@
-# CardWiseOffer Stabilization Plan
+# CardWiseOffer Frontend Completion & Backend Sync Plan
 
-Scope: fix correctness, transparency, and completeness of the local-data MVP. No real backend, no real auth. Keep the current premium UI. Structure code so a FastAPI repository can drop in later.
+Scope: complete the frontend to the spec in your prompt while preserving the existing premium UI, historical docs, and working flows. No Lovable Cloud, no fake auth, no scraping. Local-mode works standalone; API-mode is wired against the FastAPI contract without silent fallback.
 
-## Phase 1 — Offer correctness & trust
-- Introduce canonical `OfferViewModel` in `src/types/offer.ts` with explicit `originalPrice`, `finalPrice`, `savings`, `discountType`, `maxDiscount`, `minTransaction`, `validFrom/To`, `verificationStatus`, `sourceType`.
-- Rewrite `OfferCard` to render savings vs. final price distinctly; show `Demo offer — based on sample data` badge instead of hard-coded "Verified / Updated today".
-- Derive validity label from dates (`Valid until…`, `Expired`, `Starts on…`).
-- Add `src/domain/offerValidity.ts` (`isOfferActive/Expired/Upcoming`) + filter expired/inactive out of results and catalog.
+## Phase 0 — Audit (no code changes)
+- Inventory current state vs. required behavior in `docs/todo/2026-07-12-frontend-readiness-todo.md` with statuses: IMPLEMENTED / PARTIAL / NOT_IMPLEMENTED / UNVERIFIED / DEFERRED.
+- Attempt to read backend contracts from `cwo_backend/contracts/*`. If not reachable from this sandbox, snapshot the last known shape and mark contract-dependent items UNVERIFIED with a blocker note. I will ask you to paste the current OpenAPI JSON if not accessible.
+- Preserve all existing markdown under `.lovable/`, `docs/`, `README.md`, memory files.
 
-## Phase 2 — Demo-mode transparency
-- Add `VITE_DATA_MODE` (`mock` | `api`), default `mock` for preview.
-- `mock`: always local fixtures + persistent `DemoModeBanner` ("Demo mode — sample offers…").
-- `api`: real fetch; on failure show error, never silently fall back.
-- Remove the current "API-first with silent mock fallback" behavior in `dataRepo.ts`.
+## Phase 1 — Dated documentation scaffolding
+Add (do not overwrite existing):
+- `docs/skills/2026-07-12-frontend-readiness-audit.md`
+- `docs/skills/2026-07-12-local-data-pipeline.md`
+- `docs/skills/2026-07-12-dynamic-offer-facets.md`
+- `docs/skills/2026-07-12-feature-flag-integration.md`
+- `docs/skills/2026-07-12-backend-contract-sync.md`
+- `docs/skills/2026-07-12-frontend-analytics.md`
+- `docs/todo/2026-07-12-frontend-readiness-todo.md`
+- Append entries to `docs/skills/README.md` (create if missing; never overwrite).
 
-## Phase 3 — Data normalization (one-time, dev-side)
-- Re-read previously uploaded Excel via a Node script under `scripts/normalize-offers.ts` (run once locally; not shipped to browser).
-- Produce canonical fixtures under `src/data/mock/`:
-  - `offers.json` (canonical), `banks.json`, `platforms.json`, `airports.json`, `featureFlags.json`.
-- Archive/remove `src/data/mock.json` and `bankOffersMvp.json` after confirming no imports.
-- Canonical IDs: banks `HDFC|ICICI|SBI|AXIS|AMEX|KOTAK|YES|INDUSIND|RBL|HSBC`; payment `CREDIT|DEBIT|NO_CARD`; platforms `MakeMyTrip|Cleartrip|EaseMyTrip|Goibibo`. Separate display names.
-- Fix Kotak (+ others) missing from selector/filters by driving all UI from `MetaContext` fed by canonical fixtures.
+## Phase 2 — Product scope narrowing
+- Restrict platforms to `MAKEMYTRIP`, `CLEARTRIP` across meta, filters, logos, deep links, empty states.
+- Category fixed to `FLIGHT_DOMESTIC`.
+- Payment methods: `CREDIT|DEBIT|NO_CARD`. Booking channels: `WEB|APP|WEB_AND_APP`.
+- Update `banks.json`/`platforms.json`/`featureFlags.json` and constants; retire EaseMyTrip/Goibibo references without deleting historical docs.
 
-## Phase 4 — Search & ranking
-- New `src/domain/offerRanking.ts` implementing the deterministic rules:
-  - 0 cards → best card + best default (+ optional 2nd card).
-  - 1 card → selected best + better alt (only if higher savings, show correct Δ) + default.
-  - 2 cards → best selected + 2nd selected + better outside alt (only if better) + default.
-- No forced 3 tiles, no duplicates, sort by relevance→savings→priority→expiry.
-- Percent discount calc helper: uses fare when known, else labels as `Up to ₹X` / `N% off, max ₹X`.
-- 7-day strip: label as "Best estimated savings" (matches available data); date change re-runs search, preserves selected banks.
-- Enforce **10-day** booking window (latest confirmed rule): disable dates beyond today+10 in `SearchCard` date picker and clamp `DateStrip`. Document in `constants/index.ts`.
+## Phase 3 — Canonical types & mappers
+- Rewrite `src/types/offer.ts` to the full `OfferViewModel` from the prompt (adds `platformId`, `bookingChannel`, `evidenceStatus`, `publishStatus`, `sourceUrl`, `newUserOnly`, `usageLimit`, `bookingUrl`, `extra`, search-only `displayKind/displayRank/savingsDelta/...`).
+- New mappers: `src/data/mappers/{mapLocalOffer,mapBackendCatalogOffer,mapBackendSearchOffer}.ts`. Remove the shared-passthrough current `offerMapper.ts` (kept as thin re-export during migration).
 
-## Phase 5 — Booking links
-- New `src/domain/platformUrlBuilder.ts` with per-platform builders for MMT/Cleartrip/EaseMyTrip/Goibibo (from, to, date, one-way).
-- Catalog offers with no route → link to platform home or offer terms; if neither → disable CTA with tooltip "Choose travel details to book". Never `href="#"`.
-- All external links: HTTPS allow-list, `target="_blank" rel="noopener noreferrer"`.
+## Phase 4 — Repository layer & data-source config
+- `src/data/repositories/OfferRepository.ts` interface (`getFeatureFlags`, `getMetadata`, `listOffers`, `searchOffers`).
+- `LocalOfferRepository.ts` (reads generated JSON, runs domain filter/facets).
+- `ApiOfferRepository.ts` (typed fetch, repeated-key array serialization, AbortController, timeout, typed errors, header capture for `X-Data-Version`, `X-Contract-Version`, `ETag`).
+- `src/data/repositoryFactory.ts` chooses based on `VITE_DATA_SOURCE`. Replace `getDataMode`/`dataRepo.ts` internals; keep old export names as adapters so components don't churn.
+- No silent fallback. API errors surface via typed error → UI retry state.
 
-## Phase 6 — Mobile & responsive
-- New `MobileOfferFilters` using shadcn `Sheet`, triggered from an "All Offers" filter button on `<lg` breakpoints. Bank/Platform/Payment, active count, Apply/Reset.
-- Sweep responsive states at 375/430/768/1024/1440 for header, search, autocomplete, date picker/strip, card selector, offer grid, modal, banners.
+## Phase 5 — Local data pipeline
+- `scripts/normalize-offers.ts` produces:
+  - `src/data/generated/offers.json`
+  - `src/data/generated/metadata.json`
+  - `src/data/generated/facets.json` (platform↔bank↔payment↔channel with counts)
+  - `src/data/generated/manifest.json` (version, generated_at, source hash)
+  - `src/data/generated/validation-report.json` (rejected rows w/ reasons)
+- Reject invalid rows (dup id, bad dates, bad enum, unsupported platform). Preserve `null≠0`. Unknown fields go into `extra`.
+- Add `data/source/offers.sample.csv` + `data/source/README.md` (field spec, aliases). Add npm script `data:normalize`.
 
-## Phase 7 — Demo auth (honest)
-- Relabel `AuthModal` as demo; accept valid email OR valid Indian phone format only; no fake OTP; small "Demo sign-in — no real account is created" note.
-- Persist to `localStorage` under `cardwiseoffer.demo.session` / `.profile`; hydrate on mount so refresh keeps the demo user.
-- `ProfileSetup`: require name + (email OR phone based on login method); add working "Skip for now" and "Logout".
-- Remove `x-user-auth: true` fabricated header from `api.ts`; leave a typed `AuthTokenProvider` seam for future real auth.
+## Phase 6 — Domain: filtering, facets, ranking
+- `src/domain/offerFiltering.ts` — pure `filterOffers(offers, filters)` with OR-in-group / AND-across-groups; strict bank for catalog.
+- `src/domain/offerFacets.ts` — `calculateFacets(offers, filters, universe)` with self-excluding counts, zero-count disabled options, selected zero-count retention.
+- Keep `offerRanking.ts`; adjust to new model; document that in API mode backend order is authoritative and never reranked.
 
-## Phase 8 — Refactor (targeted, not a rewrite)
-- Extract from `Index.tsx`: `OfferSearchResults`, `OfferCatalog`, `SearchSummary`, `OfferGrid`, `OfferEmptyState`, `DemoModeBanner`.
-- New hooks: `useOfferSearch`, `useOfferCatalog`, `useOfferFilters`.
-- Consolidate types in `src/types/` (offer, meta, feature-flags, search, session). Remove duplicates in `api.ts`, `mockApi.ts`, contexts.
-- Introduce `OfferRepository` interface with `MockOfferRepository` (JSON) and `ApiOfferRepository` (HTTP). Selected by `VITE_DATA_MODE`.
-- Central `src/lib/http.ts` client (base URL, timeout, AbortController, typed errors, auth-injection seam).
+## Phase 7 — Feature flags
+- Extend `FeatureFlagResponse` (adds `contract_version`, `config_version`).
+- Safe defaults per spec. Wire real behavior:
+  - `authEnabled=false` → hide sign-in/profile/logout entry points, no session init.
+  - `offerLockingEnabled=false` → never render locked tiles.
+  - `allOffers=false` → hide nav, block route, no `/offers` calls.
+  - `savedCards`, `dailyVisitorsEnabled` → gate UI + network.
+- Remove any `x-user-auth`, fake OTP/password paths from the codebase (already partially done — verify).
 
-## Phase 9 — Validation, a11y, states
-- Zod schemas for offer, meta, feature flags, search response; validate fixtures at load in dev.
-- Complete loading/empty/error states across search, catalog, meta, auth.
-- A11y: labels, `aria-expanded/controls`, keyboard nav for autocomplete + multiselect, focus return, visible focus, dialog semantics, `prefers-reduced-motion` respected.
+## Phase 8 — All Offers UI (desktop + mobile)
+- Sidebar and new `MobileOfferFilters` (shadcn `Sheet`) share one filter state + facet source.
+- Groups: Platform, Bank, Payment method, Booking channel, Active date.
+- Show counts, disable zero-counts, preserve selected zero-counts, active-filter chips, Apply/Reset/Clear individual.
+- URL sync: `/all-offers?platform=...&bank=...&payment=...&channel=...` (repeated keys), refresh + back/forward safe, unknown values ignored.
+- Loading / no-catalog / no-results / API-error-retry / feature-disabled — distinct states.
 
-## Phase 10 — Tests (Vitest + Testing Library)
-- Unit: `offerMapper`, `offerValidity`, `offerRanking`, `offerCalculation`, `platformUrlBuilder`, `mockOfferRepository`, `searchValidation`.
-- Component: `SearchCard`, `BankMultiSelect`, `OfferCard`, `MobileOfferFilters`, `DemoModeBanner`, `ProfileSetup`.
-- Flow: 0/1/2 card search, better-alt delta, expired excluded, date-strip change, All Offers filter, mobile filter, demo login+reload persistence, demo logout, API-mode failure has no mock fallback, catalog CTA disabled without URL.
-- Delete placeholder `example.test.ts`.
+## Phase 9 — Main search behavior
+- Keep selected banks as ranking preferences (not strict). Backend order preserved in API mode.
+- Fix `DateStrip`: hide fake 7-day savings; replace with "Active offers by date" count OR hide entirely until real fare data (choose count variant, documented).
+- 10-day booking window enforced in picker, validation, URL, repo call.
 
-## Phase 11 — Config & cleanup
-- Document env (`VITE_DATA_MODE`, `VITE_API_BASE_URL`) in README; dev-time validation with a visible error banner if invalid.
-- Fix assets: either add `/og-image.png` or update `index.html`; ensure `favicon.png` referenced exists (already generated earlier).
-- Remove/archive: `src/data/mock.json`, `bankOffersMvp.json` (if unused), unused `LockedOfferCard` and `getDailyVisitorCount` if not referenced, dead constants.
+## Phase 10 — Offer display correctness
+- Percent → "N% off · Max ₹X · Min ₹Y". Flat → "Flat ₹X off · Min ₹Y". Never invent "You save".
+- Consume `estimated_savings/estimated_final_amount/savings_label` only if backend supplies.
+- Replace demo wording with the exact disclaimer from the prompt.
+
+## Phase 11 — Landing page defect fix
+- Investigate blank/sliding: audit `AnimatePresence` keys, absolute positioning, parent height collapse in `Index.tsx` / section transitions. Fix with stable container height + fade/small-y motion, respect `prefers-reduced-motion`, add `overflow-x: clip` on body if needed. Verify at 375/430/768/1024/1440 via Playwright.
+
+## Phase 12 — Analytics (vendor-neutral, opt-in)
+- `src/analytics/{provider,events,index}.ts`. GA4 loader gated on `VITE_GA_MEASUREMENT_ID`. No-op otherwise.
+- Emit the event list from the prompt with non-PII properties. Tests for dispatch + disabled no-op.
+
+## Phase 13 — OpenAPI sync
+- Add `openapi-typescript` dev dep; script `api:generate`.
+- `contracts/backend-openapi.json` (placeholder + real when you paste it); generate `src/generated/api-schema.ts`. DTO aliases used by `ApiOfferRepository` and mappers. Zod only at validation boundary; no `as any` bypasses.
+
+## Phase 14 — Contract/version headers
+- HTTP client captures `X-Data-Version`, `X-Contract-Version`, `ETag` and body `data_version`/`contract_version`; surfaces in debug metadata + analytics. Incompatible contract → clear error, no silent parsing.
+
+## Phase 15 — Branding hygiene
+- Grep for project-controlled "lovable/edit with lovable/watermark/badge" strings and remove from source (not the hosted badge — that stays via publish settings).
+
+## Phase 16 — Tests
+- Vitest units: filtering matrix, facets self-exclude + zero-count, mappers (local, backend catalog, backend search), feature-flag gates, URL parse/serialize, ranking rules, analytics dispatch + disabled.
+- Component tests: SidebarFilters, MobileOfferFilters, OfferCard, DateStrip empty state, DemoDisclaimer wording.
+- Playwright: landing not blank across viewports, Home→AllOffers→Home, mobile drawer flow, URL persistence, API-error retry.
+
+## Phase 17 — Cleanup & handoff
+- Remove/deprecate legacy: unused `dataMode.ts` internals (kept adapter), obsolete demo copy, dead constants.
+- README env-var section: `VITE_DATA_SOURCE`, `VITE_API_BASE_URL`, `VITE_GA_MEASUREMENT_ID`.
+- Final handoff message with all sections listed in your spec §28.
 
 ## Out of scope (explicit)
-Real FastAPI, DB, Supabase migration, real auth/OTP/Google/Apple, saved cards backend, hotels, scraping, payments, analytics. Interfaces prepared only.
+Real backend deploy, Supabase/Cloud, real auth, payments, hotels, scraping, editor branding removal from hosted badge, backend contract authoring.
 
-## Deliverables in final message
-Changes list · Excel normalization summary · Architecture diagram (UI→Hooks→OfferRepository→Mock/Api) · Requirement status table · Known limitations · Verification (build/lint/typecheck/tests + QA notes) · Backend backlog.
+## Open questions before I start
+1. **Backend OpenAPI access**: I cannot reach `github.com/vikas-nitp/cwo_backend` from the sandbox. Can you paste the current `contracts/openapi.json` (or upload it), or should I proceed with a best-guess contract matching the examples we already have and mark it UNVERIFIED?
+2. **Source data**: The last normalization used `offers.xlsx`. Should I keep the current generated `offers.json` as the source of truth for now and only add the pipeline/sample CSV, or do you want to re-upload a fresh source spreadsheet?
+3. **Date strip**: Prefer "hide until real fare data" or "Active offers by date (counts only)"?
+4. **Scale**: This is a large multi-day change. OK to land in one big change set, or split into PRs by phase (Phase 1-6 first, then 7-12, then 13-17)?
 
-## Technical notes
-- Files added: `src/types/offer.ts`, `src/domain/{offerValidity,offerRanking,offerCalculation,platformUrlBuilder}.ts`, `src/data/repositories/{OfferRepository,MockOfferRepository,ApiOfferRepository}.ts`, `src/lib/http.ts`, `src/lib/schemas.ts`, `src/hooks/{useOfferSearch,useOfferCatalog,useOfferFilters}.ts`, `src/components/{DemoModeBanner,MobileOfferFilters,OfferSearchResults,OfferCatalog,SearchSummary,OfferGrid,OfferEmptyState}.tsx`, `scripts/normalize-offers.ts`, tests under `src/**/*.test.ts(x)`.
-- Files heavily changed: `Index.tsx`, `OfferCard.tsx`, `SearchCard.tsx`, `DateStrip.tsx`, `AuthModal.tsx`, `ProfileSetup.tsx`, `AuthContext.tsx`, `dataRepo.ts`, `api.ts`, `mockApi.ts`, `constants/index.ts`, `index.html`.
-- Files removed/archived after reference check: `src/data/mock.json`, `src/data/mock/bankOffersMvp.json`, `src/test/example.test.ts`, possibly `LockedOfferCard.tsx`.
-
-Awaiting approval before implementation. If the previously uploaded Excel file is no longer accessible in this session, I will ask you to re-upload it before Phase 3; otherwise I will locate it and normalize from source.
+Awaiting approval + answers before implementation.
