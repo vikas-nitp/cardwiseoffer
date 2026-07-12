@@ -384,26 +384,40 @@ const Index = () => {
                   </Alert>
                 )}
                 {!allOffersLoading && !allOffersError && (
-                  <div className="flex flex-col lg:flex-row gap-5">
-                    <div className="hidden lg:block w-64 shrink-0">
-                      <SidebarFilters
+                  <>
+                    <div className="lg:hidden mb-3">
+                      <MobileOfferFilters
                         bankFilter={bankFilter} onBankFilterChange={setBankFilter}
                         platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
                         paymentFilter={paymentFilter} onPaymentFilterChange={setPaymentFilter}
+                        channelFilter={channelFilter} onChannelFilterChange={setChannelFilter}
+                        facets={facets}
                         onResetAll={handleResetFilters}
                       />
                     </div>
-                    <div className="flex-1">
-                      {filteredAllOffers.length === 0 ? (
-                        <EmptyState onReset={handleResetFilters} />
-                      ) : (
-                        renderOfferTiles(filteredAllOffers, "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4", "catalog")
-                      )}
-                      <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
-                        Offers sourced from public bank promotions. Final eligibility depends on platform &amp; bank terms.
-                      </p>
+                    <div className="flex flex-col lg:flex-row gap-5">
+                      <div className="hidden lg:block w-64 shrink-0">
+                        <SidebarFilters
+                          bankFilter={bankFilter} onBankFilterChange={setBankFilter}
+                          platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
+                          paymentFilter={paymentFilter} onPaymentFilterChange={setPaymentFilter}
+                          channelFilter={channelFilter} onChannelFilterChange={setChannelFilter}
+                          facets={facets}
+                          onResetAll={handleResetFilters}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        {filteredAllOffers.length === 0 ? (
+                          <EmptyState onReset={handleResetFilters} message={allOffers.length === 0 ? "Offers are currently unavailable." : "No offers match the selected filters."} />
+                        ) : (
+                          renderOfferTiles(filteredAllOffers, "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4", "catalog")
+                        )}
+                        <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
+                          Offer details may change. Please verify eligibility and terms on the booking platform before payment.
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  </>
                 )}
               </motion.div>
             )}
