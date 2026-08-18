@@ -57,7 +57,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
           {badgeLabel}
         </span>
         {extraLabel && (
-          <span className="text-[10px] font-bold text-accent bg-savings-soft px-2 py-0.5 rounded-md">
+          <span className="text-[10px] font-bold text-savings bg-savings-soft px-2 py-0.5 rounded-md">
             {extraLabel}
           </span>
         )}
@@ -114,7 +114,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
       {/* Trust row — honest about demo status */}
       <div className="px-5 pb-2 flex items-center gap-3 text-[10px] text-muted-foreground/70">
         {offer.verificationStatus === "verified" ? (
-          <span className="flex items-center gap-1 text-emerald-700">
+          <span className="flex items-center gap-1 text-accent">
             <BadgeCheck className="w-3 h-3" />
             Verified
           </span>
@@ -151,7 +151,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
 
 const Condition = ({ text, tone = "muted", strong = false }: { text: string; tone?: "muted" | "warn" | "danger"; strong?: boolean }) => (
   <div className={`text-[11px] flex items-start gap-2 leading-relaxed ${
-    tone === "danger" ? "text-destructive" : tone === "warn" ? "text-amber-700" : strong ? "font-semibold text-foreground" : "text-muted-foreground"
+    tone === "danger" ? "text-destructive" : tone === "warn" ? "text-highlight" : strong ? "font-semibold text-foreground" : "text-muted-foreground"
   }`}>
     <span className="w-1 h-1 rounded-full bg-border mt-1.5 flex-shrink-0" />
     {text}
