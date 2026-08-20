@@ -37,10 +37,10 @@ const buttonVariants = cva(
         default: [
           "rounded-[14px]",
           "shimmer-hover",
-          "bg-primary text-primary-foreground",
+          "bg-accent text-accent-foreground",
           /* depth: top-edge inner highlight + directional outer shadow */
-          "[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.12),0_1px_2px_hsl(225_37%_2%/0.6),0_4px_16px_hsl(var(--primary)/0.30)]",
-          "hover:brightness-115 hover:[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.18),0_1px_2px_hsl(225_37%_2%/0.6),0_6px_24px_hsl(var(--primary)/0.40)]",
+          "[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.15),0_1px_2px_hsl(225_37%_2%/0.6),0_4px_16px_hsl(var(--accent)/0.35)]",
+          "hover:brightness-110 hover:[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.22),0_1px_2px_hsl(225_37%_2%/0.6),0_6px_24px_hsl(var(--accent)/0.45)]",
           "active:brightness-95 active:scale-[0.98]",
           "transition-all duration-150",
         ],

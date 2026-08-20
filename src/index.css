@@ -37,7 +37,7 @@
     --popover-foreground:   218 54% 94%;
 
     /* Brand ------------------------------------------------------- */
-    --primary:              216 84% 62%;   /* #4B8DEF airline blue — CTA     */
+    --primary:              216 84% 50%;   /* deeper blue — richer CTA       */
     --primary-foreground:     0  0% 100%; /* white — 4.9:1 on blue           */
 
     --accent:                41 78% 52%;   /* #E4A827 sovereign gold — decor  */
@@ -58,7 +58,7 @@
     /* Structure --------------------------------------------------- */
     --border:               224 35% 18%;   /* #192035 visible separator      */
     --input:                224 40% 11%;   /* slightly darker than card      */
-    --ring:                 216 84% 62%;   /* blue focus ring                */
+    --ring:                 216 84% 50%;   /* blue focus ring                */
     --radius:               0.875rem;      /* 14px                           */
 
     /* ── Semantic status ─────────────────────────────────────────── */
@@ -77,26 +77,18 @@
     --danger-soft:            0 50% 14%;
     --danger-soft-foreground: 0 78% 74%;
 
-    /* ── Legacy brand tokens (OfferCard compat) ──────────────────── */
-    --savings:               38 92% 50%;
-    --savings-foreground:     0  0% 100%;
-    --savings-soft:          38 55% 12%;
-    --highlight:             38 85% 54%;
-    --highlight-foreground:   0  0% 100%;
-
     /* ── Misc ────────────────────────────────────────────────────── */
-    --glow:                  41 78% 52%;   /* sovereign gold glow            */
     --surface-elevated:     221 45% 15%;
 
     /* Sidebar */
     --sidebar-background:   225 40%  7%;
     --sidebar-foreground:   218 54% 94%;
-    --sidebar-primary:      216 84% 62%;
+    --sidebar-primary:      216 84% 50%;
     --sidebar-primary-foreground:  0  0% 100%;
     --sidebar-accent:       221 45% 15%;
     --sidebar-accent-foreground: 218 54% 94%;
     --sidebar-border:       224 35% 18%;
-    --sidebar-ring:         216 84% 62%;
+    --sidebar-ring:         216 84% 50%;
   }
 
   /* ── Light mode variant (future toggle) ─────────────────────────── */
@@ -167,6 +159,7 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-optical-sizing: auto;
   }
 
   h1, h2, h3, h4 {
@@ -190,9 +183,9 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse 80% 60% at 20% 0%,   hsl(216 70% 22% / 0.55) 0%, transparent 65%),
-      radial-gradient(ellipse 60% 50% at 80% 100%,  hsl( 41 65% 18% / 0.40) 0%, transparent 65%),
-      radial-gradient(ellipse 40% 35% at 50% 45%,  hsl(225 50% 10% / 0.20) 0%, transparent 70%);
+      radial-gradient(ellipse 80% 60% at 20% 0%,   hsl(216 70% 28% / 0.70) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 50% at 80% 100%,  hsl( 41 65% 18% / 0.50) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 35% at 50% 45%,  hsl(225 50% 10% / 0.25) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
   }
@@ -219,27 +212,8 @@
   /* Gold glow ring — SearchCard only ─────────────────────────────── */
   .gold-ring {
     box-shadow:
-      0 0 0 1px hsl(var(--accent) / 0.30),
-      0 0 32px -8px hsl(var(--accent) / 0.20);
-  }
-
-  /* ── Text gradient — near-white → sovereign gold ──────────────── */
-  .text-gradient {
-    background: linear-gradient(
-      120deg,
-      hsl(var(--foreground)) 0%,
-      hsl(var(--accent))     100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* ── Glass card — used on SearchCard only ─────────────────────── */
-  .glass-card {
-    background: hsl(var(--card) / 0.85);
-    backdrop-filter: blur(24px) saturate(1.4);
-    border: 1px solid hsl(var(--border) / 0.7);
+      0 0 0 1px hsl(var(--accent) / 0.40),
+      0 0 40px -4px hsl(var(--accent) / 0.35);
   }
 
   /* ── Scrollbar hide ───────────────────────────────────────────── */

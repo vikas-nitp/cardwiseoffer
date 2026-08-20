@@ -170,10 +170,6 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
       {...motionProps}
       className="w-full max-w-5xl mx-auto bg-card rounded-2xl border border-border border-t-[3px] border-t-accent card-shadow-xl gold-ring p-6 md:p-8 relative z-30"
     >
-      <div className="flex items-center justify-between mb-5">
-        <p className="text-[11px] font-bold text-accent uppercase tracking-[0.14em]">Find the best card offer</p>
-        <div className="h-px flex-1 mx-4 bg-gradient-to-r from-accent/20 to-transparent" />
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
         {/* From */}
         <div className="space-y-1">

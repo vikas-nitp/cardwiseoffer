@@ -237,17 +237,21 @@ const Index = () => {
             {showHome && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
                 <section className="flex flex-col items-center justify-center pt-16 md:pt-28 pb-10 max-w-2xl mx-auto text-center px-4">
-                  <div className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/20 bg-accent/6 text-accent text-[11px] font-bold uppercase tracking-[0.14em]">
+                  <div className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/35 bg-accent/8 text-accent text-[11px] font-bold uppercase tracking-[0.14em]">
                     <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
-                    Live card offers
+                    Live card offers · India
                   </div>
                   <h1 className="tracking-[-0.04em] leading-[1.0]">
-                    <span className="block text-[32px] md:text-[46px] font-bold text-gradient leading-[1.1]">Compare card offers.</span>
-                    <span className="block text-[44px] md:text-[64px] font-black text-accent mt-1 leading-[1.0]">Book smarter.</span>
+                    <span className="block text-[30px] md:text-[44px] font-bold text-foreground leading-[1.15]">Which card saves the most</span>
+                    <span className="block text-[44px] md:text-[64px] font-black text-accent mt-1 leading-[1.0]">on your flight?</span>
                   </h1>
-                  <p className="mt-6 text-[14px] md:text-[16px] text-muted-foreground leading-relaxed max-w-md">
-                    Every active bank card offer for Indian flights — in one place.
+                  <p className="mt-5 text-[14px] md:text-[16px] text-muted-foreground leading-relaxed max-w-md">
+                    We compare every active bank offer across Indian travel platforms — independently.
                   </p>
+                  <p className="mt-4 text-[15px] text-muted-foreground tracking-wide border-t border-border/40 pt-4 max-w-xs">
+                    We don't sell tickets. We only show the truth.
+                  </p>
+
                 </section>
 
                 <SearchCard
@@ -258,7 +262,16 @@ const Index = () => {
                   initialBanks={searchState?.banks ?? []}
                 />
 
-                <TrustIndicators />
+                {/* Trust indicators — below search, understated */}
+                <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-5">
+                  {["No booking bias", "Updated daily", "Independent comparison"].map((label) => (
+                    <span key={label} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground/80">
+                      <span className="w-1 h-1 rounded-full bg-accent/60 inline-block shrink-0" />
+                      {label}
+                    </span>
+                  ))}
+                </div>
+
                 <SupportedSection />
               </motion.div>
             )}
