@@ -15,7 +15,7 @@ const TrustIndicators = () => {
       {indicators.map(({ icon: Icon, label }) => (
         <div
           key={label}
-          className="flex items-center gap-2 text-muted-foreground bg-card/80 backdrop-blur-sm px-3.5 py-2 rounded-lg border border-border/50 text-xs font-medium whitespace-nowrap hover:border-primary/20 transition-all duration-200"
+          className="flex items-center gap-2 text-muted-foreground bg-card px-3.5 py-2 rounded-lg border border-border text-xs font-medium whitespace-nowrap hover:border-primary/30 transition-all duration-200"
         >
           <Icon className="w-3.5 h-3.5 text-accent shrink-0" />
           <span>{label}</span>

@@ -45,7 +45,7 @@ const FAQSection = () => {
 
   return (
     <section className="w-full max-w-3xl mx-auto animate-fade-up">
-      <div className="glass-card rounded-2xl card-shadow-lg p-8 md:p-10">
+      <div className="bg-card rounded-2xl border border-border border-t-2 border-t-accent/40 card-shadow-lg p-8 md:p-10">
         <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 tracking-tight">
           Frequently Asked Questions
         </h2>
@@ -54,8 +54,8 @@ const FAQSection = () => {
         </p>
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, i) => (
-            <AccordionItem key={i} value={`faq-${i}`} className="border-border/30">
-              <AccordionTrigger className="text-[13px] font-semibold text-foreground hover:text-primary text-left py-4">
+            <AccordionItem key={i} value={`faq-${i}`} className="border-border">
+              <AccordionTrigger className="text-[13px] font-semibold text-foreground hover:text-accent text-left py-4">
                 {faq.q}
               </AccordionTrigger>
               <AccordionContent className="text-[13px] text-muted-foreground leading-relaxed pb-4">
