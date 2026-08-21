@@ -361,7 +361,7 @@ const Index = () => {
                 )}
                 {!allOffersLoading && !allOffersError && (
                   <div className="flex min-w-0 flex-col lg:flex-row gap-5">
-                    <div className="lg:hidden">
+                    <div className="lg:hidden" aria-hidden="false">
                       <SidebarFilters
                         bankFilter={bankFilter} onBankFilterChange={setBankFilter}
                         platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
@@ -369,7 +369,7 @@ const Index = () => {
                         onResetAll={handleResetFilters}
                       />
                     </div>
-                    <div className="hidden lg:block w-64 shrink-0">
+                    <div className="hidden lg:block w-64 shrink-0" aria-hidden="true">
                       <SidebarFilters
                         bankFilter={bankFilter} onBankFilterChange={setBankFilter}
                         platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}

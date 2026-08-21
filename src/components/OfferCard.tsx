@@ -1,4 +1,4 @@
-import { ExternalLink, Star, TrendingUp, Gift, CreditCard, Shield, BadgeCheck } from "lucide-react";
+import { ExternalLink, Star, TrendingUp, Gift, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { OfferViewModel } from "@/types/offer";
 import { validityLabel, isOfferExpired, isOfferUpcoming } from "@/domain/offerValidity";
@@ -46,8 +46,13 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
     offer.bankDisplay && badgeLabel.toLowerCase().includes(offer.bankDisplay.toLowerCase())
   );
 
+  const cardAriaLabel = isNoCard
+    ? `Default offer on ${offer.platformName}: ${savingsLabel(offer)}`
+    : `${offer.bankDisplay ?? offer.bank} offer on ${offer.platformName}: ${savingsLabel(offer)}`;
+
   return (
     <div
+      aria-label={cardAriaLabel}
       className={`bg-card rounded-2xl border border-border/40 flex flex-col h-full border-t-[3px] ${v.border} hover:card-shadow-xl hover:-translate-y-0.5 transition-all duration-300 card-shadow`}
     >
       {/* Header */}
@@ -111,27 +116,12 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
         <p className="px-5 pb-3 text-[10px] leading-relaxed text-muted-foreground">Estimated values are based on advertised terms. Verify final price and eligibility on the booking platform.</p>
       )}
 
-      {/* Trust row — honest about demo status */}
-      <div className="px-5 pb-2 flex items-center gap-3 text-[10px] text-muted-foreground/70">
-        {offer.verificationStatus === "verified" ? (
-          <span className="flex items-center gap-1 text-accent">
-            <BadgeCheck className="w-3 h-3" />
-            Verified
-          </span>
-        ) : (
-          <span className="flex items-center gap-1">
-            <Shield className="w-3 h-3" />
-            Unverified
-          </span>
-        )}
-      </div>
-
       {/* CTA */}
       <div className="px-5 pb-5 pt-1">
         {canBook && offer.platformUrl ? (
           <a href={offer.platformUrl} target="_blank" rel="noopener noreferrer" className="block">
-            <Button className="gap-2 w-full font-semibold text-[13px] rounded-xl h-10 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md transition-all duration-200">
-              Book on {offer.platform}
+            <Button className="gap-2 w-full font-semibold text-[13px] rounded-xl h-10 bg-accent text-accent-foreground hover:brightness-110 shadow-sm hover:shadow-md transition-all duration-200">
+              Book on {offer.platformName}
               <ExternalLink className="w-3.5 h-3.5" />
             </Button>
           </a>

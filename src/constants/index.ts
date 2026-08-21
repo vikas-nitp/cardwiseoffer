@@ -97,14 +97,6 @@ export const BANK_DISPLAY_NAMES: Record<string, string> = {
 export type BankType = (typeof BANKS)[number];
 
 // ────────────────────────────────────────────────────────────────────
-// Platform Data (for filter)
-// ────────────────────────────────────────────────────────────────────
-
-export const PLATFORMS = ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Goibibo"] as const;
-
-export type PlatformType = (typeof PLATFORMS)[number];
-
-// ────────────────────────────────────────────────────────────────────
 // Payment Methods (maps UI label to API canonical value)
 // ────────────────────────────────────────────────────────────────────
 
@@ -118,16 +110,6 @@ export const PAYMENT_METHOD_API_MAP: Record<string, string> = {
 };
 
 export type PaymentMethodType = (typeof PAYMENT_METHODS)[number];
-
-// ────────────────────────────────────────────────────────────────────
-// Utility: Mock Visitor Count
-// ────────────────────────────────────────────────────────────────────
-
-export const getDailyVisitorCount = (): number => {
-  const today = new Date().toISOString().split("T")[0];
-  const hash = today.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return 1200 + (hash % 800); // 1200–2000 visitors
-};
 
 // ────────────────────────────────────────────────────────────────────
 // Error Messages

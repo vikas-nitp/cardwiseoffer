@@ -192,7 +192,7 @@ const SidebarFilters = ({
             variant="ghost"
             size="sm"
             onClick={onResetAll}
-            className="text-[11px] text-primary h-auto py-1 px-2 font-medium"
+            className="text-[11px] text-accent h-auto py-1 px-2 font-medium"
           >
             Reset all
           </Button>
