@@ -23,7 +23,6 @@ export const API_ENDPOINTS = {
   OFFERS: "/api/v1/offers",
   FEATURE_FLAGS: "/api/v1/feature-flags",
   SEARCH: "/api/v1/search",
-  AUTH_INFO: "/api/v1/auth-info",
 } as const;
 
 // ────────────────────────────────────────────────────────────────────
