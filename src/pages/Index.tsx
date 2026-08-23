@@ -115,6 +115,10 @@ const Index = () => {
     });
   }, [allOffers, bankFilter, platformFilter, paymentFilter]);
 
+  const handleBankFilterChange = useCallback((v: string[]) => { setBankFilter(v); setOffersPage(1); }, []);
+  const handlePlatformFilterChange = useCallback((v: string[]) => { setPlatformFilter(v); setOffersPage(1); }, []);
+  const handlePaymentFilterChange = useCallback((v: string[]) => { setPaymentFilter(v); setOffersPage(1); }, []);
+
   const handleResetFilters = () => {
     setBankFilter([]); setPlatformFilter([]); setPaymentFilter([]);
     setOffersPage(1);
@@ -363,17 +367,17 @@ const Index = () => {
                   <div className="flex min-w-0 flex-col lg:flex-row gap-5">
                     <div className="lg:hidden" aria-hidden="false">
                       <SidebarFilters
-                        bankFilter={bankFilter} onBankFilterChange={setBankFilter}
-                        platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
-                        paymentFilter={paymentFilter} onPaymentFilterChange={setPaymentFilter}
+                        bankFilter={bankFilter} onBankFilterChange={handleBankFilterChange}
+                        platformFilter={platformFilter} onPlatformFilterChange={handlePlatformFilterChange}
+                        paymentFilter={paymentFilter} onPaymentFilterChange={handlePaymentFilterChange}
                         onResetAll={handleResetFilters}
                       />
                     </div>
                     <div className="hidden lg:block w-64 shrink-0" aria-hidden="true">
                       <SidebarFilters
-                        bankFilter={bankFilter} onBankFilterChange={setBankFilter}
-                        platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
-                        paymentFilter={paymentFilter} onPaymentFilterChange={setPaymentFilter}
+                        bankFilter={bankFilter} onBankFilterChange={handleBankFilterChange}
+                        platformFilter={platformFilter} onPlatformFilterChange={handlePlatformFilterChange}
+                        paymentFilter={paymentFilter} onPaymentFilterChange={handlePaymentFilterChange}
                         onResetAll={handleResetFilters}
                       />
                     </div>
