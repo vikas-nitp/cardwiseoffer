@@ -1,286 +1,174 @@
-/**
- * Real Backend API Service
- * Connects to FastAPI backend at configured URL
- */
+import {
+  API_BASE_URL,
+  API_ENDPOINTS,
+  API_RETRY_ATTEMPTS,
+  API_RETRY_DELAY_MS,
+  API_TIMEOUT_MS,
+} from "@/constants";
+import type { components } from "@/types/generated-api";
 
-import { API_BASE_URL, API_ENDPOINTS, API_RETRY_ATTEMPTS, API_RETRY_DELAY_MS } from "@/constants";
+export type MetaData = components["schemas"]["OfferMetadata"];
+export type FeatureFlags = components["schemas"]["FeatureFlagsResponse"];
+export type ApiOffer = components["schemas"]["PublicOffer"];
+export type ApiSearchOffer = components["schemas"]["SearchOffer"];
+export type SearchResponse = components["schemas"]["SearchResponse"];
+export type OffersResponse = components["schemas"]["OffersResponse"];
 
-// ── UI type for OfferCard component ───────────────────────
-export interface OfferTile {
-  id: string;
-  label: string;
-  extraLabel?: string;
-  labelIcon: string;
-  accentClass: string;
-  accentBorder: string;
-  platform: string;
-  platformUrl: string;
-  bank: string | null;
-  card: string | null;
-  discount: number;
-  paymentType: string;
-  conditions: string[];
+export interface ApiResponseMetadata {
+  requestId: string | null;
+  dataVersion: string | null;
+  contractVersion: string | null;
 }
 
-// ── Meta response (matches /api/v1/meta) ──────────────────
-export interface MetaData {
-  banks: Array<{ id: string; name: string }>;
-  platforms: Array<{ id: string; name: string }>;
-  categories: string[];
-  airports: Array<{ code: string; name: string }>;
-}
-
-// ── Feature flags (matches /api/v1/feature-flags) ─────────
-export interface FeatureFlags {
-  authEnabled: boolean;
-  offerLockingEnabled: boolean;
-  allOffers: boolean;
-  savedCards: boolean;
-  dailyVisitorsEnabled?: boolean;
-}
-
-// ── Backend OfferCard (matches offer_engine.py) ───────────
-export interface BackendOfferCard {
-  offer_id: string;
-  label: string;
-  bank: string;
-  card_name: string;
-  platform: string;
-  payment_method: string;
-  category: string;
-  coupon_code: string;
-  discount_type: string;
-  discount_value: number;
-  max_discount: number;
-  min_txn: number;
-  final_price: number;
-  savings: number;
-  locked: boolean;
-  reasons: string[];
-  cta_url: string;
-}
-
-// ── Backend SearchResponse (matches main.py SearchResponse) ──
-export interface SearchSummary {
-  from_airport: string;
-  to_airport: string;
-  date: string;
-  base_fare: number;
-}
-
-export interface PriceStripItem {
-  date: string;
-  price: number;
-}
-
-export interface SearchResponse {
-  summary: SearchSummary;
-  strip7days: PriceStripItem[];
-  offers: BackendOfferCard[];
-}
-
-// ── All offers response (matches /api/v1/offers → Offer model) ──
-export interface OfferResponse {
-  offer_id: string;
-  bank: string;
-  card_name?: string;
-  platform: string;
-  category: string;
-  payment_method: string;
-  discount_type: string;
-  discount_value: number;
-  max_discount: number;
-  min_txn: number;
-  coupon_code: string;
-  valid_from: string;
-  valid_to: string;
-  channels: string;
-  eligibility_notes: string;
-  terms_url: string;
-  priority_score: number;
-  login_required: boolean;
-}
-
-// ── Error class ───────────────────────────────────────────
 export class APIError extends Error {
   constructor(
     public status: number,
     message: string,
-    public details?: unknown
+    public details?: unknown,
+    public metadata?: ApiResponseMetadata
   ) {
     super(message);
     this.name = "APIError";
   }
 }
 
-// ── Core fetch helper with retry ──────────────────────────
+const metadataFrom = (response: Response): ApiResponseMetadata => ({
+  requestId: response.headers.get("X-Request-ID"),
+  dataVersion: response.headers.get("X-Data-Version"),
+  contractVersion: response.headers.get("X-Contract-Version"),
+});
+
+const delay = (milliseconds: number) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 async function apiCall<T>(
   endpoint: string,
-  method: "GET" | "POST" = "GET",
-  body?: unknown,
-  isAuthenticated: boolean = false
+  options: { method?: "GET" | "POST"; body?: unknown; signal?: AbortSignal } = {}
 ): Promise<T> {
-  // Fail fast if no API URL is configured — dataRepo will fall back to mock
-  if (!API_BASE_URL) {
-    throw new APIError(0, "No API URL configured");
-  }
+  if (!API_BASE_URL) throw new APIError(0, "VITE_API_BASE_URL is not configured");
 
-  // NOTE: Real auth token/session will be injected here by a future AuthTokenProvider.
-  // The previous `x-user-auth: true` header was a client-only claim and is not real auth.
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-  void isAuthenticated;
-
+  const method = options.method ?? "GET";
+  const attempts = method === "GET" ? API_RETRY_ATTEMPTS + 1 : 1;
   let lastError: Error | null = null;
-  
-  for (let attempt = 0; attempt <= API_RETRY_ATTEMPTS; attempt++) {
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort("timeout"), API_TIMEOUT_MS);
+    const abort = () => controller.abort(options.signal?.reason);
+    options.signal?.addEventListener("abort", abort, { once: true });
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method,
-        headers,
-        body: body ? JSON.stringify(body) : undefined,
+        headers: { "Content-Type": "application/json" },
+        body: options.body === undefined ? undefined : JSON.stringify(options.body),
+        signal: controller.signal,
       });
-
+      const metadata = metadataFrom(response);
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new APIError(response.status, `API Error: ${response.statusText}`, errorData);
+        const details = await response.json().catch(() => undefined);
+        const message =
+          typeof details === "object" && details !== null && "error" in details
+            ? String((details as { error?: { message?: string } }).error?.message ?? `HTTP ${response.status}`)
+            : `HTTP ${response.status}`;
+        throw new APIError(response.status, message, details, metadata);
       }
-
-      return await response.json();
+      return (await response.json()) as T;
     } catch (error) {
-      lastError = error instanceof Error ? error : new Error("Unknown error");
-      
-      // Don't retry on client errors (4xx)
-      if (error instanceof APIError && error.status >= 400 && error.status < 500) {
-        throw error;
+      if (options.signal?.aborted) throw error;
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw new APIError(0, "Request timed out");
       }
-      
-      // Wait before retry (exponential backoff)
-      if (attempt < API_RETRY_ATTEMPTS) {
-        await new Promise(resolve => setTimeout(resolve, API_RETRY_DELAY_MS * (attempt + 1)));
-      }
+      lastError = error instanceof Error ? error : new Error("Unknown API error");
+      if (error instanceof APIError && (error.status < 500 || error.status === 0)) throw error;
+      if (attempt + 1 < attempts) await delay(API_RETRY_DELAY_MS * (attempt + 1));
+    } finally {
+      window.clearTimeout(timeout);
+      options.signal?.removeEventListener("abort", abort);
     }
   }
-  
-  // All retries failed
-  if (lastError instanceof APIError) throw lastError;
-  throw new APIError(0, `Network error after ${API_RETRY_ATTEMPTS + 1} attempts: ${lastError?.message || "Unknown"}`);
+  throw lastError instanceof APIError
+    ? lastError
+    : new APIError(0, lastError?.message ?? "Network error");
 }
 
-// ── Health check ──────────────────────────────────────────
-export async function checkHealth(): Promise<boolean> {
+export async function checkHealth(signal?: AbortSignal): Promise<boolean> {
   try {
-    const res = await fetch(`${API_BASE_URL}${API_ENDPOINTS.HEALTH}`);
-    return res.ok;
+    await apiCall<{ ok: boolean }>("/health/live", { signal });
+    return true;
   } catch {
     return false;
   }
 }
 
-// ── Feature flags ─────────────────────────────────────────
-export async function fetchFeatureFlags(): Promise<FeatureFlags> {
-  return apiCall<FeatureFlags>(API_ENDPOINTS.FEATURE_FLAGS);
-}
+export const fetchFeatureFlags = (signal?: AbortSignal) =>
+  apiCall<FeatureFlags>(API_ENDPOINTS.FEATURE_FLAGS, { signal });
 
-// ── Metadata ──────────────────────────────────────────────
-export async function fetchMetadata(): Promise<MetaData> {
-  return apiCall<MetaData>(API_ENDPOINTS.META);
-}
+export const fetchMetadata = (signal?: AbortSignal) =>
+  apiCall<MetaData>(API_ENDPOINTS.META, { signal });
 
-// ── Search offers ─────────────────────────────────────────
-// Backend expects: { from, to, date, banks?, platforms? }
 export async function searchOffers(
   fromCode: string,
   toCode: string,
   travelDate: string,
   banks: string[] = [],
   platforms: string[] = [],
-  isAuthenticated: boolean = false
+  _isAuthenticated = false,
+  signal?: AbortSignal,
+  bookingAmount?: number
 ): Promise<SearchResponse> {
-  return apiCall<SearchResponse>(
-    API_ENDPOINTS.SEARCH,
-    "POST",
-    { 
-      from: fromCode, 
-      to: toCode, 
+  return apiCall<SearchResponse>(API_ENDPOINTS.SEARCH, {
+    method: "POST",
+    signal,
+    body: {
+      from: fromCode,
+      to: toCode,
       date: travelDate,
-      banks: banks.length > 0 ? banks : undefined,
-      platforms: platforms.length > 0 ? platforms : undefined,
+      banks: [...new Set(banks)],
+      platforms: [...new Set(platforms)],
+      ...(bookingAmount === undefined ? {} : { booking_amount: bookingAmount }),
     },
-    isAuthenticated
-  );
+  });
 }
 
-// ── All offers catalog ────────────────────────────────────
-// Backend returns { offers: [...] }, so we unwrap
+export interface OfferFilters {
+  platform?: string[];
+  bank?: string[];
+  payment_method?: string[];
+  booking_channel?: string[];
+  category?: string[];
+  active_on?: string;
+  page?: number;
+  limit?: number;
+}
+
+export const buildOffersQuery = (filters: OfferFilters): string => {
+  const query = new URLSearchParams();
+  for (const key of ["platform", "bank", "payment_method", "booking_channel", "category"] as const) {
+    for (const value of [...new Set(filters[key] ?? [])].sort()) query.append(key, value);
+  }
+  if (filters.active_on) query.set("active_on", filters.active_on);
+  if (filters.page !== undefined) query.set("page", String(filters.page));
+  if (filters.limit !== undefined) query.set("limit", String(filters.limit));
+  const encoded = query.toString();
+  return encoded ? `?${encoded}` : "";
+};
+
 export async function fetchAllOffers(
-  isAuthenticated: boolean = false
-): Promise<OfferResponse[]> {
-  const res = await apiCall<{ offers: OfferResponse[] }>(API_ENDPOINTS.OFFERS, "GET", undefined, isAuthenticated);
-  return res.offers;
+  _isAuthenticated = false,
+  filters: OfferFilters = {},
+  signal?: AbortSignal
+): Promise<ApiOffer[]> {
+  const response = await apiCall<OffersResponse>(
+    `${API_ENDPOINTS.OFFERS}${buildOffersQuery(filters)}`,
+    { signal }
+  );
+  return response.offers;
 }
 
-// ── Transform search response → OfferTile[] ───────────────
-export function transformSearchResponse(response: SearchResponse): OfferTile[] {
-  return response.offers.map((offer, idx) => {
-    let labelIcon = "Gift";
-    let accentClass = "bg-secondary text-secondary-foreground";
-    let accentBorder = "border-secondary";
-
-    if (offer.label === "Best Offer" || idx === 0) {
-      labelIcon = "Star";
-      accentClass = "bg-primary text-primary-foreground";
-      accentBorder = "border-primary";
-    } else if (offer.savings > 200) {
-      labelIcon = "TrendingUp";
-      accentClass = "bg-highlight text-highlight-foreground";
-      accentBorder = "border-highlight";
-    }
-
-    return {
-      id: offer.offer_id || `offer-${idx}`,
-      label: offer.label || "Offer",
-      labelIcon,
-      accentClass,
-      accentBorder,
-      platform: offer.platform,
-      platformUrl: offer.cta_url || "#",
-      bank: offer.bank === "Any" ? null : offer.bank,
-      card: offer.card_name || null,
-      discount: offer.final_price,
-      paymentType: "Credit Card",
-      conditions: offer.reasons?.length ? offer.reasons : ["Valid offer"],
-      extraLabel: offer.locked ? "🔒 Login to unlock" : undefined,
-    };
-  });
-}
-
-// ── Transform all offers → OfferTile[] ────────────────────
-export function transformAllOffers(offers: OfferResponse[]): OfferTile[] {
-  return offers.map((offer, idx) => {
-    const discount =
-      offer.discount_type === "FLAT"
-        ? offer.discount_value
-        : Math.min(Math.round((offer.min_txn * offer.discount_value) / 100), offer.max_discount);
-
-    return {
-      id: `all-${offer.offer_id}`,
-      label: idx === 0 ? "Best Offer" : offer.bank,
-      labelIcon: idx === 0 ? "Star" : "CreditCard",
-      accentClass: idx === 0 ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground",
-      accentBorder: idx === 0 ? "border-primary" : "border-secondary",
-      platform: offer.platform,
-      platformUrl: "#",
-      bank: offer.bank,
-      card: offer.card_name || `${offer.bank} Card`,
-      discount,
-      paymentType: offer.payment_method === "CREDIT" ? "Credit Card" : offer.payment_method === "DEBIT" ? "Debit Card" : "No Card",
-      conditions: [
-        `Min transaction: ₹${offer.min_txn}`,
-        `Max discount: ₹${offer.max_discount}`,
-        `Valid till: ${offer.valid_to}`,
-      ],
-    };
-  });
-}
+export const fetchAllOffersPage = (
+  filters: OfferFilters = {},
+  signal?: AbortSignal,
+) => apiCall<OffersResponse>(
+  `${API_ENDPOINTS.OFFERS}${buildOffersQuery(filters)}`,
+  { signal },
+);

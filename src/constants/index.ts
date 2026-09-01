@@ -3,14 +3,19 @@
  * All hardcoded values, configuration, and mock data centralized here
  */
 
-import airportsData from "@/data/mock/airports.json";
-import featureFlagsData from "@/data/mock/featureFlags.json";
+import airportsData from "@/data/generated/airports.json";
 
 // ────────────────────────────────────────────────────────────────────
 // API & Environment
 // ────────────────────────────────────────────────────────────────────
 
-export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || "";
+const configuredApiBaseUrl = ((import.meta.env.VITE_API_BASE_URL as string) || "")
+  .trim()
+  .replace(/\/+$/, "");
+
+// Endpoint constants below own the `/api/v1` prefix. Accept either the API
+// origin or the documented `/api/v1` URL without producing `/api/v1/api/v1`.
+export const API_BASE_URL = configuredApiBaseUrl.replace(/\/api\/v1$/i, "");
 
 export const API_ENDPOINTS = {
   HEALTH: "/health",
@@ -25,12 +30,13 @@ export const API_ENDPOINTS = {
 // UI Constants
 // ────────────────────────────────────────────────────────────────────
 
-export const MAX_FREE_OFFERS = 2; // Max offers shown to guest users
 export const MAX_BANK_FILTERS = 2; // Max banks user can select (enforced by UI warning)
 export const API_TIMEOUT_MS = 30000; // 30 seconds
 
 // Booking window: latest confirmed product rule = today .. today + 10 days.
-export const BOOKING_WINDOW_DAYS = 10;
+export const MAX_BOOKING_AMOUNT = 1_000_000;
+export const DATE_STRIP_VISIBLE_DAYS = 7;
+export const DATE_STRIP_NAVIGATION_STEP_DAYS = 1;
 
 // Price Strip Configuration
 export const STRIP_DAYS_COUNT = 7; // Number of days in price strip (always 7)
@@ -135,16 +141,4 @@ export const ERROR_MESSAGES = {
   OFFERS_FAILED: "Failed to load offers.",
   INVALID_SEARCH: "Please fill in all search fields.",
   SAME_CITY_ERROR: "Source and destination cannot be the same.",
-} as const;
-
-// ────────────────────────────────────────────────────────────────────
-// Default Feature Flags (loaded from featureFlags.json mock data)
-// ────────────────────────────────────────────────────────────────────
-
-export const DEFAULT_FEATURE_FLAGS = {
-  authEnabled: featureFlagsData.authEnabled ?? false,
-  offerLockingEnabled: featureFlagsData.offerLockingEnabled ?? false,
-  allOffers: featureFlagsData.allOffers ?? true,
-  savedCards: featureFlagsData.savedCards ?? false,
-  dailyVisitorsEnabled: featureFlagsData.dailyVisitorsEnabled ?? true,
 } as const;

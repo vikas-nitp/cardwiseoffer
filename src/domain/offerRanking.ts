@@ -50,10 +50,6 @@ export function rankOffers(
   return dedupe([primary, secondary, betterAlt, bestDefault]);
 }
 
-export function betterAltDelta(alt: OfferViewModel, primary: OfferViewModel): number {
-  return Math.max(0, alt.savings - primary.savings);
-}
-
 function pickBest(offers: OfferViewModel[]): OfferViewModel | null {
   if (offers.length === 0) return null;
   return [...offers].sort(

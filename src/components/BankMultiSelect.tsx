@@ -60,7 +60,7 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
     <div className="space-y-1.5 relative z-30" ref={wrapperRef}>
       <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
         <CreditCard className="w-3.5 h-3.5" />
-        Card
+        Bank / card issuer
       </label>
       <button
         type="button"
@@ -69,7 +69,7 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
       >
         <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         {selected.length === 0 ? (
-          <span className="text-muted-foreground">Select Card(s)</span>
+          <span className="text-muted-foreground">Select up to 2 banks</span>
         ) : (
           <span className="font-bold text-foreground">{selected.map(b => bankDisplayNames[b] || b).join(", ")}</span>
         )}
@@ -84,7 +84,7 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search cards..."
+                placeholder="Search banks..."
                 className="w-full pl-8 pr-3 py-2 text-sm bg-secondary/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
                 autoFocus
               />
@@ -122,7 +122,7 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
               );
             })}
             {filtered.length === 0 && (
-              <p className="text-center text-sm text-muted-foreground py-4">No cards found</p>
+              <p className="text-center text-sm text-muted-foreground py-4">No banks found</p>
             )}
           </div>
         </div>

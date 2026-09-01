@@ -25,4 +25,11 @@ describe("platformUrlBuilder", () => {
     expect(platformHomeUrl("MakeMyTrip")).toMatch(/^https:\/\/www\.makemytrip\.com/);
     expect(platformHomeUrl("Unknown")).toBeNull();
   });
+
+  it("supports canonical backend platform IDs", () => {
+    expect(buildFlightSearchUrl("MAKEMYTRIP", ctx)).toContain("makemytrip.com");
+    expect(buildFlightSearchUrl("CLEARTRIP", ctx)).toContain("cleartrip.com");
+    expect(platformHomeUrl("MAKEMYTRIP")).toContain("makemytrip.com");
+    expect(platformHomeUrl("CLEARTRIP")).toContain("cleartrip.com");
+  });
 });

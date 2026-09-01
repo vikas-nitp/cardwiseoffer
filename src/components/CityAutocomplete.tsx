@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,11 +17,24 @@ interface CityAutocompleteProps {
 }
 
 const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityAutocompleteProps) => {
-  const availableCities = excludeCode ? cities.filter(c => c.code !== excludeCode) : cities;
+  const availableCities = useMemo(
+    () => excludeCode ? cities.filter((city) => city.code !== excludeCode) : cities,
+    [cities, excludeCode]
+  );
   const [query, setQuery] = useState(value ? `${value.city} (${value.code})` : "");
   const [open, setOpen] = useState(false);
-  const [filtered, setFiltered] = useState<CityOption[]>(availableCities);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const filtered = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return availableCities;
+    return availableCities.filter(
+      (city) =>
+        city.city.toLowerCase().includes(normalizedQuery) ||
+        city.code.toLowerCase().includes(normalizedQuery) ||
+        city.airport.toLowerCase().includes(normalizedQuery)
+    );
+  }, [availableCities, query]);
 
   useEffect(() => {
     if (value) setQuery(`${value.city} (${value.code})`);
@@ -42,15 +55,6 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
   const handleInputChange = (val: string) => {
     setQuery(val);
     setOpen(true);
-    const q = val.toLowerCase();
-    setFiltered(
-      availableCities.filter(
-        (c) =>
-          c.city.toLowerCase().includes(q) ||
-          c.code.toLowerCase().includes(q) ||
-          c.airport.toLowerCase().includes(q)
-      )
-    );
     if (value && val !== `${value.city} (${value.code})`) onChange(null);
   };
 
@@ -71,7 +75,7 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
           type="text"
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
-          onFocus={() => { setOpen(true); setFiltered(availableCities); }}
+          onFocus={() => setOpen(true)}
           placeholder="Type city or airport..."
           className="w-full bg-muted/40 border border-border/30 h-auto text-[13px] pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl font-semibold text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring hover:border-primary/20 transition-all duration-200"
         />

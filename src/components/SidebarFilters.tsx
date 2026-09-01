@@ -2,34 +2,29 @@ import { Check, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useMeta } from "@/contexts/MetaContext";
+const PAYMENT_METHOD_IDS = ["CREDIT", "DEBIT", "NO_CARD"] as const;
+const PAYMENT_DISPLAY: Record<string, string> = {
+  CREDIT: "Credit Card",
+  DEBIT: "Debit Card",
+  NO_CARD: "No Card",
+};
 import { Button } from "@/components/ui/button";
-import type { OfferFacets, FacetOption } from "@/domain/offerFacets";
-
-const PAYMENT_UNIVERSE = [
-  { id: "CREDIT", name: "Credit Card" },
-  { id: "DEBIT", name: "Debit Card" },
-  { id: "NO_CARD", name: "No Card" },
-];
-
-const CHANNEL_UNIVERSE = [
-  { id: "WEB", name: "Web" },
-  { id: "APP", name: "App" },
-  { id: "WEB_AND_APP", name: "Web + App" },
-];
 
 interface FilterSelectProps {
   title: string;
-  options: FacetOption[];
+  items: string[];
   selected: string[];
-  onToggle: (id: string) => void;
-  onClearAll?: () => void;
+  onToggle: (item: string) => void;
   searchable?: boolean;
+  displayNames?: Record<string, string>;
 }
 
-const FilterSelect = ({ title, options, selected, onToggle, onClearAll, searchable = false }: FilterSelectProps) => {
+const FilterSelect = ({ title, items, selected, onToggle, searchable = false, displayNames }: FilterSelectProps) => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const getDisplayName = (item: string) => displayNames?.[item] || item;
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -43,14 +38,13 @@ const FilterSelect = ({ title, options, selected, onToggle, onClearAll, searchab
   }, []);
 
   const filtered = searchable
-    ? options.filter((o) => o.name.toLowerCase().includes(search.toLowerCase()))
-    : options;
+    ? items.filter((item) => getDisplayName(item).toLowerCase().includes(search.toLowerCase()))
+    : items;
 
-  const displayText =
-    selected.length === 0
-      ? `All ${title}`
-      : selected.length <= 2
-      ? options.filter((o) => selected.includes(o.id)).map((o) => o.name).join(", ")
+  const displayText = selected.length === 0
+    ? `All ${title}`
+    : selected.length <= 2
+      ? selected.map(getDisplayName).join(", ")
       : `${selected.length} selected`;
 
   return (
@@ -60,7 +54,6 @@ const FilterSelect = ({ title, options, selected, onToggle, onClearAll, searchab
         <button
           onClick={() => setOpen(!open)}
           className="w-full text-left px-3 py-2.5 rounded-xl bg-muted/30 border border-border/40 text-[13px] font-medium text-foreground flex items-center justify-between gap-2 hover:border-primary/20 transition-all duration-200"
-          aria-expanded={open}
         >
           <span className={cn(selected.length === 0 && "text-muted-foreground")}>{displayText}</span>
           <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
@@ -83,41 +76,38 @@ const FilterSelect = ({ title, options, selected, onToggle, onClearAll, searchab
                 </div>
               </div>
             )}
-            <div className="max-h-52 overflow-y-auto py-1">
-              {filtered.map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => !opt.disabled && onToggle(opt.id)}
-                  disabled={opt.disabled}
-                  className={cn(
-                    "w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-[13px] transition-colors",
-                    opt.selected ? "bg-primary/6 text-primary font-medium" : "text-foreground hover:bg-muted/40",
-                    opt.disabled && "opacity-50 cursor-not-allowed hover:bg-transparent"
-                  )}
-                  title={opt.disabled ? "No offers match this option with current filters" : undefined}
-                >
-                  <div
+            <div className="max-h-48 overflow-y-auto py-1">
+              {filtered.map((item) => {
+                const isSelected = selected.includes(item);
+                return (
+                  <button
+                    key={item}
+                    onClick={() => onToggle(item)}
                     className={cn(
-                      "w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors",
-                      opt.selected ? "bg-primary border-primary" : "border-border"
+                      "w-full text-left px-3 py-2.5 flex items-center gap-2.5 text-[13px] transition-colors",
+                      isSelected ? "bg-primary/6 text-primary font-medium" : "text-foreground hover:bg-muted/40"
                     )}
                   >
-                    {opt.selected && <Check className="w-3 h-3 text-primary-foreground" />}
-                  </div>
-                  <span className="flex-1">{opt.name}</span>
-                  <span className={cn("text-[11px] font-medium", opt.count === 0 ? "text-muted-foreground/60" : "text-muted-foreground")}>
-                    {opt.count}
-                  </span>
-                </button>
-              ))}
+                    <div
+                      className={cn(
+                        "w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors",
+                        isSelected ? "bg-primary border-primary" : "border-border"
+                      )}
+                    >
+                      {isSelected && <Check className="w-3 h-3 text-primary-foreground" />}
+                    </div>
+                    {getDisplayName(item)}
+                  </button>
+                );
+              })}
               {filtered.length === 0 && (
                 <p className="text-xs text-muted-foreground py-3 px-3 text-center">No results</p>
               )}
             </div>
-            {selected.length > 0 && onClearAll && (
+            {selected.length > 0 && (
               <div className="border-t border-border/30 p-2">
                 <button
-                  onClick={onClearAll}
+                  onClick={() => selected.forEach(s => onToggle(s))}
                   className="text-xs text-primary font-medium hover:underline w-full text-center py-1"
                 >
                   Clear all
@@ -128,21 +118,20 @@ const FilterSelect = ({ title, options, selected, onToggle, onClearAll, searchab
         )}
       </div>
 
+      {/* Selected chips */}
       {selected.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-2">
-          {options
-            .filter((o) => selected.includes(o.id))
-            .map((o) => (
-              <span
-                key={o.id}
-                className="inline-flex items-center gap-1 text-[10px] font-medium bg-primary/8 text-primary px-2 py-1 rounded-md"
-              >
-                {o.name}
-                <button onClick={() => onToggle(o.id)} className="hover:text-destructive transition-colors" aria-label={`Remove ${o.name}`}>
-                  <X className="w-2.5 h-2.5" />
-                </button>
-              </span>
-            ))}
+          {selected.map((item) => (
+            <span
+              key={item}
+              className="inline-flex items-center gap-1 text-[10px] font-medium bg-primary/8 text-primary px-2 py-1 rounded-md"
+            >
+              {getDisplayName(item)}
+              <button onClick={() => onToggle(item)} className="hover:text-destructive transition-colors">
+                <X className="w-2.5 h-2.5" />
+              </button>
+            </span>
+          ))}
         </div>
       )}
     </div>
@@ -156,9 +145,6 @@ interface SidebarFiltersProps {
   onPlatformFilterChange: (platforms: string[]) => void;
   paymentFilter: string[];
   onPaymentFilterChange: (types: string[]) => void;
-  channelFilter?: string[];
-  onChannelFilterChange?: (channels: string[]) => void;
-  facets?: OfferFacets;
   onResetAll?: () => void;
 }
 
@@ -169,95 +155,72 @@ const SidebarFilters = ({
   onPlatformFilterChange,
   paymentFilter,
   onPaymentFilterChange,
-  channelFilter = [],
-  onChannelFilterChange,
-  facets,
   onResetAll,
 }: SidebarFiltersProps) => {
   const { meta } = useMeta();
+  
+  const bankDisplayNames = useMemo(() => {
+    const names: Record<string, string> = {};
+    meta.banks.forEach((b) => {
+      names[b.id] = b.name;
+    });
+    return names;
+  }, [meta.banks]);
 
-  // Fallback options built from meta when facets aren't yet provided.
-  const bankOptions: FacetOption[] = useMemo(
-    () =>
-      facets?.banks ??
-      meta.banks.map((b) => ({ id: b.id, name: b.name, count: 0, selected: bankFilter.includes(b.id), disabled: false })),
-    [facets, meta.banks, bankFilter]
-  );
+  const bankIds = useMemo(() => meta.banks.map((b) => b.id), [meta.banks]);
+  const platformIds = useMemo(() => meta.platforms.map((p) => p.id), [meta.platforms]);
+  const platformDisplayNames = useMemo(() => {
+    const names: Record<string, string> = {};
+    meta.platforms.forEach((platform) => {
+      names[platform.id] = platform.name;
+    });
+    return names;
+  }, [meta.platforms]);
 
-  const platformOptions: FacetOption[] = useMemo(
-    () =>
-      facets?.platforms ??
-      meta.platforms.map((p) => ({
-        id: p.id,
-        name: p.name,
-        count: 0,
-        selected: platformFilter.includes(p.id),
-        disabled: false,
-      })),
-    [facets, meta.platforms, platformFilter]
-  );
+  const toggleItem = (arr: string[], item: string, setter: (v: string[]) => void) => {
+    setter(arr.includes(item) ? arr.filter((i) => i !== item) : [...arr, item]);
+  };
 
-  const paymentOptions: FacetOption[] = useMemo(
-    () =>
-      facets?.paymentMethods ??
-      PAYMENT_UNIVERSE.map((p) => ({ ...p, count: 0, selected: paymentFilter.includes(p.id), disabled: false })),
-    [facets, paymentFilter]
-  );
-
-  const channelOptions: FacetOption[] = useMemo(
-    () =>
-      facets?.bookingChannels ??
-      CHANNEL_UNIVERSE.map((c) => ({ ...c, count: 0, selected: channelFilter.includes(c.id), disabled: false })),
-    [facets, channelFilter]
-  );
-
-  const toggle = (arr: string[], id: string, setter: (v: string[]) => void) =>
-    setter(arr.includes(id) ? arr.filter((i) => i !== id) : [...arr, id]);
-
-  const hasActiveFilters =
-    bankFilter.length + platformFilter.length + paymentFilter.length + channelFilter.length > 0;
+  const hasActiveFilters = bankFilter.length > 0 || platformFilter.length > 0 || paymentFilter.length > 0;
 
   return (
     <div className="bg-card rounded-2xl card-shadow p-5 sticky top-24 animate-fade-in border border-border/40">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-[13px] font-bold text-foreground">Filters</h3>
         {hasActiveFilters && onResetAll && (
-          <Button variant="ghost" size="sm" onClick={onResetAll} className="text-[11px] text-primary h-auto py-1 px-2 font-medium">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onResetAll}
+            className="text-[11px] text-primary h-auto py-1 px-2 font-medium"
+          >
             Reset all
           </Button>
         )}
       </div>
       <FilterSelect
-        title="Platform"
-        options={platformOptions}
-        selected={platformFilter}
-        onToggle={(id) => toggle(platformFilter, id, onPlatformFilterChange)}
-        onClearAll={() => onPlatformFilterChange([])}
+        title="Bank"
+        items={bankIds}
+        selected={bankFilter}
+        onToggle={(b) => toggleItem(bankFilter, b, onBankFilterChange)}
+        searchable
+        displayNames={bankDisplayNames}
       />
       <FilterSelect
-        title="Bank"
-        options={bankOptions}
-        selected={bankFilter}
-        onToggle={(id) => toggle(bankFilter, id, onBankFilterChange)}
-        onClearAll={() => onBankFilterChange([])}
+        title="Platform"
+        items={platformIds}
+        selected={platformFilter}
+        onToggle={(p) => toggleItem(platformFilter, p, onPlatformFilterChange)}
         searchable
+        displayNames={platformDisplayNames}
       />
       <FilterSelect
         title="Payment Method"
-        options={paymentOptions}
+        items={PAYMENT_METHOD_IDS as unknown as string[]}
         selected={paymentFilter}
-        onToggle={(id) => toggle(paymentFilter, id, onPaymentFilterChange)}
-        onClearAll={() => onPaymentFilterChange([])}
+        onToggle={(t) => toggleItem(paymentFilter, t, onPaymentFilterChange)}
+        displayNames={PAYMENT_DISPLAY}
       />
-      {onChannelFilterChange && (
-        <FilterSelect
-          title="Booking Channel"
-          options={channelOptions}
-          selected={channelFilter}
-          onToggle={(id) => toggle(channelFilter, id, onChannelFilterChange)}
-          onClearAll={() => onChannelFilterChange([])}
-        />
-      )}
     </div>
   );
 };

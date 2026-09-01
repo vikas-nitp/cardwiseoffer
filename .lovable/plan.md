@@ -53,10 +53,9 @@ Add (do not overwrite existing):
 ## Phase 7 — Feature flags
 - Extend `FeatureFlagResponse` (adds `contract_version`, `config_version`).
 - Safe defaults per spec. Wire real behavior:
-  - `authEnabled=false` → hide sign-in/profile/logout entry points, no session init.
-  - `offerLockingEnabled=false` → never render locked tiles.
-  - `allOffers=false` → hide nav, block route, no `/offers` calls.
-  - `savedCards`, `dailyVisitorsEnabled` → gate UI + network.
+  - `phase2UserFeaturesEnabled=false` → no account or personalization UI/network.
+  - `publicAllOffersEnabled=false` → hide nav, block route, no `/offers` calls.
+  - Coupon, analytics, and booking comparison flags are enforced at repository boundaries.
 - Remove any `x-user-auth`, fake OTP/password paths from the codebase (already partially done — verify).
 
 ## Phase 8 — All Offers UI (desktop + mobile)

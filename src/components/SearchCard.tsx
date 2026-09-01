@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Calendar as CalendarIcon, Search, AlertCircle } from "lucide-react";
-import { format, addDays } from "date-fns";
+import { format, parseISO, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -8,7 +8,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import CityAutocomplete, { type CityOption } from "@/components/CityAutocomplete";
 import BankMultiSelect from "@/components/BankMultiSelect";
 import { useMeta } from "@/contexts/MetaContext";
-import { MAX_BANK_FILTERS, BOOKING_WINDOW_DAYS } from "@/constants";
+import { MAX_BANK_FILTERS } from "@/constants";
+import { MAX_BOOKING_AMOUNT } from "@/constants";
+import { Input } from "@/components/ui/input";
+import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
+import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
 
 const AIRPORT_CODE_PATTERN = /^[A-Z]{3}$/;
 
@@ -16,14 +20,8 @@ const validateAirportCode = (code: string): boolean => {
   return AIRPORT_CODE_PATTERN.test(code.toUpperCase());
 };
 
-const validateDate = (date: Date): boolean => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return date >= today;
-};
-
 interface SearchCardProps {
-  onSearch: (from: CityOption, to: CityOption, date: Date, banks: string[]) => void;
+  onSearch: (from: CityOption, to: CityOption, date: Date, banks: string[], bookingAmount?: number) => void;
   initialFrom?: CityOption | null;
   initialTo?: CityOption | null;
   initialDate?: Date;
@@ -32,6 +30,8 @@ interface SearchCardProps {
 
 const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBanks }: SearchCardProps) => {
   const { meta } = useMeta();
+  const { flags } = useFeatureFlags();
+  const capabilities = resolveFeatureCapabilities(flags);
   
   const cities: CityOption[] = useMemo(() => {
     return meta.airports.map((airport) => ({
@@ -45,12 +45,15 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
   const [toAirport, setToAirport] = useState<CityOption | null>(initialTo ?? null);
   const [departDate, setDepartDate] = useState<Date | undefined>(initialDate ?? undefined);
   const [banks, setBanks] = useState<string[]>(initialBanks ?? []);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [bookingAmount, setBookingAmount] = useState("");
 
   const [errors, setErrors] = useState<{
     from?: string;
     to?: string;
     date?: string;
     banks?: string;
+    bookingAmount?: string;
   }>({});
 
   useEffect(() => {
@@ -85,8 +88,8 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
 
     if (!departDate) {
       isValid = false;
-    } else if (!validateDate(departDate)) {
-      newErrors.date = "Date must be today or later";
+    } else if (!meta.availability_start || !meta.availability_end || departDate < parseISO(meta.availability_start) || departDate > parseISO(meta.availability_end)) {
+      newErrors.date = "Choose a date with available offers";
       isValid = false;
     }
 
@@ -94,22 +97,32 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
       newErrors.banks = `Maximum ${MAX_BANK_FILTERS} banks allowed`;
       isValid = false;
     }
+    if (capabilities.bookingAmountComparison && bookingAmount) {
+      const amount = Number(bookingAmount);
+      if (!Number.isFinite(amount) || amount <= 0 || amount > MAX_BOOKING_AMOUNT) {
+        newErrors.bookingAmount = `Enter an amount from ₹1 to ₹${MAX_BOOKING_AMOUNT.toLocaleString()}`;
+        isValid = false;
+      }
+    }
 
     return { errors: newErrors, isValid };
-  }, [fromAirport, toAirport, departDate, banks]);
+  }, [fromAirport, toAirport, departDate, banks, bookingAmount, capabilities.bookingAmountComparison, meta.availability_start, meta.availability_end]);
 
   const handleSearch = () => {
     setErrors(validation.errors);
     if (!validation.isValid || !fromAirport || !toAirport || !departDate) return;
-    onSearch(fromAirport, toAirport, departDate, banks);
+    const effectiveBookingAmount = capabilities.bookingAmountComparison && bookingAmount
+      ? Number(bookingAmount)
+      : undefined;
+    onSearch(fromAirport, toAirport, departDate, banks, effectiveBookingAmount);
   };
 
-  const today = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d;
-  }, []);
-  const maxDate = useMemo(() => addDays(today, BOOKING_WINDOW_DAYS), [today]);
+  const minDate = useMemo(() => meta.availability_start ? parseISO(meta.availability_start) : startOfDay(new Date()), [meta.availability_start]);
+  const maxDate = useMemo(() => meta.availability_end ? parseISO(meta.availability_end) : minDate, [meta.availability_end, minDate]);
+
+  useEffect(() => {
+    if (!capabilities.bookingAmountComparison) setBookingAmount("");
+  }, [capabilities.bookingAmountComparison]);
 
   const hasError = Object.keys(validation.errors).length > 0;
 
@@ -147,22 +160,25 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
         <div className="space-y-1">
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em]">Departure</label>
-            <Popover>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
               <PopoverTrigger asChild>
                 <button 
                   className={cn(
-                    "w-full bg-muted/40 border border-border/30 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left flex items-center relative hover:border-primary/20 transition-all duration-200",
+                    "w-full bg-muted/40 border border-border/30 h-14 text-sm pl-10 pr-3 rounded-xl text-left flex items-center relative hover:border-primary/20 transition-all duration-200",
                     errors.date && "ring-2 ring-destructive"
                   )}
                 >
                   <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   {departDate ? (
-                    <div>
+                    <div className="grid h-9 grid-rows-2 content-center">
                       <span className="font-bold text-foreground block text-[13px]">{format(departDate, "dd MMM yyyy")}</span>
                       <span className="text-[10px] text-muted-foreground">{format(departDate, "EEEE")}</span>
                     </div>
                   ) : (
-                    <span className="text-muted-foreground text-[13px]">Select date</span>
+                    <div className="grid h-9 grid-rows-2 content-center">
+                      <span className="text-muted-foreground text-[13px] font-medium">Select date</span>
+                      <span className="text-[10px] text-muted-foreground">Choose travel date</span>
+                    </div>
                   )}
                 </button>
               </PopoverTrigger>
@@ -170,8 +186,12 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
                 <Calendar
                   mode="single"
                   selected={departDate}
-                  onSelect={(d) => d && setDepartDate(d)}
-                  disabled={(d) => d < today || d > maxDate}
+                  onSelect={(date) => {
+                    if (!date) return;
+                    setDepartDate(date);
+                    setCalendarOpen(false);
+                  }}
+                  disabled={(d) => d < minDate || d > maxDate}
                   initialFocus
                   className={cn("p-3 pointer-events-auto")}
                 />
@@ -191,6 +211,15 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
           )}
         </div>
       </div>
+
+      {capabilities.bookingAmountComparison && (
+        <div className="mt-4 max-w-md">
+          <label htmlFor="booking-amount" className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em]">Expected booking amount</label>
+          <p className="text-[11px] text-muted-foreground mb-1.5">Optional — enter an estimated fare to compare actual savings.</p>
+          <Input id="booking-amount" inputMode="decimal" value={bookingAmount} onChange={(event) => setBookingAmount(event.target.value.replace(/[^0-9.]/g, ""))} placeholder="e.g. ₹8,000" className="h-12 rounded-xl bg-muted/40" />
+          {errors.bookingAmount && <p className="text-xs text-destructive mt-1">{errors.bookingAmount}</p>}
+        </div>
+      )}
 
       {/* General error display */}
       {hasError && Object.keys(errors).length === 0 && (

@@ -8,11 +8,9 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { log } from "@/lib/logger";
-import banksJson from "@/data/mock/banks.json";
-import platformsJson from "@/data/mock/platforms.json";
-import airportsJson from "@/data/mock/airports.json";
-import offersJson from "@/data/mock/offers.json";
+import metadataJson from "@/data/generated/metadata.json";
 import { getDataMode } from "@/config/dataMode";
+import { fetchMetadata } from "@/services/api";
 
 // ── Types (match backend /api/v1/meta response) ────────────────────
 
@@ -42,24 +40,34 @@ export interface MetaData {
   categories: string[];
   supported_banks: string[];      // Bank IDs currently supported
   supported_platforms: string[];  // Platform IDs currently supported
+  availability_start: string | null;
+  availability_end: string | null;
+  dataset_last_updated_at: string;
 }
 
 // ── Safe defaults built from canonical local fixtures ─────────────
-const OFFER_BANK_IDS = Array.from(
-  new Set((offersJson as Array<{ bank_id: string | null }>).map((o) => o.bank_id).filter(Boolean) as string[])
-);
-const OFFER_PLATFORM_IDS = Array.from(
-  new Set((offersJson as Array<{ platform: string }>).map((o) => o.platform))
-);
+const LOCAL_METADATA = metadataJson as {
+  banks: BankMeta[];
+  platforms: PlatformMeta[];
+  airports: AirportMeta[];
+  payment_methods: string[];
+  categories: string[];
+  availability_start: string | null;
+  availability_end: string | null;
+  dataset_last_updated_at: string;
+};
 
 const DEFAULT_META: MetaData = {
-  banks: banksJson as BankMeta[],
-  platforms: platformsJson as PlatformMeta[],
-  airports: airportsJson as AirportMeta[],
-  payment_methods: ["CREDIT", "DEBIT", "NO_CARD"],
-  categories: ["flight_domestic", "flight_international", "hotel_domestic", "hotel_international"],
-  supported_banks: OFFER_BANK_IDS,          // only banks that have at least one offer
-  supported_platforms: OFFER_PLATFORM_IDS,
+  banks: LOCAL_METADATA.banks,
+  platforms: LOCAL_METADATA.platforms,
+  airports: LOCAL_METADATA.airports,
+  payment_methods: LOCAL_METADATA.payment_methods,
+  categories: LOCAL_METADATA.categories,
+  supported_banks: LOCAL_METADATA.banks.map((bank) => bank.id),
+  supported_platforms: LOCAL_METADATA.platforms.map((platform) => platform.id),
+  availability_start: LOCAL_METADATA.availability_start,
+  availability_end: LOCAL_METADATA.availability_end,
+  dataset_last_updated_at: LOCAL_METADATA.dataset_last_updated_at,
 };
 
 // API URL read safely inside fetchMeta — no crash if missing
@@ -92,13 +100,15 @@ interface MetaProviderProps {
 }
 
 export const MetaProvider = ({ children }: MetaProviderProps) => {
+  // The generated bundle is the bootstrap in both modes. API mode refreshes it,
+  // but a transient API failure must not blank navigation and search controls.
   const [meta, setMeta] = useState<MetaData>(DEFAULT_META);
   const [loading, setLoading] = useState(getDataMode() === "api");
   const [error, setError] = useState<string | null>(null);
 
   const fetchMeta = async () => {
-    // Mock mode: local fixtures are the source of truth. Never touch the network.
-    if (getDataMode() === "mock") {
+    // Local mode: the generated bundle is the source of truth. Never touch the network.
+    if (getDataMode() === "local") {
       setMeta(DEFAULT_META);
       setLoading(false);
       return;
@@ -106,14 +116,7 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
     try {
       setLoading(true);
       setError(null);
-      const apiUrl = (import.meta.env.VITE_API_BASE_URL as string) || "";
-      if (!apiUrl) throw new Error("VITE_API_BASE_URL not configured");
-
-      const response = await fetch(`${apiUrl}/api/v1/meta`, {
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
+      const data = await fetchMetadata();
 
       const mergedMeta: MetaData = {
         banks: data.banks || DEFAULT_META.banks,
@@ -121,16 +124,18 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
         airports: data.airports || DEFAULT_META.airports,
         payment_methods: data.payment_methods || DEFAULT_META.payment_methods,
         categories: data.categories || DEFAULT_META.categories,
-        supported_banks: data.supported_banks || DEFAULT_META.supported_banks,
-        supported_platforms: data.supported_platforms || DEFAULT_META.supported_platforms,
+        supported_banks: data.banks.map((bank) => bank.id),
+        supported_platforms: data.platforms.map((platform) => platform.id),
+        availability_start: data.availability_start,
+        availability_end: data.availability_end,
+        dataset_last_updated_at: data.dataset_last_updated_at,
       };
       setMeta(mergedMeta);
       log.info("Meta data loaded from API");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
-      log.warn("Failed to load meta, using defaults", { error: message });
+      log.warn("Failed to load API metadata", { error: message });
       setError(message);
-      setMeta(DEFAULT_META);
     } finally {
       setLoading(false);
     }

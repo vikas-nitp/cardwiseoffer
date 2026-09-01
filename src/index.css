@@ -95,6 +95,15 @@
     @apply border-border;
   }
 
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100vw;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -129,11 +138,6 @@
       radial-gradient(ellipse 50% 40% at 75% 20%, hsl(230 40% 93% / 0.5) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
-  }
-
-  .sky-gradient > * {
-    position: relative;
-    z-index: 1;
   }
 
   .card-shadow {

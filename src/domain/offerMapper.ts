@@ -1,127 +1,119 @@
-import type {
-  OfferViewModel,
-  PaymentMethod,
-  DiscountType,
-  PlatformId,
-  BookingChannel,
-  EvidenceStatus,
-  PublishStatus,
-} from "@/types/offer";
-import banks from "@/data/mock/banks.json";
+import type { components } from "@/types/generated-api";
+import type { OfferViewModel } from "@/types/offer";
 
-interface RawOffer {
+export interface LocalRawOffer {
   offer_id: string;
   bank_id: string | null;
-  card_name: string | null;
-  platform?: string;
-  platform_id?: string;
-  platform_name?: string;
+  card_name?: string | null;
+  platform: string;
   category: string;
   payment_method: string;
   discount_type: string;
   discount_value: number;
-  max_discount: number;
-  min_transaction: number;
-  coupon_code: string | null;
+  max_discount?: number;
+  min_transaction?: number;
+  coupon_code?: string | null;
   valid_from: string;
-  valid_to: string;
+  expiry_date: string;
   channels?: string;
-  booking_channel?: string;
-  eligibility_notes: string;
-  terms_url: string | null;
-  source_url?: string | null;
-  priority_score: number;
-  login_required: boolean;
-  source_type: string;
-  verification_status: string;
-  evidence_status?: string;
-  publish_status?: string;
-  is_active?: boolean;
-  usage_limit?: string | null;
-  new_user_only?: boolean;
-  [k: string]: unknown;
+  eligibility_notes?: string;
+  priority_score?: number;
+  source_type?: string;
+  verification_status?: string;
 }
 
-const BANK_NAMES: Record<string, string> = Object.fromEntries(
-  (banks as Array<{ id: string; name: string }>).map((b) => [b.id, b.name])
-);
+export type ApiOffer =
+  | components["schemas"]["PublicOffer"]
+  | components["schemas"]["SearchOffer"];
 
-const PLATFORM_ID_MAP: Record<string, PlatformId> = {
-  MakeMyTrip: "MAKEMYTRIP",
-  Cleartrip: "CLEARTRIP",
-  MAKEMYTRIP: "MAKEMYTRIP",
-  CLEARTRIP: "CLEARTRIP",
-};
-const PLATFORM_NAME_MAP: Record<string, string> = {
-  MAKEMYTRIP: "MakeMyTrip",
-  CLEARTRIP: "Cleartrip",
-};
-
-const CHANNEL_MAP: Record<string, BookingChannel> = {
-  web: "WEB",
-  app: "APP",
-  "web+app": "WEB_AND_APP",
-  WEB: "WEB",
-  APP: "APP",
-  WEB_AND_APP: "WEB_AND_APP",
-};
-
-export function mapRawOffer(raw: RawOffer): OfferViewModel {
-  const notes = [raw.eligibility_notes].filter(Boolean) as string[];
-  if (raw.channels) notes.push(`Channels: ${raw.channels}`);
-
-  const platformName = raw.platform_name ?? raw.platform ?? "";
-  const platformId = (raw.platform_id
-    ? (raw.platform_id.toUpperCase() as PlatformId)
-    : PLATFORM_ID_MAP[platformName]) as PlatformId;
-
-  const bookingChannel =
-    (raw.booking_channel && CHANNEL_MAP[raw.booking_channel]) ||
-    (raw.channels && CHANNEL_MAP[raw.channels]) ||
-    "WEB_AND_APP";
-
-  const bankId = raw.bank_id;
-  const bankName = bankId ? BANK_NAMES[bankId] ?? bankId : null;
-  const label = bankName ? `${bankName} Offer` : "Default Offer";
+export function mapApiOffer(raw: ApiOffer): OfferViewModel {
+  const discountValue = Number(raw.discount_value ?? 0);
+  const maxDiscount = raw.max_discount == null ? undefined : Number(raw.max_discount);
+  const estimatedSavings =
+    "estimated_savings" in raw ? raw.estimated_savings ?? undefined : undefined;
+  const displayKind = "display_kind" in raw ? raw.display_kind : undefined;
+  const labelByKind: Record<string, string> = {
+    SELECTED_CARD: "Your Card Offer",
+    SECOND_SELECTED_CARD: "Second Selected Card",
+    BETTER_ALTERNATIVE: "Better Alternative",
+    DEFAULT_OFFER: "Default Offer (No Card)",
+    GENERAL_BEST: "Best Offer",
+  };
 
   return {
     id: raw.offer_id,
-    platformId,
-    platformName: PLATFORM_NAME_MAP[platformId] ?? platformName,
-    platform: platformName,
-    title: label,
-    label,
-    bankId,
-    bankName,
-    bank: bankId,
-    bankDisplay: bankName,
-    cardName: raw.card_name ?? null,
-    paymentMethod: (raw.payment_method as PaymentMethod) ?? "NO_CARD",
-    category: "FLIGHT_DOMESTIC",
-    bookingChannel,
-    discountType: (raw.discount_type as DiscountType) ?? "FLAT",
-    discountValue: raw.discount_value,
-    maxDiscount: raw.max_discount || null,
-    minTransaction: raw.min_transaction || null,
-    savings: raw.discount_type === "FLAT" ? raw.discount_value : raw.max_discount,
+    label:
+      (displayKind && labelByKind[displayKind]) ??
+      (raw.bank_id ? `${raw.bank_name ?? raw.bank_id} Offer` : "Default Offer (No Card)"),
+    bank: raw.bank_id ?? null,
+    bankDisplay: raw.bank_name ?? raw.bank_id ?? null,
+    cardName: raw.payment_method === "NO_CARD" ? null : raw.card_name ?? null,
+    platform: raw.platform_id,
+    platformName: raw.platform_name,
+    offerTitle: raw.offer_title,
+    platformUrl: raw.booking_url ?? null,
+    finalPrice:
+      "estimated_final_amount" in raw
+        ? raw.estimated_final_amount == null ? undefined : Number(raw.estimated_final_amount)
+        : undefined,
+    amountEligible: "amount_eligible" in raw ? raw.amount_eligible ?? null : null,
+    comparisonText: "comparison_text" in raw ? raw.comparison_text ?? null : null,
+    savings:
+      estimatedSavings ??
+      (raw.discount_type === "FLAT" ? discountValue : maxDiscount ?? 0),
+    paymentMethod: raw.payment_method,
+    bookingChannel: raw.booking_channel,
+    newUserOnly: raw.new_user_only,
+    discountType: raw.discount_type,
+    discountValue,
+    maxDiscount,
+    minTransaction: raw.min_transaction == null ? undefined : Number(raw.min_transaction),
     couponCode: raw.coupon_code ?? null,
     validFrom: raw.valid_from,
-    validTo: raw.valid_to,
-    usageLimit: raw.usage_limit ?? null,
-    newUserOnly: raw.new_user_only ?? false,
-    loginRequired: !!raw.login_required,
-    eligibilityNotes: notes,
-    termsUrl: raw.terms_url ?? null,
-    sourceUrl: raw.source_url ?? raw.terms_url ?? "https://example.com/",
-    bookingUrl: null,
+    expiryDate: raw.expiry_date,
+    eligibilityNotes: raw.eligibility_notes ?? [],
+    category: raw.category,
+    sourceType: "api",
+    verificationStatus: "verified",
+    isActive: true,
+    publishStatus: "READY",
+    evidenceStatus: "VERIFIED",
+    priorityScore: 0,
+    lastUpdatedAt: raw.updated_at,
+  };
+}
+
+export function mapLocalOffer(raw: LocalRawOffer): OfferViewModel {
+  const notes = raw.eligibility_notes ? [raw.eligibility_notes] : [];
+  if (raw.channels) notes.push(`Channels: ${raw.channels}`);
+  return {
+    id: raw.offer_id,
+    label: raw.bank_id ? `${raw.bank_id} Offer` : "Default Offer",
+    bank: raw.bank_id,
+    bankDisplay: raw.bank_id,
+    cardName: raw.card_name ?? null,
+    platform: raw.platform,
+    platformName: raw.platform,
+    offerTitle: raw.bank_id ? `${raw.bank_id} offer` : `${raw.platform} offer`,
     platformUrl: null,
-    sourceType: raw.source_type ?? "demo_excel",
-    evidenceStatus: (raw.evidence_status as EvidenceStatus) ?? "UNVERIFIED",
-    publishStatus: (raw.publish_status as PublishStatus) ?? "READY",
-    isActive: raw.is_active ?? true,
-    verificationStatus: (raw.verification_status as OfferViewModel["verificationStatus"]) ?? "unverified",
-    lastVerifiedAt: null,
+    savings: raw.discount_type === "FLAT" ? raw.discount_value : raw.max_discount ?? 0,
+    paymentMethod: raw.payment_method as OfferViewModel["paymentMethod"],
+    bookingChannel: raw.channels ?? "WEB_AND_APP",
+    newUserOnly: false,
+    discountType: raw.discount_type as OfferViewModel["discountType"],
+    discountValue: raw.discount_value,
+    maxDiscount: raw.max_discount,
+    minTransaction: raw.min_transaction,
+    couponCode: raw.coupon_code,
+    validFrom: raw.valid_from,
+    expiryDate: raw.expiry_date,
+    eligibilityNotes: notes,
+    category: raw.category,
+    sourceType: "demo_excel",
+    verificationStatus: "demo",
+    isActive: true,
+    publishStatus: "READY",
+    evidenceStatus: "VERIFIED",
     priorityScore: raw.priority_score ?? 0,
-    extra: {},
   };
 }

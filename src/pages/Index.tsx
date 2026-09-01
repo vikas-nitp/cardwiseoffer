@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
 import type { ActiveSection } from "@/components/Header";
@@ -10,29 +10,22 @@ import AboutSection from "@/components/AboutSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import ContactSection from "@/components/ContactSection";
 import FAQSection from "@/components/FAQSection";
-import ProfileSetup from "@/components/ProfileSetup";
-import GlobalLoginGate from "@/components/GlobalLoginGate";
-import AuthModal from "@/components/AuthModal";
-import { useAuth } from "@/contexts/AuthContext";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import DateStrip, { type StripDay } from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
-import MobileOfferFilters from "@/components/MobileOfferFilters";
 import OfferCard from "@/components/OfferCard";
 import TrustDisclaimer from "@/components/TrustDisclaimer";
-import DemoModeBanner from "@/components/DemoModeBanner";
 import { format } from "date-fns";
 import { ArrowRight, Pencil, AlertCircle, Loader2, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { CityOption } from "@/components/CityAutocomplete";
-import { MAX_FREE_OFFERS } from "@/constants";
-import type { OfferViewModel, PlatformId, PaymentMethod, BookingChannel } from "@/types/offer";
-import { repoSearchOffers, repoFetchAllOffers, isLocalMode } from "@/services/dataRepo";
-import { betterAltDelta } from "@/domain/offerRanking";
-import { filterOffers, EMPTY_FILTERS } from "@/domain/offerFiltering";
-import { calculateFacets, type FacetUniverse } from "@/domain/offerFacets";
+import type { OfferViewModel } from "@/types/offer";
+import { repoSearchOffers, repoFetchAllOffersPage, isLocalMode } from "@/services/dataRepo";
+import { filterCatalogueOffers } from "@/domain/offerFiltering";
 import { log } from "@/lib/logger";
+import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
+import { analytics } from "@/services/analytics";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -45,132 +38,136 @@ interface SearchState {
   to: CityOption;
   date: Date;
   banks: string[];
+  bookingAmount?: number;
 }
 
 const Index = () => {
-  const { needsProfile, isLoggedIn } = useAuth();
   const { flags: featureFlags } = useFeatureFlags();
+  const capabilities = useMemo(() => resolveFeatureCapabilities(featureFlags), [featureFlags]);
   const [activeSection, setActiveSection] = useState<ActiveSection>("home");
   const [searchState, setSearchState] = useState<SearchState | null>(null);
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [bankFilter, setBankFilter] = useState<string[]>([]);
   const [platformFilter, setPlatformFilter] = useState<string[]>([]);
   const [paymentFilter, setPaymentFilter] = useState<string[]>([]);
-  const [channelFilter, setChannelFilter] = useState<string[]>([]);
 
   const [searchResults, setSearchResults] = useState<OfferViewModel[]>([]);
   const [strip7days, setStrip7days] = useState<StripDay[]>([]);
   const [allOffers, setAllOffers] = useState<OfferViewModel[]>([]);
+  const [offersPage, setOffersPage] = useState(1);
+  const [offersTotalPages, setOffersTotalPages] = useState(1);
   const [searchLoading, setSearchLoading] = useState(false);
   const [allOffersLoading, setAllOffersLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [allOffersError, setAllOffersError] = useState<string | null>(null);
+  const searchController = useRef<AbortController | null>(null);
+  const offersController = useRef<AbortController | null>(null);
 
   const hasSearched = searchState !== null;
-  const authEnabled = featureFlags.authEnabled;
-  const offerLockingEnabled = featureFlags.offerLockingEnabled;
 
-  const handleAllOffersClick = async () => {
+  useEffect(() => analytics.configure(capabilities.analytics), [capabilities.analytics]);
+
+  useEffect(() => () => {
+    searchController.current?.abort();
+    offersController.current?.abort();
+  }, []);
+
+  const handleAllOffersClick = useCallback(async () => {
+    analytics.track("all_offers");
+    offersController.current?.abort();
+    const controller = new AbortController();
+    offersController.current = controller;
     setAllOffersLoading(true);
     setAllOffersError(null);
     try {
-      const offers = await repoFetchAllOffers(isLoggedIn);
-      setAllOffers(offers);
+      const result = await repoFetchAllOffersPage({
+        bank: bankFilter,
+        platform: platformFilter,
+        payment_method: paymentFilter,
+        page: offersPage,
+        limit: 20,
+      }, controller.signal);
+      if (controller.signal.aborted) return;
+      setAllOffers(result.offers);
+      setOffersTotalPages(result.pagination.total_pages);
     } catch (err) {
+      if (controller.signal.aborted) return;
       setAllOffersError(err instanceof Error ? err.message : "Failed to fetch offers.");
       setAllOffers([]);
     } finally {
-      setAllOffersLoading(false);
+      if (offersController.current === controller) setAllOffersLoading(false);
     }
-  };
+  }, [bankFilter, paymentFilter, platformFilter, offersPage]);
 
   useEffect(() => {
-    if (activeSection === "all-offers" && allOffers.length === 0 && !allOffersLoading) {
+    if (capabilities.publicAllOffers && activeSection === "all-offers") {
       handleAllOffersClick();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSection]);
+  }, [activeSection, capabilities.publicAllOffers, handleAllOffersClick]);
 
-  // Canonical filter object (OR-within-group, AND-across-groups; strict bank in catalog).
-  const filters = useMemo(
-    () => ({
-      ...EMPTY_FILTERS,
-      platformIds: platformFilter as PlatformId[],
-      bankIds: bankFilter,
-      paymentMethods: paymentFilter as PaymentMethod[],
-      bookingChannels: channelFilter as BookingChannel[],
-    }),
-    [platformFilter, bankFilter, paymentFilter, channelFilter]
-  );
-
-  const filteredAllOffers = useMemo(() => filterOffers(allOffers, filters), [allOffers, filters]);
-
-  const facetUniverse: FacetUniverse = useMemo(
-    () => ({
-      platforms: [
-        { id: "MAKEMYTRIP", name: "MakeMyTrip" },
-        { id: "CLEARTRIP", name: "Cleartrip" },
-      ],
-      banks: Array.from(
-        new Map(allOffers.filter((o) => o.bankId).map((o) => [o.bankId as string, o.bankName ?? o.bankId!])).entries()
-      ).map(([id, name]) => ({ id, name })),
-      paymentMethods: [
-        { id: "CREDIT", name: "Credit Card" },
-        { id: "DEBIT", name: "Debit Card" },
-        { id: "NO_CARD", name: "No Card" },
-      ],
-      bookingChannels: [
-        { id: "WEB", name: "Web" },
-        { id: "APP", name: "App" },
-        { id: "WEB_AND_APP", name: "Web + App" },
-      ],
-    }),
-    [allOffers]
-  );
-
-  const facets = useMemo(() => calculateFacets(allOffers, filters, facetUniverse), [allOffers, filters, facetUniverse]);
+  // OR within each category, AND across categories. Canonical IDs (CREDIT/DEBIT/NO_CARD, bank code, platform id).
+  const filteredAllOffers = useMemo(() => {
+    if (!isLocalMode()) return allOffers;
+    return filterCatalogueOffers(allOffers, {
+      bank: bankFilter,
+      platform: platformFilter,
+      paymentMethod: paymentFilter,
+    });
+  }, [allOffers, bankFilter, platformFilter, paymentFilter]);
 
   const handleResetFilters = () => {
-    setBankFilter([]); setPlatformFilter([]); setPaymentFilter([]); setChannelFilter([]);
+    setBankFilter([]); setPlatformFilter([]); setPaymentFilter([]);
+    setOffersPage(1);
   };
 
-  const handleSearch = async (from: CityOption, to: CityOption, date: Date, banks: string[]) => {
-    setSearchState({ from, to, date, banks });
+  const handleSearch = async (from: CityOption, to: CityOption, date: Date, banks: string[], bookingAmount?: number) => {
+    analytics.track("search", { from: from.code, to: to.code, date: format(date, "yyyy-MM-dd") });
+    searchController.current?.abort();
+    const controller = new AbortController();
+    searchController.current = controller;
+    setSearchState({ from, to, date, banks, bookingAmount });
     setActiveSection("results");
     handleResetFilters();
     setSearchError(null);
     setSearchLoading(true);
     setStrip7days([]);
     try {
-      const result = await repoSearchOffers(from, to, date, banks, isLoggedIn);
+      const result = await repoSearchOffers(from, to, date, banks, false, controller.signal, bookingAmount);
+      if (controller.signal.aborted) return;
       setSearchResults(result.offers);
       setStrip7days(result.strip7days);
-      log.info("Search completed", { offers: result.offers.length, local: isLocalMode() });
+      log.info("Search completed", { offers: result.offers.length, mode: isLocalMode() ? "local" : "api" });
     } catch (err) {
+      if (controller.signal.aborted) return;
       setSearchError(err instanceof Error ? err.message : "Failed to fetch offers.");
       setSearchResults([]);
       setStrip7days([]);
     } finally {
-      setSearchLoading(false);
+      if (searchController.current === controller) setSearchLoading(false);
     }
   };
 
   const handleEditSearch = () => setActiveSection("home");
 
   const handleDateChange = async (newDate: Date) => {
+    analytics.track("date_selection", { date: format(newDate, "yyyy-MM-dd") });
     if (!searchState) return;
+    searchController.current?.abort();
+    const controller = new AbortController();
+    searchController.current = controller;
     setSearchState({ ...searchState, date: newDate });
     setSearchLoading(true);
     setSearchError(null);
     try {
-      const result = await repoSearchOffers(searchState.from, searchState.to, newDate, searchState.banks, isLoggedIn);
+      const result = await repoSearchOffers(searchState.from, searchState.to, newDate, searchState.banks, false, controller.signal, searchState.bookingAmount);
+      if (controller.signal.aborted) return;
       setSearchResults(result.offers);
       setStrip7days(result.strip7days);
     } catch (err) {
+      if (controller.signal.aborted) return;
       setSearchError(err instanceof Error ? err.message : "Failed to fetch offers.");
     } finally {
-      setSearchLoading(false);
+      if (searchController.current === controller) setSearchLoading(false);
     }
   };
 
@@ -184,51 +181,23 @@ const Index = () => {
   // Variant + label helpers for search result tiles.
   const decorateResults = (offers: OfferViewModel[]) => {
     if (offers.length === 0) return [];
-    const primary = offers[0];
-    return offers.map((o, i) => {
-      let variant: "primary" | "highlight" | "default" | "neutral" = "neutral";
-      let label = o.label;
-      let extraLabel: string | undefined;
-      if (i === 0) {
-        variant = "primary";
-        label = "Best Offer";
-      } else if (o.bank === null || o.paymentMethod === "NO_CARD") {
-        variant = "default";
-        label = "Default Offer (No Card)";
-      } else if (o.savings > primary.savings) {
-        variant = "highlight";
-        label = "Better Alternative";
-        extraLabel = `Save ₹${betterAltDelta(o, primary).toLocaleString()} more`;
-      } else {
-        variant = "neutral";
-      }
-      return { offer: o, variant, label, extraLabel };
-    });
+    return offers.map((offer) => ({
+      offer,
+      variant: offer.label === "Best Offer" || offer.label === "Your Card Offer"
+        ? "primary" as const
+        : offer.label === "Better Alternative"
+          ? "highlight" as const
+          : offer.label.includes("Default") ? "default" as const : "neutral" as const,
+      label: offer.label,
+      extraLabel: offer.comparisonText ?? undefined,
+    }));
   };
 
   const renderOfferTiles = (offers: OfferViewModel[], wrapperClass: string, kind: "results" | "catalog") => {
-    const shouldShowLoginGate = authEnabled && offerLockingEnabled && !isLoggedIn;
     const decorated = kind === "results"
       ? decorateResults(offers)
       : offers.map((o) => ({ offer: o, variant: "neutral" as const, label: o.label, extraLabel: undefined as string | undefined }));
 
-    if (shouldShowLoginGate) {
-      const preview = decorated.slice(0, MAX_FREE_OFFERS);
-      return (
-        <>
-          <div className={wrapperClass}>
-            {preview.map((d, i) => (
-              <motion.div key={d.offer.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08, duration: 0.3 }}>
-                <OfferCard offer={d.offer} variant={d.variant} label={d.label} extraLabel={d.extraLabel} />
-              </motion.div>
-            ))}
-          </div>
-          {offers.length > MAX_FREE_OFFERS && (
-            <GlobalLoginGate onLoginClick={() => setShowLoginModal(true)} totalOffers={offers.length} />
-          )}
-        </>
-      );
-    }
     return (
       <div className={wrapperClass}>
         {decorated.map((d, i) => (
@@ -256,25 +225,18 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <div className="fixed inset-0 z-0 sky-gradient airplane-trail cloud-decoration">
-        <div className="absolute top-16 left-[8%] w-[500px] h-[500px] rounded-full bg-primary/[0.03] blur-[80px]" />
-        <div className="absolute bottom-16 right-[8%] w-[400px] h-[400px] rounded-full bg-accent/[0.03] blur-[80px]" />
+    <div className="min-h-screen w-full min-w-0 overflow-x-clip flex flex-col relative">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden z-0 sky-gradient airplane-trail cloud-decoration">
+        <div className="absolute top-16 left-[8%] w-[min(500px,90vw)] h-[min(500px,90vw)] rounded-full bg-primary/[0.03] blur-[80px]" />
+        <div className="absolute bottom-16 right-[8%] w-[min(400px,85vw)] h-[min(400px,85vw)] rounded-full bg-accent/[0.03] blur-[80px]" />
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <DemoModeBanner />
-        <Header activeSection={activeSection} onSectionChange={setActiveSection} authEnabled={authEnabled} />
+        <Header activeSection={activeSection} onSectionChange={setActiveSection} allOffersEnabled={capabilities.publicAllOffers} />
 
         <main className="flex-1 flex flex-col items-center px-4 md:px-8 pb-10">
           <AnimatePresence mode="wait">
-            {needsProfile && (
-              <motion.div key="profile" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full">
-                <ProfileSetup />
-              </motion.div>
-            )}
-
-            {showHome && !needsProfile && (
+            {showHome && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
                 <section className="flex flex-col items-center justify-center pt-14 md:pt-28 pb-8 max-w-xl mx-auto text-center px-4">
                   <h1 className="text-3xl md:text-[44px] font-extrabold tracking-tight leading-[1.12]">
@@ -366,7 +328,7 @@ const Index = () => {
               </motion.div>
             )}
 
-            {showAllOffers && featureFlags.allOffers && (
+            {showAllOffers && capabilities.publicAllOffers && (
               <motion.div key="all-offers" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 tracking-tight">All Card Offers</h2>
                 <p className="text-[13px] text-muted-foreground mb-5">Browse every active card offer across major travel platforms.</p>
@@ -384,45 +346,44 @@ const Index = () => {
                   </Alert>
                 )}
                 {!allOffersLoading && !allOffersError && (
-                  <>
-                    <div className="lg:hidden mb-3">
-                      <MobileOfferFilters
+                  <div className="flex min-w-0 flex-col lg:flex-row gap-5">
+                    <div className="lg:hidden">
+                      <SidebarFilters
                         bankFilter={bankFilter} onBankFilterChange={setBankFilter}
                         platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
                         paymentFilter={paymentFilter} onPaymentFilterChange={setPaymentFilter}
-                        channelFilter={channelFilter} onChannelFilterChange={setChannelFilter}
-                        facets={facets}
                         onResetAll={handleResetFilters}
                       />
                     </div>
-                    <div className="flex flex-col lg:flex-row gap-5">
-                      <div className="hidden lg:block w-64 shrink-0">
-                        <SidebarFilters
-                          bankFilter={bankFilter} onBankFilterChange={setBankFilter}
-                          platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
-                          paymentFilter={paymentFilter} onPaymentFilterChange={setPaymentFilter}
-                          channelFilter={channelFilter} onChannelFilterChange={setChannelFilter}
-                          facets={facets}
-                          onResetAll={handleResetFilters}
-                        />
-                      </div>
-                      <div className="flex-1">
-                        {filteredAllOffers.length === 0 ? (
-                          <EmptyState onReset={handleResetFilters} message={allOffers.length === 0 ? "Offers are currently unavailable." : "No offers match the selected filters."} />
-                        ) : (
-                          renderOfferTiles(filteredAllOffers, "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4", "catalog")
-                        )}
-                        <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
-                          Offer details may change. Please verify eligibility and terms on the booking platform before payment.
-                        </p>
-                      </div>
+                    <div className="hidden lg:block w-64 shrink-0">
+                      <SidebarFilters
+                        bankFilter={bankFilter} onBankFilterChange={setBankFilter}
+                        platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
+                        paymentFilter={paymentFilter} onPaymentFilterChange={setPaymentFilter}
+                        onResetAll={handleResetFilters}
+                      />
                     </div>
-                  </>
+                    <div className="min-w-0 flex-1">
+                      {filteredAllOffers.length === 0 ? (
+                        <EmptyState onReset={handleResetFilters} />
+                      ) : (
+                        renderOfferTiles(filteredAllOffers, "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4", "catalog")
+                      )}
+                      <div className="mt-6 flex items-center justify-center gap-3">
+                        <Button variant="outline" disabled={offersPage <= 1} onClick={() => setOffersPage((page) => page - 1)}>Previous</Button>
+                        <span className="text-sm text-muted-foreground">Page {offersPage} of {offersTotalPages}</span>
+                        <Button variant="outline" disabled={offersPage >= offersTotalPages} onClick={() => setOffersPage((page) => page + 1)}>Next</Button>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
+                        Offers sourced from public bank promotions. Final eligibility depends on platform &amp; bank terms.
+                      </p>
+                    </div>
+                  </div>
                 )}
               </motion.div>
             )}
 
-            {showAllOffers && !featureFlags.allOffers && (
+            {showAllOffers && !capabilities.publicAllOffers && (
               <motion.div key="all-offers-disabled" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
@@ -442,7 +403,7 @@ const Index = () => {
             )}
           </AnimatePresence>
 
-          {showHome && !needsProfile && (
+          {showHome && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.35 }} className="w-full max-w-6xl mx-auto mt-12 mb-4">
               <FAQSection />
             </motion.div>
@@ -453,7 +414,6 @@ const Index = () => {
         <Footer />
       </div>
 
-      <AuthModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
   );
 };
