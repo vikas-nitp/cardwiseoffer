@@ -1,14 +1,15 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/components/Header";
 import type { ActiveSection } from "@/components/Header";
 import Footer from "@/components/Footer";
 import SearchCard from "@/components/SearchCard";
 import TrustIndicators from "@/components/TrustIndicators";
-import AboutSection from "@/components/AboutSection";
-import HowItWorksSection from "@/components/HowItWorksSection";
-import ContactSection from "@/components/ContactSection";
-import FAQSection from "@/components/FAQSection";
+
+const AboutSection = lazy(() => import("@/components/AboutSection"));
+const HowItWorksSection = lazy(() => import("@/components/HowItWorksSection"));
+const ContactSection = lazy(() => import("@/components/ContactSection"));
+const FAQSection = lazy(() => import("@/components/FAQSection"));
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import DateStrip, { type StripDay } from "@/components/DateStrip";
 import SidebarFilters from "@/components/SidebarFilters";
@@ -237,7 +238,7 @@ const Index = () => {
         <Header activeSection={activeSection} onSectionChange={setActiveSection} allOffersEnabled={capabilities.publicAllOffers} />
 
         <main className="flex-1 flex flex-col items-center px-4 md:px-8 pb-10">
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             {showHome && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
                 <section className="flex flex-col items-center justify-center pt-14 md:pt-24 pb-8 max-w-2xl mx-auto text-center px-4">
@@ -400,19 +401,25 @@ const Index = () => {
             )}
 
             {showAbout && (
-              <motion.div key="about" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-6 md:py-8"><AboutSection /></motion.div>
+              <motion.div key="about" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-6 md:py-8">
+                <Suspense fallback={null}><AboutSection /></Suspense>
+              </motion.div>
             )}
             {showHowItWorks && (
-              <motion.div key="how-it-works" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-6 md:py-8"><HowItWorksSection /></motion.div>
+              <motion.div key="how-it-works" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-6 md:py-8">
+                <Suspense fallback={null}><HowItWorksSection /></Suspense>
+              </motion.div>
             )}
             {showContact && (
-              <motion.div key="contact" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-6 md:py-8"><ContactSection /></motion.div>
+              <motion.div key="contact" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-6 md:py-8">
+                <Suspense fallback={null}><ContactSection /></Suspense>
+              </motion.div>
             )}
           </AnimatePresence>
 
           {showHome && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.35 }} className="w-full max-w-6xl mx-auto mt-12 mb-4">
-              <FAQSection />
+              <Suspense fallback={null}><FAQSection /></Suspense>
             </motion.div>
           )}
         </main>
