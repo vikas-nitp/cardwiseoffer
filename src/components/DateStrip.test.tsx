@@ -61,4 +61,20 @@ describe("DateStrip", () => {
     );
     expect(container.firstChild).toBeNull();
   });
+
+  it("hides nav arrows when all days fit in the visible window", () => {
+    render(<DateStrip {...defaultProps} />);
+    expect(screen.queryByRole("button", { name: /Previous eligible dates/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Next eligible dates/i })).toBeNull();
+  });
+
+  it("shows nav arrows when strip has more days than the visible window", () => {
+    const manyDays: StripDay[] = Array.from({ length: 10 }, (_, i) => ({
+      date: `2026-09-${String(i + 1).padStart(2, "0")}`,
+      displayText: i % 2 === 0 ? "3 offers" : "No offers",
+    }));
+    render(<DateStrip {...defaultProps} strip7days={manyDays} />);
+    expect(screen.getByRole("button", { name: /Previous eligible dates/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Next eligible dates/i })).toBeInTheDocument();
+  });
 });
