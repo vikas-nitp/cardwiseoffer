@@ -5,7 +5,6 @@ import type { ActiveSection } from "@/components/Header";
 import Footer from "@/components/Footer";
 import SearchCard from "@/components/SearchCard";
 import TrustIndicators from "@/components/TrustIndicators";
-import SupportedSection from "@/components/SupportedSection";
 import AboutSection from "@/components/AboutSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import ContactSection from "@/components/ContactSection";
@@ -251,7 +250,7 @@ const Index = () => {
                     <span className="block text-[42px] md:text-[60px] font-black text-accent mt-1 leading-[1.0]">on your flight?</span>
                   </h1>
                   <p className="mt-4 text-[14px] md:text-[15px] text-muted-foreground leading-relaxed max-w-lg">
-                    Compare HDFC, ICICI, SBI, AXIS and other bank card offers across MakeMyTrip and Cleartrip — updated daily, independently curated.
+                    Every active bank card offer across major Indian travel platforms — updated daily, independently curated.
                   </p>
                 </section>
 
@@ -273,7 +272,6 @@ const Index = () => {
                   ))}
                 </div>
 
-                <SupportedSection />
               </motion.div>
             )}
 
