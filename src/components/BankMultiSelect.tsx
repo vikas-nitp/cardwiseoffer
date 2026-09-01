@@ -58,7 +58,7 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
 
   return (
     <div className="space-y-1.5 relative z-30" ref={wrapperRef}>
-      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+      <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.10em] flex items-center gap-2">
         <CreditCard className="w-3.5 h-3.5" />
         Bank / card issuer
       </label>

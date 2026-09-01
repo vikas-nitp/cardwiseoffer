@@ -46,6 +46,16 @@ export const API_RETRY_ATTEMPTS = 2;
 export const API_RETRY_DELAY_MS = 1000;
 
 // ────────────────────────────────────────────────────────────────────
+// Brand
+// ────────────────────────────────────────────────────────────────────
+
+export const APP_NAME = "CardWiseOffer";
+export const APP_TAGLINE = "independent card comparison for Indian flights";
+export const DISCLAIMER_TEXT =
+  "We are not affiliated with any platform or bank. Offers may change without notice. " +
+  "Please verify details on the official website before booking.";
+
+// ────────────────────────────────────────────────────────────────────
 // Contact
 // ────────────────────────────────────────────────────────────────────
 

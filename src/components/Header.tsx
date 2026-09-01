@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, Plane, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { APP_NAME } from "@/constants";
 
 export type ActiveSection = "home" | "results" | "all-offers" | "about" | "how-it-works" | "contact";
 
@@ -25,7 +26,7 @@ const Header = ({ activeSection, onSectionChange, allOffersEnabled = true }: Hea
       <header className="w-full py-4 px-4 md:px-8 flex items-center justify-between relative z-20 border-b border-border/40 bg-background/80 backdrop-blur-md">
         <Link to="/" className="flex items-center gap-2.5 group" onClick={() => handleNav("home")}>
           <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-sm"><Plane className="w-4.5 h-4.5 text-accent-foreground" /></div>
-          <span className="text-lg font-bold text-foreground tracking-tight">CardWiseOffer</span>
+          <span className="text-lg font-bold text-foreground tracking-tight">{APP_NAME}</span>
         </Link>
         <nav className="hidden md:flex items-center gap-0.5">
           {navItems.map(({ label, section }) => <button key={section} onClick={() => handleNav(section)} className={cn("px-3.5 py-2 rounded-lg text-[13px] font-medium", activeSection === section ? "bg-accent/8 text-accent font-semibold" : "text-muted-foreground hover:text-foreground hover:bg-muted/50")}>{label}</button>)}

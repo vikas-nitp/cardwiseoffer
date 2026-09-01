@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useMeta } from "@/contexts/MetaContext";
+import { APP_NAME } from "@/constants";
 
 const FAQSection = () => {
   const { meta } = useMeta();
@@ -14,8 +15,8 @@ const FAQSection = () => {
 
   const faqs = [
     {
-      q: "Is CardWiseOffer free to use?",
-      a: "Yes, CardWiseOffer is completely free. We compare publicly available bank offers to help you find the best deal.",
+      q: `Is ${APP_NAME} free to use?`,
+      a: `Yes, ${APP_NAME} is completely free. We compare publicly available bank offers to help you find the best deal.`,
     },
     {
       q: "Do you sell flight tickets?",
@@ -46,7 +47,7 @@ const FAQSection = () => {
           Frequently Asked Questions
         </h2>
         <p className="text-[13px] text-muted-foreground mb-6">
-          Common questions about CardWiseOffer.
+          Common questions about {APP_NAME}.
         </p>
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, i) => (

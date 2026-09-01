@@ -1,15 +1,9 @@
-import { Info } from "lucide-react";
+import { DISCLAIMER_TEXT } from "@/constants";
 
 const TrustDisclaimer = () => (
-  <div className="w-full max-w-3xl mx-auto px-4 py-6">
-    <div className="flex items-start gap-3 bg-muted/30 border border-border/40 rounded-xl px-5 py-4">
-      <Info className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground/60" />
-      <p className="text-xs text-muted-foreground leading-relaxed">
-        We are not affiliated with any platform or bank. Offers may change without notice.
-        Please verify details on the official website before booking.
-      </p>
-    </div>
-  </div>
+  <p className="text-[11px] text-muted-foreground/50 text-center px-4 py-4 max-w-xl mx-auto leading-relaxed">
+    {DISCLAIMER_TEXT}
+  </p>
 );
 
 export default TrustDisclaimer;
