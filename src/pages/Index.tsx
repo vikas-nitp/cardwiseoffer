@@ -26,6 +26,7 @@ import { filterCatalogueOffers } from "@/domain/offerFiltering";
 import { log } from "@/lib/logger";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
 import { analytics } from "@/services/analytics";
+import { DATE_STRIP_NO_OFFERS_LABEL, TRUST_LABELS } from "@/constants";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -240,22 +241,18 @@ const Index = () => {
           <AnimatePresence mode="wait">
             {showHome && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
-                <section className="flex flex-col items-center justify-center pt-16 md:pt-28 pb-10 max-w-2xl mx-auto text-center px-4">
-                  <div className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/35 bg-accent/8 text-accent text-[11px] font-bold uppercase tracking-[0.14em]">
+                <section className="flex flex-col items-center justify-center pt-14 md:pt-24 pb-8 max-w-2xl mx-auto text-center px-4">
+                  <div className="mb-5 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/35 bg-accent/8 text-accent text-[11px] font-bold uppercase tracking-[0.14em]">
                     <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
                     Live card offers · India
                   </div>
                   <h1 className="tracking-[-0.04em] leading-[1.0]">
-                    <span className="block text-[30px] md:text-[44px] font-bold text-foreground leading-[1.15]">Which card saves the most</span>
-                    <span className="block text-[44px] md:text-[64px] font-black text-accent mt-1 leading-[1.0]">on your flight?</span>
+                    <span className="block text-[28px] md:text-[42px] font-bold text-foreground leading-[1.15]">Which card saves the most</span>
+                    <span className="block text-[42px] md:text-[60px] font-black text-accent mt-1 leading-[1.0]">on your flight?</span>
                   </h1>
-                  <p className="mt-5 text-[14px] md:text-[16px] text-muted-foreground leading-relaxed max-w-md">
-                    We compare every active bank offer across Indian travel platforms — independently.
+                  <p className="mt-4 text-[14px] md:text-[15px] text-muted-foreground leading-relaxed max-w-lg">
+                    Compare HDFC, ICICI, SBI, AXIS and other bank card offers across MakeMyTrip and Cleartrip — updated daily, independently curated.
                   </p>
-                  <p className="mt-4 text-[15px] text-muted-foreground tracking-wide border-t border-border/40 pt-4 max-w-xs">
-                    We don't sell tickets. We only show the truth.
-                  </p>
-
                 </section>
 
                 <SearchCard
@@ -267,10 +264,10 @@ const Index = () => {
                 />
 
                 {/* Trust indicators — below search, understated */}
-                <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-5">
-                  {["No booking bias", "Updated daily", "Independent comparison"].map((label) => (
-                    <span key={label} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground/80">
-                      <span className="w-1 h-1 rounded-full bg-accent/60 inline-block shrink-0" />
+                <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-4">
+                  {[TRUST_LABELS.NO_BOOKING_BIAS, TRUST_LABELS.UPDATED_DAILY, TRUST_LABELS.INDEPENDENT_COMPARISON].map((label) => (
+                    <span key={label} className="flex items-center gap-1.5 text-[12px] font-medium text-muted-foreground">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent/70 inline-block shrink-0" />
                       {label}
                     </span>
                   ))}
@@ -300,9 +297,7 @@ const Index = () => {
                     {searchState.banks.length > 0 && (
                       <>
                         <span className="text-border/60 hidden sm:inline">·</span>
-                        {searchState.banks.map((b) => (
-                          <span key={b} className="text-[11px] font-medium bg-accent/8 text-accent px-2 py-0.5 rounded-md">{b}</span>
-                        ))}
+                        <span className="text-muted-foreground">{searchState.banks.join(", ")}</span>
                       </>
                     )}
                   </div>
@@ -328,7 +323,7 @@ const Index = () => {
                 )}
                 {!searchLoading && !searchError && (
                   <>
-                    {strip7days.length > 0 && (
+                    {strip7days.length > 0 && strip7days.some((d) => d.displayText !== DATE_STRIP_NO_OFFERS_LABEL) && (
                       <div className="mb-5">
                         <DateStrip selectedDate={searchState.date} onDateChange={handleDateChange} strip7days={strip7days} />
                       </div>
@@ -338,9 +333,6 @@ const Index = () => {
                     ) : (
                       renderOfferTiles(searchResults, "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4", "results")
                     )}
-                    <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
-                      Offers sourced from public bank promotions. Final eligibility depends on platform &amp; bank terms.
-                    </p>
                   </>
                 )}
               </motion.div>
@@ -387,14 +379,13 @@ const Index = () => {
                       ) : (
                         renderOfferTiles(filteredAllOffers, "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4", "catalog")
                       )}
-                      <div className="mt-6 flex items-center justify-center gap-3">
-                        <Button variant="outline" disabled={offersPage <= 1} onClick={() => setOffersPage((page) => page - 1)}>Previous</Button>
-                        <span className="text-sm text-muted-foreground">Page {offersPage} of {offersTotalPages}</span>
-                        <Button variant="outline" disabled={offersPage >= offersTotalPages} onClick={() => setOffersPage((page) => page + 1)}>Next</Button>
-                      </div>
-                      <p className="text-[11px] text-muted-foreground/50 text-center mt-10 max-w-md mx-auto leading-relaxed">
-                        Offers sourced from public bank promotions. Final eligibility depends on platform &amp; bank terms.
-                      </p>
+                      {offersTotalPages > 1 && (
+                        <div className="mt-6 flex items-center justify-center gap-3">
+                          <Button variant="outline" disabled={offersPage <= 1} onClick={() => setOffersPage((page) => page - 1)}>Previous</Button>
+                          <span className="text-sm text-muted-foreground">Page {offersPage} of {offersTotalPages}</span>
+                          <Button variant="outline" disabled={offersPage >= offersTotalPages} onClick={() => setOffersPage((page) => page + 1)}>Next</Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -428,7 +419,7 @@ const Index = () => {
           )}
         </main>
 
-        <TrustDisclaimer />
+        {(showHome || showResults || showAllOffers) && <TrustDisclaimer />}
         <Footer />
       </div>
 

@@ -30,10 +30,6 @@ const FAQSection = () => {
       a: `We aggregate publicly available promotions from major banks and travel platforms like ${platformNames}.`,
     },
     {
-      q: "Why do I need to log in?",
-      a: "Login lets you see all available offers. Non-logged-in users can preview a limited number of offers before signing in.",
-    },
-    {
       q: "How many cards can I compare at once?",
       a: "You can select up to 2 cards for comparison. The system will show the best offers for your selected cards and suggest better alternatives if available.",
     },

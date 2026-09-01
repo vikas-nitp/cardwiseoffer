@@ -46,6 +46,30 @@ export const API_RETRY_ATTEMPTS = 2;
 export const API_RETRY_DELAY_MS = 1000;
 
 // ────────────────────────────────────────────────────────────────────
+// Contact
+// ────────────────────────────────────────────────────────────────────
+
+export const SUPPORT_EMAIL = "support@cardwiseoffer.com";
+
+// ────────────────────────────────────────────────────────────────────
+// Date Strip
+// ────────────────────────────────────────────────────────────────────
+
+// Sentinel displayText used when a date has no eligible offers.
+// Must match the value produced by LocalOfferRepository.
+export const DATE_STRIP_NO_OFFERS_LABEL = "No offers";
+
+// ────────────────────────────────────────────────────────────────────
+// Trust Labels
+// ────────────────────────────────────────────────────────────────────
+
+export const TRUST_LABELS = {
+  NO_BOOKING_BIAS: "No booking bias",
+  UPDATED_DAILY: "Updated daily",
+  INDEPENDENT_COMPARISON: "Independent comparison",
+} as const;
+
+// ────────────────────────────────────────────────────────────────────
 // Cities Data (loaded from airports.json mock data)
 // ────────────────────────────────────────────────────────────────────
 

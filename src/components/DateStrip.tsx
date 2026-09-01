@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DATE_STRIP_NAVIGATION_STEP_DAYS, DATE_STRIP_VISIBLE_DAYS } from "@/constants";
+import { DATE_STRIP_NAVIGATION_STEP_DAYS, DATE_STRIP_NO_OFFERS_LABEL, DATE_STRIP_VISIBLE_DAYS } from "@/constants";
 
 export interface StripDay {
   date: string;
@@ -35,7 +35,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
 
   return (
     <div>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground mb-1.5 text-center">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.10em] text-muted-foreground mb-1.5 text-center">
         Eligible offers by date
       </p>
       <div className="flex items-center gap-1.5 w-full justify-center relative">
@@ -59,21 +59,23 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
               <button
                 key={day.date}
                 onClick={() => onDateChange(dateObj)}
+                aria-label={`Select ${format(dateObj, "EEEE dd MMMM")}${day.displayText !== DATE_STRIP_NO_OFFERS_LABEL ? ` — ${day.displayText}` : ""}`}
+                aria-pressed={isSelected}
                 className={cn(
                   "flex flex-col items-center px-3 py-2.5 rounded-xl border transition-all duration-200 min-w-[88px] shrink-0",
                   isSelected
-                    ? "bg-primary text-primary-foreground border-primary shadow-md"
-                    : "bg-card border-border/40 hover:border-primary/30 hover:shadow-sm"
+                    ? "bg-accent text-accent-foreground border-accent shadow-md"
+                    : "bg-card border-border/50 hover:border-accent/40 hover:shadow-sm"
                 )}
               >
-                <span className="text-[10px] font-semibold uppercase tracking-wider opacity-70">
+                <span className={cn("text-[10px] font-semibold uppercase tracking-wider", isSelected ? "opacity-70" : "text-muted-foreground")}>
                   {format(dateObj, "EEE")}
                 </span>
                 <span className="text-xs font-bold mt-0.5">{format(dateObj, "dd MMM")}</span>
                 <span
                   className={cn(
                     "text-[11px] font-bold mt-1",
-                    isSelected ? "text-primary-foreground/90" : day.displayText !== "No offers" ? "text-accent" : "text-muted-foreground"
+                    isSelected ? "text-accent-foreground/90" : day.displayText !== DATE_STRIP_NO_OFFERS_LABEL ? "text-accent" : "text-muted-foreground/60"
                   )}
                 >
                   {day.displayText}

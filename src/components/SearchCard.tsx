@@ -197,7 +197,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
         {/* Departure date */}
         <div className="space-y-1">
           <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em]">
+            <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.10em]">
               Departure
             </label>
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
@@ -254,27 +254,31 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
       </div>
 
       {capabilities.bookingAmountComparison && (
-        <div className="mt-4 max-w-md">
-          <label
-            htmlFor="booking-amount"
-            className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em]"
-          >
-            Expected booking amount
-          </label>
-          <p className="text-[11px] text-muted-foreground mb-1.5">
-            Optional — enter an estimated fare to compare actual savings.
-          </p>
-          <Input
-            id="booking-amount"
-            inputMode="decimal"
-            value={bookingAmount}
-            onChange={(e) => setBookingAmount(e.target.value.replace(/[^0-9.]/g, ""))}
-            placeholder="e.g. ₹8,000"
-            className="h-12 rounded-xl bg-input border-border"
-          />
-          {errors.bookingAmount && (
-            <p className="text-xs text-destructive mt-1">{errors.bookingAmount}</p>
-          )}
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3 border-t border-border/40 pt-4">
+          <div className="shrink-0">
+            <label
+              htmlFor="booking-amount"
+              className="block text-[11px] font-bold text-muted-foreground uppercase tracking-[0.10em] mb-0.5"
+            >
+              Expected booking amount
+            </label>
+            <p className="text-[11px] text-muted-foreground">
+              Optional — estimated fare to compare actual savings.
+            </p>
+          </div>
+          <div className="flex-1 min-w-0">
+            <Input
+              id="booking-amount"
+              inputMode="decimal"
+              value={bookingAmount}
+              onChange={(e) => setBookingAmount(e.target.value.replace(/[^0-9.]/g, ""))}
+              placeholder="e.g. ₹8,000"
+              className="h-12 rounded-xl bg-input border-border w-full"
+            />
+            {errors.bookingAmount && (
+              <p className="text-xs text-destructive mt-1">{errors.bookingAmount}</p>
+            )}
+          </div>
         </div>
       )}
 

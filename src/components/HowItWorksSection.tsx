@@ -41,7 +41,7 @@ const HowItWorksSection = () => (
           <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
             <item.icon className="w-5 h-5 text-accent" />
           </div>
-          <span className="text-[11px] font-bold text-accent uppercase tracking-[0.15em]">Step {item.step}</span>
+          <span className="text-[11px] font-bold text-accent uppercase tracking-[0.12em]">Step {item.step}</span>
           <h3 className="text-base font-bold text-foreground mt-2 mb-2.5 tracking-tight">{item.title}</h3>
           <p className="text-[13px] text-muted-foreground leading-relaxed">{item.desc}</p>
         </div>
