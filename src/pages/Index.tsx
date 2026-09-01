@@ -226,10 +226,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen w-full min-w-0 overflow-x-clip flex flex-col relative">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden z-0 sky-gradient airplane-trail cloud-decoration">
-        <div className="absolute top-16 left-[8%] w-[min(500px,90vw)] h-[min(500px,90vw)] rounded-full bg-primary/[0.03] blur-[80px]" />
-        <div className="absolute bottom-16 right-[8%] w-[min(400px,85vw)] h-[min(400px,85vw)] rounded-full bg-accent/[0.03] blur-[80px]" />
-      </div>
+      {/* Sovereign depth — near-black ground with dual radial accent */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden z-0 sovereign-ground" />
 
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header activeSection={activeSection} onSectionChange={setActiveSection} allOffersEnabled={capabilities.publicAllOffers} />
@@ -238,15 +236,22 @@ const Index = () => {
           <AnimatePresence mode="wait">
             {showHome && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
-                <section className="flex flex-col items-center justify-center pt-14 md:pt-28 pb-8 max-w-xl mx-auto text-center px-4">
-                  <h1 className="text-3xl md:text-[44px] font-extrabold tracking-tight leading-[1.12]">
-                    <span className="text-gradient">Compare card offers.</span>
-                    <br />
-                    <span className="text-primary">Book smarter.</span>
+                <section className="flex flex-col items-center justify-center pt-16 md:pt-28 pb-10 max-w-2xl mx-auto text-center px-4">
+                  <div className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/35 bg-accent/8 text-accent text-[11px] font-bold uppercase tracking-[0.14em]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse inline-block" />
+                    Live card offers · India
+                  </div>
+                  <h1 className="tracking-[-0.04em] leading-[1.0]">
+                    <span className="block text-[30px] md:text-[44px] font-bold text-foreground leading-[1.15]">Which card saves the most</span>
+                    <span className="block text-[44px] md:text-[64px] font-black text-accent mt-1 leading-[1.0]">on your flight?</span>
                   </h1>
-                  <p className="mt-4 text-[13px] md:text-sm text-muted-foreground leading-relaxed max-w-md">
-                    Make every flight booking cheaper — transparently across platforms.
+                  <p className="mt-5 text-[14px] md:text-[16px] text-muted-foreground leading-relaxed max-w-md">
+                    We compare every active bank offer across Indian travel platforms — independently.
                   </p>
+                  <p className="mt-4 text-[15px] text-muted-foreground tracking-wide border-t border-border/40 pt-4 max-w-xs">
+                    We don't sell tickets. We only show the truth.
+                  </p>
+
                 </section>
 
                 <SearchCard
@@ -257,14 +262,23 @@ const Index = () => {
                   initialBanks={searchState?.banks ?? []}
                 />
 
-                <TrustIndicators />
+                {/* Trust indicators — below search, understated */}
+                <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-5">
+                  {["No booking bias", "Updated daily", "Independent comparison"].map((label) => (
+                    <span key={label} className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground/80">
+                      <span className="w-1 h-1 rounded-full bg-accent/60 inline-block shrink-0" />
+                      {label}
+                    </span>
+                  ))}
+                </div>
+
                 <SupportedSection />
               </motion.div>
             )}
 
             {showResults && searchState && (
               <motion.div key="results" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
-                <div className="bg-card rounded-2xl card-shadow border border-border/40 p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                <div className="bg-card rounded-2xl card-shadow border border-border p-4 md:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
                   <div className="flex items-center gap-2 flex-wrap text-[13px]">
                     <span className="font-bold text-foreground">
                       {searchState.from.city}
@@ -283,7 +297,7 @@ const Index = () => {
                       <>
                         <span className="text-border/60 hidden sm:inline">·</span>
                         {searchState.banks.map((b) => (
-                          <span key={b} className="text-[11px] font-medium bg-primary/6 text-primary px-2 py-0.5 rounded-md">{b}</span>
+                          <span key={b} className="text-[11px] font-medium bg-accent/8 text-accent px-2 py-0.5 rounded-md">{b}</span>
                         ))}
                       </>
                     )}
@@ -347,7 +361,7 @@ const Index = () => {
                 )}
                 {!allOffersLoading && !allOffersError && (
                   <div className="flex min-w-0 flex-col lg:flex-row gap-5">
-                    <div className="lg:hidden">
+                    <div className="lg:hidden" aria-hidden="false">
                       <SidebarFilters
                         bankFilter={bankFilter} onBankFilterChange={setBankFilter}
                         platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}
@@ -355,7 +369,7 @@ const Index = () => {
                         onResetAll={handleResetFilters}
                       />
                     </div>
-                    <div className="hidden lg:block w-64 shrink-0">
+                    <div className="hidden lg:block w-64 shrink-0" aria-hidden="true">
                       <SidebarFilters
                         bankFilter={bankFilter} onBankFilterChange={setBankFilter}
                         platformFilter={platformFilter} onPlatformFilterChange={setPlatformFilter}

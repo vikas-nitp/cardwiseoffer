@@ -6,7 +6,6 @@
 export type PaymentMethod = "CREDIT" | "DEBIT" | "NO_CARD";
 export type DiscountType = "FLAT" | "PERCENT";
 export type SourceType = "demo_excel" | "api";
-export type VerificationStatus = "demo" | "verified" | "expired" | "unverified" | "upcoming";
 
 export interface OfferViewModel {
   id: string;
@@ -42,10 +41,7 @@ export interface OfferViewModel {
   category: string;
 
   sourceType: SourceType;
-  verificationStatus: VerificationStatus;
   isActive: boolean;
-  publishStatus: string;
-  evidenceStatus: string;
   priorityScore: number;
   lastUpdatedAt?: string;
 }

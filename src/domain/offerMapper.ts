@@ -19,7 +19,6 @@ export interface LocalRawOffer {
   eligibility_notes?: string;
   priority_score?: number;
   source_type?: string;
-  verification_status?: string;
 }
 
 export type ApiOffer =
@@ -74,10 +73,7 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     eligibilityNotes: raw.eligibility_notes ?? [],
     category: raw.category,
     sourceType: "api",
-    verificationStatus: "verified",
     isActive: true,
-    publishStatus: "READY",
-    evidenceStatus: "VERIFIED",
     priorityScore: 0,
     lastUpdatedAt: raw.updated_at,
   };
@@ -110,10 +106,7 @@ export function mapLocalOffer(raw: LocalRawOffer): OfferViewModel {
     eligibilityNotes: notes,
     category: raw.category,
     sourceType: "demo_excel",
-    verificationStatus: "demo",
     isActive: true,
-    publishStatus: "READY",
-    evidenceStatus: "VERIFIED",
     priorityScore: raw.priority_score ?? 0,
   };
 }
