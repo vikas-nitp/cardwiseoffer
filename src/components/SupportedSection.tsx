@@ -1,59 +1,21 @@
 import { useMeta } from "@/contexts/MetaContext";
-import { CreditCard, Globe } from "lucide-react";
 
 const SupportedSection = () => {
   const { meta, loading } = useMeta();
+  if (loading || !meta.banks.length) return null;
 
-  if (loading) return null;
-
-  const { banks, platforms } = meta;
+  const bankNames = meta.banks.map((b) => b.name).join(", ");
+  const platformNames = meta.platforms.map((p) => p.name).join(", ");
 
   return (
-    <section className="w-full max-w-3xl mx-auto mt-10">
-      <div className="bg-card rounded-2xl border border-border card-shadow p-6 md:p-8">
-        <h3 className="text-sm font-bold text-foreground mb-6 text-center tracking-tight">
-          Currently Supporting
-        </h3>
-        
-        <div className="mb-5">
-          <div className="flex items-center gap-2 mb-3 justify-center">
-            <CreditCard className="w-3.5 h-3.5 text-accent" />
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em]">Banks</span>
-          </div>
-          <div className="flex flex-wrap gap-2 justify-center">
-            {banks.map((bank) => (
-              <span
-                key={bank.id}
-                className="px-3 py-1.5 bg-accent/8 text-accent text-xs font-semibold rounded-lg border border-accent/15"
-              >
-                {bank.name}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="border-t border-border pt-5">
-          <div className="flex items-center gap-2 mb-3 justify-center">
-            <Globe className="w-3.5 h-3.5 text-accent" />
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em]">Platforms</span>
-          </div>
-          <div className="flex flex-wrap gap-2 justify-center">
-            {platforms.map((platform) => (
-              <span
-                key={platform.id}
-                className="px-3 py-1.5 bg-muted/50 text-foreground text-xs font-medium rounded-lg border border-border/40"
-              >
-                {platform.name}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <p className="text-[11px] text-muted-foreground/70 text-center mt-5">
-          More banks and platforms coming soon
-        </p>
-      </div>
-    </section>
+    <div className="w-full max-w-2xl mx-auto mt-6 text-center space-y-1">
+      <p className="text-[12px] text-muted-foreground/80 leading-relaxed">
+        <span className="font-semibold text-muted-foreground">Banks:</span> {bankNames}
+      </p>
+      <p className="text-[12px] text-muted-foreground/80 leading-relaxed">
+        <span className="font-semibold text-muted-foreground">Platforms:</span> {platformNames}
+      </p>
+    </div>
   );
 };
 

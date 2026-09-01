@@ -8,6 +8,7 @@ import type { OfferViewModel } from "@/types/offer";
 import { mapApiOffer, type ApiOffer } from "@/domain/offerMapper";
 import { isOfferEligible } from "@/domain/offerValidity";
 import { rankOffers } from "@/domain/offerRanking";
+import { DATE_STRIP_NO_OFFERS_LABEL } from "@/constants";
 import { buildFlightSearchUrl, platformHomeUrl } from "@/domain/platformUrlBuilder";
 import { estimateSavings } from "@/domain/offerCalculation";
 import offersJson from "@/data/generated/offers.json";
@@ -78,7 +79,7 @@ export function searchLocalOffers(
       ? `Up to ₹${Math.max(...cappedAmounts).toLocaleString()}`
       : uncappedPercentages.length > 0
         ? `Up to ${Math.max(...uncappedPercentages)}% off`
-        : "No offers";
+        : DATE_STRIP_NO_OFFERS_LABEL;
     return { date: isoDate, displayText };
   });
 

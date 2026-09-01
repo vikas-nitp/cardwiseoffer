@@ -49,7 +49,7 @@ const FilterSelect = ({ title, items, selected, onToggle, searchable = false, di
 
   return (
     <div className="mb-4" ref={wrapperRef}>
-      <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em] mb-2">{title}</h4>
+      <h4 className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.10em] mb-2">{title}</h4>
       <div className="relative">
         <button
           onClick={() => setOpen(!open)}

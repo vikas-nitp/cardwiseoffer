@@ -52,8 +52,9 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
 
   return (
     <div
+      role="article"
       aria-label={cardAriaLabel}
-      className={`bg-card rounded-2xl border border-border/40 flex flex-col h-full border-t-[3px] ${v.border} hover:card-shadow-xl hover:-translate-y-0.5 transition-all duration-300 card-shadow`}
+      className={`bg-card rounded-2xl border border-border/50 flex flex-col h-full border-t-[3px] ${v.border} hover:card-shadow-xl hover:-translate-y-0.5 transition-all duration-300 card-shadow`}
     >
       {/* Header */}
       <div className="px-5 pt-5 pb-2 flex items-center gap-2 flex-wrap">
@@ -62,7 +63,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
           {badgeLabel}
         </span>
         {extraLabel && (
-          <span className="text-[10px] font-bold text-savings bg-savings-soft px-2 py-0.5 rounded-md">
+          <span className="text-[10px] font-bold text-savings-soft-foreground bg-savings-soft px-2 py-0.5 rounded-md border border-savings/20">
             {extraLabel}
           </span>
         )}
@@ -74,9 +75,9 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel }: OfferCardP
         </div>
       )}
 
-      {/* Discount appears once; a percentage is not presented as exact savings. */}
+      {/* Savings / discount — most prominent element on card */}
       <div className="px-5 pb-3">
-        <p className="text-xl font-extrabold text-foreground tracking-tight">
+        <p className="text-2xl font-black text-foreground tracking-tight leading-none tabular-nums">
           {savingsLabel(offer)}
         </p>
       </div>

@@ -66,7 +66,7 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
 
   return (
     <div className="space-y-1.5 relative z-40" ref={wrapperRef}>
-      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.12em]">
+      <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.10em]">
         {label}
       </label>
       <div className="relative">
