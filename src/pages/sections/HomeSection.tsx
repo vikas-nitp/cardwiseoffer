@@ -28,12 +28,12 @@ const HomeSection = ({ searchState, onSearch }: HomeSectionProps) => {
         <span className="block text-[28px] md:text-[42px] text-foreground leading-[1.15]">Which card saves the most</span>
         <span className="block text-[42px] md:text-[60px] text-accent mt-1 leading-[1.0]">on your flight?</span>
       </h1>
-      <p className="mt-3 text-[14px] md:text-[15px] text-muted-foreground">
+      <p className="mt-4 text-[15px] md:text-[17px] text-foreground/75 leading-relaxed">
         {APP_HERO_SUBTITLE}
       </p>
       <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
         {meta.total_offers > 0 && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border/30 bg-muted/20 text-[11px] font-medium text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border/40 bg-muted/25 text-[12px] font-semibold text-foreground/60">
             <span className="w-1.5 h-1.5 rounded-full bg-accent/70 inline-block shrink-0" />
             {meta.total_offers} active offers
             {lastUpdated && <><span className="text-border/60 mx-0.5">·</span>Updated {lastUpdated}</>}
@@ -52,8 +52,8 @@ const HomeSection = ({ searchState, onSearch }: HomeSectionProps) => {
 
     <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-4">
       {[TRUST_LABELS.NO_BOOKING_BIAS, TRUST_LABELS.UPDATED_DAILY, TRUST_LABELS.INDEPENDENT_COMPARISON].map((label) => (
-        <span key={label} className="flex items-center gap-1.5 text-[12px] font-medium text-muted-foreground">
-          <span className="w-1.5 h-1.5 rounded-full bg-accent/70 inline-block shrink-0" />
+        <span key={label} className="flex items-center gap-1.5 text-[13px] font-semibold text-foreground/65">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent/80 inline-block shrink-0" />
           {label}
         </span>
       ))}
