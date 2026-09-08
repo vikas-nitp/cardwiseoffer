@@ -11,6 +11,7 @@ import { log } from "@/lib/logger";
 import metadataJson from "@/data/generated/metadata.json";
 import { getDataMode } from "@/config/dataMode";
 import { fetchMetadata } from "@/services/api";
+import { getLocalOffers } from "@/data/repositories/LocalOfferRepository";
 
 // ── Types (match backend /api/v1/meta response) ────────────────────
 
@@ -43,6 +44,7 @@ export interface MetaData {
   availability_start: string | null;
   availability_end: string | null;
   dataset_last_updated_at: string;
+  total_offers: number;
 }
 
 // ── Safe defaults built from canonical local fixtures ─────────────
@@ -68,6 +70,7 @@ const DEFAULT_META: MetaData = {
   availability_start: LOCAL_METADATA.availability_start,
   availability_end: LOCAL_METADATA.availability_end,
   dataset_last_updated_at: LOCAL_METADATA.dataset_last_updated_at,
+  total_offers: getLocalOffers().length,
 };
 
 // API URL read safely inside fetchMeta — no crash if missing
@@ -129,6 +132,7 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
         availability_start: data.availability_start,
         availability_end: data.availability_end,
         dataset_last_updated_at: data.dataset_last_updated_at,
+        total_offers: DEFAULT_META.total_offers,
       };
       setMeta(mergedMeta);
       log.info("Meta data loaded from API");

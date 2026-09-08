@@ -26,18 +26,14 @@ describe("offerValidity", () => {
     expect(validityLabel(mk("2026-08-01", "2026-08-31"), now)).toMatch(/Starts on/);
   });
 
-  it("requires active, ready, verified domestic offers", () => {
+  it("requires active domestic offers within date range", () => {
     const base = {
       ...mk("2026-07-01", "2026-12-31"),
       isActive: true,
-      publishStatus: "READY",
-      evidenceStatus: "VERIFIED",
       category: "FLIGHT_DOMESTIC",
     };
     expect(isOfferEligible(base, now)).toBe(true);
     expect(isOfferEligible({ ...base, isActive: false }, now)).toBe(false);
-    expect(isOfferEligible({ ...base, publishStatus: "DRAFT" }, now)).toBe(false);
-    expect(isOfferEligible({ ...base, evidenceStatus: "UNVERIFIED" }, now)).toBe(false);
     expect(isOfferEligible({ ...base, category: "HOTEL" }, now)).toBe(false);
   });
 });

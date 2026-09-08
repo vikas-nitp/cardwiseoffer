@@ -1,14 +1,20 @@
 import type { OfferViewModel } from "@/types/offer";
 
+const sortBy = (a: OfferViewModel, b: OfferViewModel) =>
+  b.savings - a.savings || b.priorityScore - a.priorityScore;
+
+const tag = (offer: OfferViewModel | null, label: string): OfferViewModel | null =>
+  offer ? { ...offer, label } : null;
+
 /**
- * Deterministic ranking for search results.
- * Rules:
- *  - 0 cards → best card offer + best default (+ optional 2nd card)
- *  - 1 card  → selected best + better alternative (only if higher savings) + default
- *  - 2 cards → best selected + 2nd selected + better outside alt (only if better) + default
+ * Ranks and labels search results per product rules:
+ *  - 0 cards → Best Offer + Default (2 max)
+ *  - 1 card  → Your Card Offer + Better Alternative (only if genuinely better) + Default
+ *  - 2 cards → Your Card Offer + Second Selected Card + Better Alternative (only if better) + Default
+ * Labels map to display variants in ResultsSection.decorateResults.
  * Never duplicates. Never pads to a fixed count.
  */
-export function rankOffers(
+export function rankAndLabelOffers(
   active: OfferViewModel[],
   selectedBanks: string[]
 ): OfferViewModel[] {
@@ -16,13 +22,12 @@ export function rankOffers(
   const defaults = active.filter((o) => o.bank === null || o.paymentMethod === "NO_CARD");
   const bestDefault = pickBest(defaults);
 
-  const sortBy = (a: OfferViewModel, b: OfferViewModel) =>
-    b.savings - a.savings || b.priorityScore - a.priorityScore;
-
   if (selectedBanks.length === 0) {
     const bestCard = pickBest(cardOffers);
-    const secondCard = pickBest(cardOffers.filter((o) => o.id !== bestCard?.id));
-    return dedupe([bestCard, bestDefault, secondCard]);
+    return dedupe([
+      tag(bestCard, "Best Offer"),
+      tag(bestDefault, "Default"),
+    ]);
   }
 
   const selectedOffers = cardOffers.filter((o) => o.bank && selectedBanks.includes(o.bank));
@@ -36,18 +41,35 @@ export function rankOffers(
   const bestOutside = pickBest(outsideOffers);
 
   if (selectedBanks.length === 1) {
-    const primary = bestSelected[0];
+    const primary = bestSelected[0] ?? null;
     const betterAlt =
       bestOutside && primary && bestOutside.savings > primary.savings ? bestOutside : null;
-    return dedupe([primary, betterAlt, bestDefault]);
+    return dedupe([
+      tag(primary, "Your Card Offer"),
+      tag(betterAlt, "Better Alternative"),
+      tag(bestDefault, "Default"),
+    ]);
   }
 
   // 2+ cards
-  const primary = bestSelected[0];
-  const secondary = bestSelected[1];
+  const primary = bestSelected[0] ?? null;
+  const secondary = bestSelected[1] ?? null;
   const betterAlt =
     bestOutside && primary && bestOutside.savings > primary.savings ? bestOutside : null;
-  return dedupe([primary, secondary, betterAlt, bestDefault]);
+  return dedupe([
+    tag(primary, "Your Card Offer"),
+    tag(secondary, "Second Selected Card"),
+    tag(betterAlt, "Better Alternative"),
+    tag(bestDefault, "Default"),
+  ]);
+}
+
+/** @deprecated Use rankAndLabelOffers for search results. */
+export function rankOffers(
+  active: OfferViewModel[],
+  selectedBanks: string[]
+): OfferViewModel[] {
+  return rankAndLabelOffers(active, selectedBanks);
 }
 
 function pickBest(offers: OfferViewModel[]): OfferViewModel | null {

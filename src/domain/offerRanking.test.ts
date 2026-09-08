@@ -16,14 +16,13 @@ const offer = (
   discountType: "FLAT", discountValue: savings, maxDiscount: null, minTransaction: null, savings,
   couponCode: null, validFrom: "2026-01-01", expiryDate: "2030-01-01",
   newUserOnly: false, eligibilityNotes: [], platformUrl: null,
-  sourceType: "demo_excel", evidenceStatus: "UNVERIFIED", publishStatus: "READY", isActive: true,
-  verificationStatus: "demo", priorityScore: pri,
+  sourceType: "demo_excel", isActive: true, priorityScore: pri,
 });
 
 describe("offerRanking", () => {
-  it("no selection: returns best card + best default", () => {
+  it("no selection: returns best card + best default only (2 max)", () => {
     const out = rankOffers([offer("a", "HDFC", 1500), offer("b", "ICICI", 1200), offer("d", null, 300, "NO_CARD")], []);
-    expect(out.map(o => o.id)).toEqual(["a", "d", "b"]);
+    expect(out.map(o => o.id)).toEqual(["a", "d"]);
   });
 
   it("1 selected: shows better alt only when strictly better", () => {
