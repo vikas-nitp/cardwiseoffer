@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { format, parseISO, subDays, addDays } from "date-fns";
+import { format, parseISO, subDays, addDays, isAfter, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DATE_STRIP_NO_OFFERS_LABEL } from "@/constants";
@@ -37,12 +37,24 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
     () => savingsAmounts.indexOf(Math.max(...savingsAmounts)),
     [savingsAmounts]
   );
+  // Only mark a day as "best" if it's genuinely better than at least one other day
+  const hasSavingsVariance = useMemo(
+    () => savingsAmounts.some(s => s < savingsAmounts[bestDayIndex] && savingsAmounts[bestDayIndex] > 0),
+    [savingsAmounts, bestDayIndex]
+  );
+
+  const firstStripDate = useMemo(() => parseISO(strip7days[0].date), [strip7days]);
+  // Can go prev if not at the first tile, OR if the strip itself starts in the future (cross-strip navigation)
+  const canGoPrev = selectedIndex > 0 || isAfter(firstStripDate, startOfDay(new Date()));
 
   const moveToPrev = () => {
     if (selectedIndex > 0) {
       onDateChange(parseISO(strip7days[selectedIndex - 1].date));
+    } else if (isAfter(firstStripDate, startOfDay(new Date()))) {
+      // Cross strip boundary — go back to day before the current strip's first date
+      onDateChange(subDays(firstStripDate, 1));
     }
-    // no-op when at first tile — prevents navigating to past dates
+    // no-op when strip starts at/before today — prevents navigating to past dates
   };
   const moveToNext = () => {
     if (selectedIndex < strip7days.length - 1) {
@@ -58,7 +70,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
     <div className="flex items-stretch gap-1.5 w-full overflow-hidden">
       <button
         onClick={moveToPrev}
-        disabled={selectedIndex <= 0}
+        disabled={!canGoPrev}
         className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors shrink-0 self-center disabled:opacity-30 disabled:cursor-not-allowed"
         aria-label="Previous date"
       >
@@ -68,7 +80,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
       <div className="flex gap-1.5 flex-1 min-w-0">
         {strip7days.map((day, i) => {
           const isSelected = day.date === selectedDateStr;
-          const isBestDay = i === bestDayIndex && savingsAmounts[i] > 0;
+          const isBestDay = hasSavingsVariance && i === bestDayIndex && savingsAmounts[i] > 0;
           const dateObj = parseISO(day.date);
           const hasOffers = day.displayText !== DATE_STRIP_NO_OFFERS_LABEL;
           const intensity = maxSavings > 0 ? savingsAmounts[i] / maxSavings : 0;

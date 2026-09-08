@@ -140,16 +140,14 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
         {userFareProvided && offer.amountEligible === false && <Condition text="Below minimum booking amount" tone="warn" />}
       </div>
 
-      {/* Coupon callout */}
-      {showCoupon && (
-        <div className="mx-4 mb-3 flex items-center gap-2 bg-accent/10 border border-accent/25 rounded-lg px-3 py-2">
-          <Tag className="w-3 h-3 text-accent shrink-0" />
-          <span className="text-[11px] font-bold text-accent tracking-wide min-w-0 truncate">{offer.couponCode}</span>
-        </div>
-      )}
-
-      {/* CTA */}
+      {/* CTA — coupon sits inside so it's always bottom-anchored on equal-height cards */}
       <div className="px-4 pb-4 pt-0 mt-auto">
+        {showCoupon && (
+          <div className="mb-3 flex items-center gap-2 bg-accent/10 border border-accent/25 rounded-lg px-3 py-2">
+            <Tag className="w-3 h-3 text-accent shrink-0" />
+            <span className="text-[11px] font-bold text-accent tracking-wide min-w-0 truncate">{offer.couponCode}</span>
+          </div>
+        )}
         {canBook && offer.platformUrl ? (
           <>
             <a href={offer.platformUrl} target="_blank" rel="noopener noreferrer" className="block">
