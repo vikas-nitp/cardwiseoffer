@@ -21,11 +21,15 @@ interface OfferCardProps {
   searchDate?: Date;
 }
 
-const VARIANTS: Record<Variant, { chip: string; savings: string; topBorder: string; icon: React.ElementType }> = {
-  primary:   { chip: "bg-primary/10 text-primary border-primary/25",       savings: "text-primary",   topBorder: "border-t-primary",   icon: Star },
-  highlight: { chip: "bg-highlight/10 text-highlight border-highlight/25", savings: "text-highlight", topBorder: "border-t-highlight", icon: TrendingUp },
-  default:   { chip: "bg-accent/10 text-accent border-accent/25",          savings: "text-accent",    topBorder: "border-t-accent",    icon: Gift },
-  neutral:   { chip: "bg-muted/60 text-muted-foreground border-border/40", savings: "text-foreground", topBorder: "border-t-border",   icon: CreditCard },
+const VARIANTS: Record<Variant, { chip: string; savings: string; topBorder: string; cta: string; icon: React.ElementType }> = {
+  // Best Offer: gold top stripe, green savings number, gold filled CTA
+  primary:   { chip: "bg-accent/10 text-accent border-accent/25",          savings: "text-savings",    topBorder: "border-t-accent",    cta: "gold",    icon: Star },
+  // Better Alternative: amber/highlight stripe, amber savings, amber outline CTA
+  highlight: { chip: "bg-highlight/10 text-highlight border-highlight/25", savings: "text-savings",    topBorder: "border-t-highlight", cta: "amber",   icon: TrendingUp },
+  // Default offer with card: accent styling
+  default:   { chip: "bg-accent/10 text-accent border-accent/25",          savings: "text-accent",     topBorder: "border-t-accent",    cta: "outline", icon: Gift },
+  // Neutral/no-card: muted, outline only
+  neutral:   { chip: "bg-muted/60 text-muted-foreground border-border/40", savings: "text-foreground", topBorder: "border-t-border",    cta: "outline", icon: CreditCard },
 };
 
 const ChannelIcon = ({ channel }: { channel: string }) =>
@@ -165,7 +169,14 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
         {canBook && offer.platformUrl ? (
           <>
             <a href={offer.platformUrl} target="_blank" rel="noopener noreferrer" className="block">
-              <Button className="gap-2 w-full font-semibold text-[13px] rounded-xl h-10 bg-accent text-accent-foreground hover:brightness-110 shadow-sm hover:shadow-md transition-all duration-200">
+              <Button className={cn(
+                "gap-2 w-full font-semibold text-[13px] rounded-xl h-10 transition-all duration-200 shadow-sm hover:shadow-md",
+                v.cta === "gold"
+                  ? "bg-accent text-accent-foreground hover:brightness-110"
+                  : v.cta === "amber"
+                  ? "bg-transparent border border-highlight/60 text-highlight hover:bg-highlight/10"
+                  : "bg-transparent border border-border/50 text-muted-foreground hover:border-accent/40 hover:text-foreground"
+              )}>
                 Continue to {offer.platformName}
                 <ExternalLink className="w-3.5 h-3.5" />
               </Button>
