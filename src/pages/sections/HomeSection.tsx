@@ -29,7 +29,7 @@ const HomeSection = ({ searchState, onSearch }: HomeSectionProps) => {
         <span className="block text-[42px] md:text-[60px] text-accent mt-1 leading-[1.0]">on your flight?</span>
       </h1>
       <p className="mt-3 text-[14px] md:text-[15px] text-muted-foreground">
-        Compare card offers on MakeMyTrip, Cleartrip &amp; more — no card? We compare that too.
+        CardSage compares card offers on MakeMyTrip, Cleartrip &amp; more — no card? We compare that too.
       </p>
       <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
         {meta.total_offers > 0 && (
