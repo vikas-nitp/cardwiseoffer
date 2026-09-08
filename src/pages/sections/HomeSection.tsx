@@ -1,7 +1,7 @@
 import SearchCard from "@/components/SearchCard";
 import type { CityOption } from "@/components/CityAutocomplete";
 import type { SearchState } from "@/hooks/useOfferSearch";
-import { TRUST_LABELS } from "@/constants";
+import { TRUST_LABELS, APP_HERO_SUBTITLE } from "@/constants";
 import { useMeta } from "@/contexts/MetaContext";
 import { format, parseISO } from "date-fns";
 
@@ -29,7 +29,7 @@ const HomeSection = ({ searchState, onSearch }: HomeSectionProps) => {
         <span className="block text-[42px] md:text-[60px] text-accent mt-1 leading-[1.0]">on your flight?</span>
       </h1>
       <p className="mt-3 text-[14px] md:text-[15px] text-muted-foreground">
-        CardSage compares card offers on MakeMyTrip, Cleartrip &amp; more — no card? We compare that too.
+        {APP_HERO_SUBTITLE}
       </p>
       <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
         {meta.total_offers > 0 && (
