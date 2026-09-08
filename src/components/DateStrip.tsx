@@ -41,9 +41,8 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
   const moveToPrev = () => {
     if (selectedIndex > 0) {
       onDateChange(parseISO(strip7days[selectedIndex - 1].date));
-    } else {
-      onDateChange(subDays(parseISO(strip7days[0].date), 1));
     }
+    // no-op when at first tile — prevents navigating to past dates
   };
   const moveToNext = () => {
     if (selectedIndex < strip7days.length - 1) {
@@ -59,7 +58,8 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
     <div className="flex items-stretch gap-1.5 w-full overflow-hidden">
       <button
         onClick={moveToPrev}
-        className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors shrink-0 self-center"
+        disabled={selectedIndex <= 0}
+        className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors shrink-0 self-center disabled:opacity-30 disabled:cursor-not-allowed"
         aria-label="Previous date"
       >
         <ChevronLeft className="w-4 h-4 text-muted-foreground" />
@@ -99,7 +99,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
               <div className="flex items-end justify-center w-full mt-4 mb-1.5" style={{ height: "28px" }}>
                 <div
                   className={cn(
-                    "w-[6px] rounded-t-sm transition-all duration-300",
+                    "w-3.5 rounded-t-sm transition-all duration-300",
                     hasOffers
                       ? isSelected
                         ? "bg-savings"

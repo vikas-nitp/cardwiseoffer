@@ -27,7 +27,7 @@
 @layer base {
   :root {
     /* Surfaces ---------------------------------------------------- */
-    --background:           220 32% 10%;   /* #091422 warmer navy ground     */
+    --background:           220 45% 12%;   /* #111A2C deep navy, clearly blue */
     --foreground:           218 54% 94%;   /* #E8EEF8 cool near-white        */
 
     --card:                 221 38% 14%;   /* #0F1E30 elevated surface       */
