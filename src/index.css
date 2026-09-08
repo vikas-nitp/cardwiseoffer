@@ -16,7 +16,7 @@
  * Spatial grid: 8pt base (p-1=4px … p-8=32px). Radius base: 14px → --radius.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -27,20 +27,21 @@
 @layer base {
   :root {
     /* Surfaces ---------------------------------------------------- */
-    --background:           222 26%  9%;   /* #0D1220 dark navy ground — NOT near-black */
+    --background:           220 32% 10%;   /* #091422 warmer navy ground     */
     --foreground:           218 54% 94%;   /* #E8EEF8 cool near-white        */
 
-    --card:                 224 36% 14%;   /* #141C2E elevated surface       */
+    --card:                 221 38% 14%;   /* #0F1E30 elevated surface       */
     --card-foreground:      218 54% 94%;
 
-    --popover:              224 38% 15%;   /* slightly above card            */
+    --popover:              221 40% 16%;   /* slightly above card            */
     --popover-foreground:   218 54% 94%;
 
     /* Brand ------------------------------------------------------- */
-    --primary:              216 84% 50%;   /* deeper blue — richer CTA       */
-    --primary-foreground:     0  0% 100%; /* white — 4.9:1 on blue           */
+    /* gold = brand / CTAs / savings labels / Best Offer badge       */
+    --primary:              216 70% 48%;   /* #2A8FD4 electric blue — interaction only */
+    --primary-foreground:     0  0% 100%;
 
-    --accent:                42 80% 55%;   /* sovereign amber-gold — vibrant  */
+    --accent:                43 77% 52%;   /* #E4A827 sovereign gold — brand primary */
     --accent-foreground:    225 37%  5%;   /* near-black on gold              */
 
     /* Secondary surface (bordered dark chip) ---------------------- */
@@ -79,10 +80,10 @@
 
     /* ── Savings / highlight / glow (dark theme)  ────────────────── */
     /* Previously only defined in .light — now fixed for dark theme   */
-    --savings:              152 70% 45%;   /* emerald green for money saved  */
+    --savings:              142 72% 45%;   /* #22C55E emerald green — all savings numbers */
     --savings-foreground:     0  0% 100%;
-    --savings-soft:         152 40% 11%;   /* dark green chip bg             */
-    --savings-soft-foreground: 152 62% 72%;
+    --savings-soft:         142 40% 11%;   /* dark green chip bg             */
+    --savings-soft-foreground: 142 62% 72%;
 
     --highlight:             42 80% 55%;   /* amber — matches accent          */
     --highlight-foreground: 225 37%  5%;   /* near-black on amber            */
@@ -136,9 +137,9 @@
     --danger-foreground:    354 61% 32%;
     --danger-soft:            0 70% 96%;
     --danger-soft-foreground: 354 61% 33%;
-    --savings:               38 92% 50%;
+    --savings:              142 68% 38%;   /* green kept in light mode — distinct from warning */
     --savings-foreground:     0  0% 100%;
-    --savings-soft:          38 88% 94%;
+    --savings-soft:         142 55% 92%;
     --highlight:             38 85% 52%;
     --highlight-foreground:   0  0% 100%;
     --glow:                 214 84% 56%;
@@ -178,6 +179,17 @@
   h1, h2, h3, h4 {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     letter-spacing: -0.03em;
+  }
+
+  .font-display {
+    font-family: 'Bricolage Grotesque', 'Inter', system-ui, -apple-system, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+
+  .font-mono-data {
+    font-family: 'JetBrains Mono', 'Fira Mono', monospace;
+    font-variant-numeric: tabular-nums;
   }
 }
 
