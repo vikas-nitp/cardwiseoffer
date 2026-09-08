@@ -5,7 +5,10 @@ import { getDataMode } from "@/config/dataMode";
 import { repoFetchFeatureFlags } from "@/services/dataRepo";
 
 type FeatureFlagsResponse = components["schemas"]["FeatureFlagsResponse"];
-export type ProductFeatureFlags = Omit<FeatureFlagsResponse, "config_version">;
+export type ProductFeatureFlags = Omit<FeatureFlagsResponse, "config_version"> & {
+  visitorCountEnabled: boolean;
+  authEnabled: boolean;
+};
 export type FeatureFlags = ProductFeatureFlags;
 
 const LOCAL_FLAGS: ProductFeatureFlags = generatedFlags;

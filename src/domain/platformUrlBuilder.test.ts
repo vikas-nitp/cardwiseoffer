@@ -5,12 +5,17 @@ describe("platformUrlBuilder", () => {
   const ctx = { from: "BLR", to: "DEL", date: "2026-07-15" };
 
   it("builds valid https URLs for supported platforms", () => {
-    for (const p of ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Goibibo"]) {
+    for (const p of ["MakeMyTrip", "Cleartrip"]) {
       const url = buildFlightSearchUrl(p, ctx);
       expect(url).toMatch(/^https:\/\//);
       expect(url).toContain("BLR");
       expect(url).toContain("DEL");
     }
+  });
+
+  it("returns null for retired platforms", () => {
+    expect(buildFlightSearchUrl("EaseMyTrip", ctx)).toBeNull();
+    expect(buildFlightSearchUrl("Goibibo", ctx)).toBeNull();
   });
 
   it("returns null for unknown platform", () => {

@@ -4,23 +4,6 @@
  */
 
 export interface paths {
-    "/api/v1/availability": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Availability */
-        get: operations["availability_api_v1_availability_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/feature-flags": {
         parameters: {
             query?: never;
@@ -127,53 +110,6 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** AirportMetadata */
-        AirportMetadata: {
-            /** City */
-            city: string;
-            /** Code */
-            code: string;
-            /** Country */
-            country: string;
-            /** Is Domestic Default */
-            is_domestic_default: boolean;
-            /** Name */
-            name: string;
-        };
-        /** AvailabilityDay */
-        AvailabilityDay: {
-            /** Available */
-            available: boolean;
-            /** Benefit Type */
-            benefit_type: string | null;
-            /** Benefit Value */
-            benefit_value: number | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Display Text */
-            display_text: string;
-            /** Offer Count */
-            offer_count: number;
-        };
-        /** AvailabilityResponse */
-        AvailabilityResponse: {
-            /** Availability End */
-            availability_end: string | null;
-            /** Availability Start */
-            availability_start: string | null;
-            /** Data Version */
-            data_version: string;
-            /**
-             * Dataset Last Updated At
-             * Format: date
-             */
-            dataset_last_updated_at: string;
-            /** Days */
-            days?: components["schemas"]["AvailabilityDay"][];
-        };
         /** BankMetadata */
         BankMetadata: {
             /** Id */
@@ -181,58 +117,24 @@ export interface components {
             /** Name */
             name: string;
         };
-        /** CatalogueFacets */
-        CatalogueFacets: {
-            /** Banks */
-            banks: components["schemas"]["FacetOption"][];
-            /** Booking Channels */
-            booking_channels: components["schemas"]["FacetOption"][];
-            /** Payment Methods */
-            payment_methods: components["schemas"]["FacetOption"][];
-            /** Platforms */
-            platforms: components["schemas"]["FacetOption"][];
-        };
-        /** FacetOption */
-        FacetOption: {
-            /** Count */
-            count: number;
-            /** Disabled */
-            disabled: boolean;
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /** Selected */
-            selected: boolean;
+        /** DateStripItem */
+        DateStripItem: {
+            /** Date */
+            date: string;
+            /** Display Text */
+            display_text: string;
         };
         /** FeatureFlagsResponse */
         FeatureFlagsResponse: {
-            /**
-             * Analyticsenabled
-             * @default true
-             */
+            /** Analyticsenabled */
             analyticsEnabled: boolean;
-            /**
-             * Bookingamountcomparisonenabled
-             * @default false
-             */
+            /** Bookingamountcomparisonenabled */
             bookingAmountComparisonEnabled: boolean;
-            /** Config Version */
-            config_version: string;
-            /**
-             * Couponcodeenabled
-             * @default false
-             */
+            /** Couponcodeenabled */
             couponCodeEnabled: boolean;
-            /**
-             * Phase2Userfeaturesenabled
-             * @default false
-             */
+            /** Phase2Userfeaturesenabled */
             phase2UserFeaturesEnabled: boolean;
-            /**
-             * Publicalloffersenabled
-             * @default true
-             */
+            /** Publicalloffersenabled */
             publicAllOffersEnabled: boolean;
         };
         /** HTTPValidationError */
@@ -243,11 +145,9 @@ export interface components {
         /** OfferMetadata */
         OfferMetadata: {
             /** Airports */
-            airports?: components["schemas"]["AirportMetadata"][];
-            /** Availability End */
-            availability_end?: string | null;
-            /** Availability Start */
-            availability_start?: string | null;
+            airports?: {
+                [key: string]: unknown;
+            }[];
             /** Banks */
             banks: components["schemas"]["BankMetadata"][];
             /** Booking Channels */
@@ -256,11 +156,6 @@ export interface components {
             categories: "FLIGHT_DOMESTIC"[];
             /** Data Version */
             data_version: string;
-            /**
-             * Dataset Last Updated At
-             * Format: date
-             */
-            dataset_last_updated_at: string;
             /** Payment Methods */
             payment_methods: ("CREDIT" | "DEBIT" | "NO_CARD")[];
             /** Platforms */
@@ -270,7 +165,8 @@ export interface components {
         OffersResponse: {
             /** Data Version */
             data_version: string;
-            facets: components["schemas"]["CatalogueFacets"];
+            /** Facets */
+            facets?: null;
             /** Offers */
             offers: components["schemas"]["PublicOffer"][];
             pagination: components["schemas"]["Pagination"];
@@ -288,40 +184,41 @@ export interface components {
         };
         /** PlatformMetadata */
         PlatformMetadata: {
-            /** Id */
-            id: string;
+            /**
+             * Id
+             * @enum {string}
+             */
+            id: "MAKEMYTRIP" | "CLEARTRIP";
             /** Name */
             name: string;
         };
         /** PublicOffer */
         PublicOffer: {
             /** Bank Id */
-            bank_id?: string | null;
+            bank_id: string | null;
             /** Bank Name */
-            bank_name?: string | null;
+            bank_name: string | null;
             /**
              * Booking Channel
              * @enum {string}
              */
             booking_channel: "WEB" | "APP" | "WEB_AND_APP";
-            /** Booking Url */
-            booking_url?: string | null;
             /** Card Name */
-            card_name?: string | null;
+            card_name: string | null;
             /**
              * Category
              * @constant
              */
             category: "FLIGHT_DOMESTIC";
             /** Coupon Code */
-            coupon_code?: string | null;
+            coupon_code: string | null;
             /**
              * Discount Type
              * @enum {string}
              */
             discount_type: "PERCENT" | "FLAT";
             /** Discount Value */
-            discount_value: string;
+            discount_value: number | null;
             /** Eligibility Notes */
             eligibility_notes: string[];
             /**
@@ -329,10 +226,12 @@ export interface components {
              * Format: date
              */
             expiry_date: string;
+            /** Login Required */
+            login_required: boolean;
             /** Max Discount */
-            max_discount?: string | null;
+            max_discount: number | null;
             /** Min Transaction */
-            min_transaction?: string | null;
+            min_transaction: number | null;
             /** New User Only */
             new_user_only: boolean;
             /** Offer Id */
@@ -344,78 +243,52 @@ export interface components {
              * @enum {string}
              */
             payment_method: "CREDIT" | "DEBIT" | "NO_CARD";
-            /** Platform Id */
-            platform_id: string;
+            /**
+             * Platform Id
+             * @enum {string}
+             */
+            platform_id: "MAKEMYTRIP" | "CLEARTRIP";
             /** Platform Name */
             platform_name: string;
-            /** Supported Cards */
-            supported_cards?: string[];
             /** Terms Url */
-            terms_url?: string | null;
-            /**
-             * Updated At
-             * Format: date
-             */
-            updated_at: string;
+            terms_url: string | null;
             /** Usage Limit */
-            usage_limit?: string | null;
+            usage_limit: string | null;
             /**
              * Valid From
              * Format: date
              */
             valid_from: string;
         };
-        /** SearchDateBenefit */
-        SearchDateBenefit: {
-            /** Available */
-            available: boolean;
-            /** Benefit Type */
-            benefit_type: string | null;
-            /** Benefit Value */
-            benefit_value: number | null;
-            /**
-             * Date
-             * Format: date
-             */
-            date: string;
-            /** Display Text */
-            display_text: string;
-            /** Offer Count */
-            offer_count: number;
-        };
         /** SearchOffer */
         SearchOffer: {
-            /** Amount Eligible */
-            amount_eligible?: boolean | null;
             /** Bank Id */
-            bank_id?: string | null;
+            bank_id: string | null;
             /** Bank Name */
-            bank_name?: string | null;
+            bank_name: string | null;
             /**
              * Booking Channel
              * @enum {string}
              */
             booking_channel: "WEB" | "APP" | "WEB_AND_APP";
             /** Booking Url */
-            booking_url?: string | null;
+            booking_url: string | null;
             /** Card Name */
-            card_name?: string | null;
+            card_name: string | null;
             /**
              * Category
              * @constant
              */
             category: "FLIGHT_DOMESTIC";
-            /** Comparison Text */
-            comparison_text?: string | null;
             /** Coupon Code */
-            coupon_code?: string | null;
+            coupon_code: string | null;
             /**
              * Discount Type
              * @enum {string}
              */
             discount_type: "PERCENT" | "FLAT";
             /** Discount Value */
-            discount_value: string;
+            discount_value: number | null;
             /** Display Kind */
             display_kind: string;
             /** Display Rank */
@@ -432,9 +305,9 @@ export interface components {
              */
             expiry_date: string;
             /** Max Discount */
-            max_discount?: string | null;
+            max_discount: number | null;
             /** Min Transaction */
-            min_transaction?: string | null;
+            min_transaction: number | null;
             /** New User Only */
             new_user_only: boolean;
             /** Offer Id */
@@ -446,25 +319,19 @@ export interface components {
              * @enum {string}
              */
             payment_method: "CREDIT" | "DEBIT" | "NO_CARD";
-            /** Platform Id */
-            platform_id: string;
+            /**
+             * Platform Id
+             * @enum {string}
+             */
+            platform_id: "MAKEMYTRIP" | "CLEARTRIP";
             /** Platform Name */
             platform_name: string;
             /** Savings Delta */
             savings_delta: number | null;
             /** Savings Label */
             savings_label: string;
-            /** Supported Cards */
-            supported_cards?: string[];
             /** Terms Url */
-            terms_url?: string | null;
-            /**
-             * Updated At
-             * Format: date
-             */
-            updated_at: string;
-            /** Usage Limit */
-            usage_limit?: string | null;
+            terms_url: string | null;
             /**
              * Valid From
              * Format: date
@@ -491,7 +358,7 @@ export interface components {
             /** From */
             from: string;
             /** Platforms */
-            platforms?: string[];
+            platforms?: ("MAKEMYTRIP" | "CLEARTRIP")[];
             /** To */
             to: string;
         };
@@ -500,7 +367,7 @@ export interface components {
             /** Data Version */
             data_version: string;
             /** Date Strip */
-            date_strip?: components["schemas"]["SearchDateBenefit"][];
+            date_strip?: components["schemas"]["DateStripItem"][];
             /** Offers */
             offers: components["schemas"]["SearchOffer"][];
             summary: components["schemas"]["SearchSummary"];
@@ -541,38 +408,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    availability_api_v1_availability_get: {
-        parameters: {
-            query: {
-                from: string;
-                to: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AvailabilityResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     feature_flags_api_v1_feature_flags_get: {
         parameters: {
             query?: never;
@@ -618,9 +453,9 @@ export interface operations {
             query?: {
                 bank?: string[];
                 platform?: string[];
-                payment_method?: string[];
-                booking_channel?: string[];
-                category?: string[];
+                payment_method?: ("CREDIT" | "DEBIT" | "NO_CARD") | null;
+                booking_channel?: ("WEB" | "APP" | "WEB_AND_APP") | null;
+                category?: "FLIGHT_DOMESTIC" | null;
                 active_on?: string;
                 page?: number;
                 limit?: number;

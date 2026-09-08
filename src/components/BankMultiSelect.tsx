@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { CreditCard, Search, Check } from "lucide-react";
+import { CreditCard, Search, Check, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMeta } from "@/contexts/MetaContext";
 import { MAX_BANK_FILTERS } from "@/constants";
@@ -7,9 +7,11 @@ import { MAX_BANK_FILTERS } from "@/constants";
 interface BankMultiSelectProps {
   selected: string[];
   onChange: (banks: string[]) => void;
+  maxSelect?: number;
+  showSignInHint?: boolean;
 }
 
-const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
+const BankMultiSelect = ({ selected, onChange, maxSelect = MAX_BANK_FILTERS, showSignInHint = false }: BankMultiSelectProps) => {
   const { meta } = useMeta();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -48,7 +50,7 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
     if (selected.includes(bank)) {
       onChange(selected.filter((b) => b !== bank));
       setShowMaxMsg(false);
-    } else if (selected.length >= MAX_BANK_FILTERS) {
+    } else if (selected.length >= maxSelect) {
       setShowMaxMsg(true);
     } else {
       onChange([...selected, bank]);
@@ -58,9 +60,9 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
 
   return (
     <div className="space-y-1.5 relative z-30" ref={wrapperRef}>
-      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+      <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.10em] flex items-center gap-1.5">
         <CreditCard className="w-3.5 h-3.5" />
-        Bank / card issuer
+        Card <span className="font-normal normal-case tracking-normal text-[10px] opacity-60">(optional)</span>
       </label>
       <button
         type="button"
@@ -69,9 +71,11 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
       >
         <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         {selected.length === 0 ? (
-          <span className="text-muted-foreground">Select up to 2 banks</span>
+          <span className="text-muted-foreground">Select Bank</span>
+        ) : selected.length === 1 ? (
+          <span className="font-bold text-foreground">{bankDisplayNames[selected[0]] || selected[0]}</span>
         ) : (
-          <span className="font-bold text-foreground">{selected.map(b => bankDisplayNames[b] || b).join(", ")}</span>
+          <span className="font-bold text-foreground">{selected.length} cards selected</span>
         )}
       </button>
 
@@ -91,9 +95,19 @@ const BankMultiSelect = ({ selected, onChange }: BankMultiSelectProps) => {
             </div>
           </div>
           {showMaxMsg && (
-            <p className="text-xs text-destructive px-3 py-2 bg-destructive/10 border-b border-border font-medium">
-              ⚠ Maximum 2 cards allowed. Deselect one to choose another.
-            </p>
+            showSignInHint ? (
+              <div className="px-3 py-2.5 bg-accent/10 border-b border-border flex items-start gap-2">
+                <LogIn className="w-3.5 h-3.5 text-accent mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-xs font-semibold text-accent leading-snug">Sign in to compare up to 4 cards</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">Or deselect one to choose another.</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-destructive px-3 py-2 bg-destructive/10 border-b border-border font-medium">
+                ⚠ Maximum {maxSelect} cards allowed. Deselect one to choose another.
+              </p>
+            )
           )}
           <div className="max-h-52 overflow-y-auto py-1">
             {filtered.map((bank) => {
