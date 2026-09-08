@@ -37,11 +37,6 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
     () => savingsAmounts.indexOf(Math.max(...savingsAmounts)),
     [savingsAmounts]
   );
-  // Only mark a day as "best" if it's genuinely better than at least one other day
-  const hasSavingsVariance = useMemo(
-    () => savingsAmounts.some(s => s < savingsAmounts[bestDayIndex] && savingsAmounts[bestDayIndex] > 0),
-    [savingsAmounts, bestDayIndex]
-  );
 
   const firstStripDate = useMemo(() => parseISO(strip7days[0].date), [strip7days]);
   // Can go prev if not at the first tile, OR if the strip itself starts in the future (cross-strip navigation)
@@ -80,7 +75,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
       <div className="flex gap-1.5 flex-1 min-w-0">
         {strip7days.map((day, i) => {
           const isSelected = day.date === selectedDateStr;
-          const isBestDay = hasSavingsVariance && i === bestDayIndex && savingsAmounts[i] > 0;
+          const isBestDay = i === bestDayIndex && savingsAmounts[i] > 0;
           const dateObj = parseISO(day.date);
           const hasOffers = day.displayText !== DATE_STRIP_NO_OFFERS_LABEL;
           const intensity = maxSavings > 0 ? savingsAmounts[i] / maxSavings : 0;

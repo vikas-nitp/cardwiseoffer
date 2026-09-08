@@ -164,7 +164,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
               </Button>
             </a>
             {!compact && (
-              <p className="text-center text-[10px] text-muted-foreground/50 mt-1.5">
+              <p className="text-center text-[10px] text-muted-foreground/70 mt-1.5">
                 Apply offer at checkout on {offer.platformName}
               </p>
             )}
