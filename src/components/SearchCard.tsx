@@ -263,6 +263,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
             cities={cities}
             value={fromAirport}
             onChange={setFromAirport}
+            hasError={submitted && (!fromAirport || !!errors.from)}
           />
           {errors.from && <p className="text-xs text-destructive">{errors.from}</p>}
         </div>
@@ -275,6 +276,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
             value={toAirport}
             onChange={setToAirport}
             excludeCode={fromAirport?.code}
+            hasError={submitted && (!toAirport || !!errors.to)}
           />
           {errors.to && <p className="text-xs text-destructive">{errors.to}</p>}
         </div>
@@ -291,7 +293,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
                   className={cn(
                     "w-full bg-input border border-border h-14 text-sm pl-10 pr-3 rounded-xl text-left flex items-center relative",
                     "hover:border-primary/40 transition-all duration-200",
-                    errors.date && "ring-2 ring-destructive",
+                    (errors.date || (submitted && !departDate)) && "ring-2 ring-destructive",
                   )}
                 >
                   <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -340,7 +342,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
 
         {/* Bank filter */}
         <div className="space-y-1">
-          <BankMultiSelect selected={banks} onChange={setBanks} maxSelect={maxBankSelect} showSignInHint={!isSignedIn && capabilities.auth} />
+          <BankMultiSelect selected={banks} onChange={setBanks} maxSelect={maxBankSelect} showSignInHint={!isSignedIn && capabilities.auth} hasError={submitted && !!errors.banks} />
           {errors.banks && <p className="text-xs text-destructive">{errors.banks}</p>}
         </div>
 
