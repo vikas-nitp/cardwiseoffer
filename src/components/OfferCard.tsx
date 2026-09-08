@@ -25,10 +25,10 @@ const VARIANTS: Record<Variant, { chip: string; savings: string; topBorder: stri
   primary:   { chip: "bg-accent/10 text-accent border-accent/25",          savings: "text-savings",    topBorder: "border-t-accent",    cta: "gold",    icon: Star },
   // Better Alternative: amber/highlight stripe, amber savings, amber outline CTA
   highlight: { chip: "bg-highlight/10 text-highlight border-highlight/25", savings: "text-savings",    topBorder: "border-t-highlight", cta: "amber",   icon: TrendingUp },
-  // Default offer (no specific card): muted chip, still green savings
-  default:   { chip: "bg-muted/50 text-muted-foreground border-border/50", savings: "text-savings", topBorder: "border-t-muted-foreground/30", cta: "outline", icon: Gift },
-  // Neutral/no-card: muted chip, green savings
-  neutral:   { chip: "bg-muted/60 text-muted-foreground border-border/40", savings: "text-savings", topBorder: "border-t-muted-foreground/20", cta: "outline", icon: CreditCard },
+  // Default offer (no specific card): muted chip, still green savings, dim gold top stripe
+  default:   { chip: "bg-muted/50 text-muted-foreground border-border/50", savings: "text-savings", topBorder: "border-t-accent/35", cta: "outline", icon: Gift },
+  // Neutral/no-card: muted chip, green savings, faintest gold top stripe
+  neutral:   { chip: "bg-muted/60 text-muted-foreground border-border/40", savings: "text-savings", topBorder: "border-t-accent/20", cta: "outline", icon: CreditCard },
 };
 
 const ChannelIcon = ({ channel }: { channel: string }) =>
