@@ -23,26 +23,25 @@ const steps = [
 
 const HowItWorksSection = () => (
   <section className="w-full max-w-5xl mx-auto animate-fade-up">
-    <div className="text-center mb-10">
-      <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-2">
+    <div className="text-center mb-5">
+      <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
         How It Works
       </h2>
-      <p className="text-sm text-muted-foreground max-w-md mx-auto">
-        Three simple steps to find the best card offer for your flight.
-      </p>
     </div>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
       {steps.map((item, i) => (
         <div
           key={item.step}
-          className={`bg-card rounded-2xl border card-shadow p-7 text-center hover:card-shadow-lg hover:-translate-y-0.5 transition-all duration-300 animate-fade-up ${i === steps.length - 1 ? "border-accent/30 hover:border-accent/50" : "border-border hover:border-accent/20"}`}
+          className={`bg-card rounded-2xl border card-shadow p-4 md:p-5 text-center hover:card-shadow-lg hover:-translate-y-0.5 transition-all duration-300 animate-fade-up ${i === steps.length - 1 ? "border-accent/30 hover:border-accent/50" : "border-border hover:border-accent/20"}`}
           style={{ animationDelay: `${i * 0.12}s` }}
         >
-          <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
-            <item.icon className="w-5 h-5 text-accent" />
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+              <item.icon className="w-4 h-4 text-accent" />
+            </div>
+            <span className="text-[11px] font-bold text-accent uppercase tracking-[0.12em]">Step {item.step}</span>
           </div>
-          <span className="text-[11px] font-bold text-accent uppercase tracking-[0.12em]">Step {item.step}</span>
-          <h3 className="text-base font-bold text-foreground mt-2 mb-2.5 tracking-tight">{item.title}</h3>
+          <h3 className="text-[15px] font-bold text-foreground mb-2 tracking-tight">{item.title}</h3>
           <p className="text-[13px] text-muted-foreground leading-relaxed">{item.desc}</p>
         </div>
       ))}

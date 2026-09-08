@@ -69,6 +69,15 @@ export const SUPPORT_EMAIL = "support@cardwiseoffer.com";
 // Must match the value produced by LocalOfferRepository.
 export const DATE_STRIP_NO_OFFERS_LABEL = "No offers";
 
+// Day-weighting factors used to simulate realistic fare variance across the 7-day strip.
+// Index = days offset from the searched date. Applied to both real fares (dayFare) and
+// the simulated fare (SIM_FARE_BASE) used when the user hasn't entered a booking amount.
+export const STRIP_DAY_FACTORS = [1.0, 0.88, 0.94, 1.05, 0.91, 0.97, 0.83] as const;
+
+// Baseline fare (₹) used for strip display-text when no booking amount is entered.
+// Never used for tile eligibility checks.
+export const STRIP_SIM_FARE_BASE = 10_000;
+
 // ────────────────────────────────────────────────────────────────────
 // Trust Labels
 // ────────────────────────────────────────────────────────────────────
@@ -95,39 +104,6 @@ export const CITIES: CityOption[] = airportsData.map((a) => ({
   code: a.code,
   airport: a.name,
 }));
-
-// ────────────────────────────────────────────────────────────────────
-// Bank Data (for filter) - CANONICAL CODES matching backend
-// ────────────────────────────────────────────────────────────────────
-
-export const BANKS = [
-  "HDFC",
-  "ICICI",
-  "SBI",
-  "AXIS",
-  "AMEX",
-  "KOTAK",
-  "YES",
-  "INDUSIND",
-  "RBL",
-  "HSBC",
-] as const;
-
-// Display names for UI rendering
-export const BANK_DISPLAY_NAMES: Record<string, string> = {
-  HDFC: "HDFC Bank",
-  ICICI: "ICICI Bank",
-  SBI: "SBI Card",
-  AXIS: "Axis Bank",
-  AMEX: "American Express",
-  KOTAK: "Kotak Mahindra",
-  YES: "Yes Bank",
-  INDUSIND: "IndusInd Bank",
-  RBL: "RBL Bank",
-  HSBC: "HSBC",
-};
-
-export type BankType = (typeof BANKS)[number];
 
 // ────────────────────────────────────────────────────────────────────
 // Payment Methods (maps UI label to API canonical value)

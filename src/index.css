@@ -40,8 +40,8 @@
     --primary:              216 84% 50%;   /* deeper blue — richer CTA       */
     --primary-foreground:     0  0% 100%; /* white — 4.9:1 on blue           */
 
-    --accent:                41 78% 52%;   /* #E4A827 sovereign gold — decor  */
-    --accent-foreground:    225 37%  5%;   /* near-black — 8.5:1 on gold     */
+    --accent:                42 80% 55%;   /* sovereign amber-gold — vibrant  */
+    --accent-foreground:    225 37%  5%;   /* near-black on gold              */
 
     /* Secondary surface (bordered dark chip) ---------------------- */
     --secondary:            221 42% 17%;   /* #172040 raised surface         */
@@ -84,7 +84,7 @@
     --savings-soft:         152 40% 11%;   /* dark green chip bg             */
     --savings-soft-foreground: 152 62% 72%;
 
-    --highlight:             41 78% 52%;   /* amber — same as accent         */
+    --highlight:             42 80% 55%;   /* amber — matches accent          */
     --highlight-foreground: 225 37%  5%;   /* near-black on amber            */
 
     --glow:                 216 84% 56%;   /* blue decorative glow           */
@@ -161,9 +161,10 @@
 
   html, body, #root {
     width: 100%;
+    height: 100%;
     max-width: 100vw;
     min-width: 0;
-    overflow-x: hidden;
+    overflow: hidden;
   }
 
   body {
@@ -184,22 +185,101 @@
 
 @layer utilities {
 
-  /* ── Sovereign depth gradient — replaces lifestyle sky ────────── */
+  /* ── Sovereign depth gradient with animated orbs ─────────────── */
   .sovereign-ground {
     background: hsl(var(--background));
     position: relative;
+    overflow: hidden;
   }
 
+  /* Static depth layer — always visible base gradient */
   .sovereign-ground::before {
     content: '';
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse 80% 60% at 20% 0%,   hsl(216 70% 28% / 0.40) 0%, transparent 65%),
-      radial-gradient(ellipse 60% 50% at 80% 100%,  hsl( 41 65% 18% / 0.28) 0%, transparent 65%),
-      radial-gradient(ellipse 40% 35% at 50% 45%,  hsl(225 50% 10% / 0.15) 0%, transparent 70%);
+      radial-gradient(ellipse 70% 55% at 12% 5%,   hsl(225 85% 38% / 0.45) 0%, transparent 58%),
+      radial-gradient(ellipse 55% 45% at 88% 92%,  hsl( 42 80% 28% / 0.35) 0%, transparent 58%),
+      radial-gradient(ellipse 45% 35% at 62% 58%,  hsl(200 72% 26% / 0.18) 0%, transparent 62%),
+      radial-gradient(ellipse 28% 22% at 82% 12%,  hsl( 38 65% 22% / 0.14) 0%, transparent 52%);
     pointer-events: none;
     z-index: 0;
+  }
+
+  /* Animated floating orb layer */
+  .sovereign-ground::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 38% 30% at 22% 55%,  hsl(216 84% 50% / 0.12) 0%, transparent 65%),
+      radial-gradient(ellipse 28% 22% at 72% 22%,  hsl( 42 80% 55% / 0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 22% 18% at 50% 80%,  hsl(200 72% 40% / 0.09) 0%, transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+    animation: orb-drift 18s ease-in-out infinite alternate;
+  }
+
+  /* Glass panel mixin — used on premium surfaces */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px) saturate(1.5);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Shimmer sweep on glass surfaces on hover */
+  .glass-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent           25%,
+      hsl(0 0% 100% / 0.06) 50%,
+      transparent           75%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.7s ease;
+    pointer-events: none;
+  }
+  .glass-shimmer:hover::after {
+    transform: translateX(120%);
+  }
+
+  /*
+   * Card shimmer overlay — use this INSTEAD of glass-shimmer on OfferCard.
+   * The overlay clips the sweep internally so the card itself doesn't need
+   * overflow:hidden, preventing content from being cut off on tall cards.
+   * Trigger: parent must have card-hover-glow (the :hover selector rides on it).
+   */
+  .card-shimmer-overlay {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .card-shimmer-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent           25%,
+      hsl(0 0% 100% / 0.06) 50%,
+      transparent           75%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.7s ease;
+  }
+  .card-hover-glow:hover .card-shimmer-overlay::after {
+    transform: translateX(120%);
   }
 
   /* ── Elevation shadows — directional on dark surface ──────────── */
@@ -221,11 +301,22 @@
       0 16px 48px hsl(225 37% 2% / 0.45);
   }
 
-  /* Gold glow ring — SearchCard only ─────────────────────────────── */
+  /* Glass SearchCard — frosted with gold crown ────────────────────── */
+  .glass-search-card {
+    background: rgba(255, 255, 255, 0.055);
+    backdrop-filter: blur(32px) saturate(1.6);
+    -webkit-backdrop-filter: blur(32px) saturate(1.6);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-top: 3px solid hsl(var(--accent) / 0.80);
+  }
+
+  /* Gold glow ring — glass glow for SearchCard ────────────────────── */
   .gold-ring {
     box-shadow:
-      0 0 0 1px hsl(var(--accent) / 0.40),
-      0 0 40px -4px hsl(var(--accent) / 0.35);
+      inset 0 1px 0 rgba(255, 255, 255, 0.10),
+      0 0 0 1px hsl(var(--accent) / 0.30),
+      0 0 48px -6px hsl(var(--accent) / 0.50),
+      0 20px 60px rgba(0, 0, 0, 0.55);
   }
 
   /* ── Scrollbar hide ───────────────────────────────────────────── */
@@ -261,4 +352,40 @@
   .divider-gold {
     border-top: 1px solid hsl(var(--accent) / 0.18);
   }
+
+  /* ── Animated orb keyframes ───────────────────────────────────── */
+  @keyframes orb-drift {
+    0%   { transform: translate(0,    0   ) scale(1);    opacity: 1; }
+    25%  { transform: translate(3%,  -4%  ) scale(1.04); opacity: 0.85; }
+    50%  { transform: translate(-2%,  5%  ) scale(0.97); opacity: 0.95; }
+    75%  { transform: translate(4%,   2%  ) scale(1.02); opacity: 0.90; }
+    100% { transform: translate(-3%,  -2% ) scale(1.05); opacity: 1; }
+  }
+
+  /* ── Pulse glow — accent dot or badge pulsing ─────────────────── */
+  @keyframes pulse-gold {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--accent) / 0.40); }
+    50%       { box-shadow: 0 0 0 6px hsl(var(--accent) / 0); }
+  }
+  .pulse-gold { animation: pulse-gold 2.4s ease-in-out infinite; }
+
+  /* ── Subtle card hover lift with glow ────────────────────────── */
+  .card-hover-glow {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .card-hover-glow:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 4px 24px hsl(var(--accent) / 0.10),
+      0 12px 40px hsl(225 37% 2% / 0.45);
+  }
+
+  /* ── Scrollbar narrow, themed ─────────────────────────────────── */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 4px; }
 }

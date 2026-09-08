@@ -3,9 +3,9 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import DateStrip, { StripDay } from "./DateStrip";
 
 const STRIP: StripDay[] = [
-  { date: "2026-09-01", displayText: "3 offers" },
+  { date: "2026-09-01", displayText: "Save ₹800" },
   { date: "2026-09-02", displayText: "No offers" },
-  { date: "2026-09-03", displayText: "5 offers" },
+  { date: "2026-09-03", displayText: "Save ₹700" },
 ];
 
 const defaultProps = {
@@ -20,7 +20,7 @@ describe("DateStrip", () => {
     const buttons = screen.getAllByRole("button", { name: /Select/ });
     const selected = buttons.find((b) => b.getAttribute("aria-pressed") === "true");
     expect(selected).toBeDefined();
-    expect(selected?.textContent).toMatch(/01 Sep/);
+    expect(selected?.textContent).toMatch(/1 Sep/);
   });
 
   it("marks non-selected dates as aria-pressed=false", () => {
@@ -30,9 +30,9 @@ describe("DateStrip", () => {
     expect(notSelected).toHaveLength(2);
   });
 
-  it("includes offer count in aria-label when available", () => {
+  it("includes savings in aria-label when available", () => {
     render(<DateStrip {...defaultProps} />);
-    const btn = screen.getByRole("button", { name: /01 September — 3 offers/i });
+    const btn = screen.getByRole("button", { name: /01 September — Save ₹800/i });
     expect(btn).toBeInTheDocument();
   });
 
@@ -62,19 +62,21 @@ describe("DateStrip", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("hides nav arrows when all days fit in the visible window", () => {
+  it("nav arrows are present but disabled when all days fit in the visible window", () => {
     render(<DateStrip {...defaultProps} />);
-    expect(screen.queryByRole("button", { name: /Previous eligible dates/i })).toBeNull();
-    expect(screen.queryByRole("button", { name: /Next eligible dates/i })).toBeNull();
+    const prev = screen.getByRole("button", { name: /Previous date/i });
+    const next = screen.getByRole("button", { name: /Next date/i });
+    expect(prev).toBeInTheDocument();
+    expect(next).toBeInTheDocument();
   });
 
-  it("shows nav arrows when strip has more days than the visible window", () => {
+  it("shows nav arrows enabled when strip has more days than the visible window", () => {
     const manyDays: StripDay[] = Array.from({ length: 10 }, (_, i) => ({
       date: `2026-09-${String(i + 1).padStart(2, "0")}`,
-      displayText: i % 2 === 0 ? "3 offers" : "No offers",
+      displayText: i % 2 === 0 ? "Save ₹800" : "No offers",
     }));
     render(<DateStrip {...defaultProps} strip7days={manyDays} />);
-    expect(screen.getByRole("button", { name: /Previous eligible dates/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Next eligible dates/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Previous date/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Next date/i })).toBeInTheDocument();
   });
 });

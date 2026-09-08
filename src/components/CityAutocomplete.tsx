@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { MapPin } from "lucide-react";
+import { MapPin, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface CityOption {
@@ -75,10 +75,21 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
           type="text"
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
-          onFocus={() => setOpen(true)}
+          onFocus={() => { if (value) setQuery(""); setOpen(true); }}
           placeholder="Type city or airport..."
-          className="w-full bg-muted/50 border border-border h-auto text-[13px] pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl font-semibold text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary/60 hover:border-primary/30 transition-all duration-200"
+          className="w-full bg-muted/50 border border-border h-auto text-[13px] pl-10 pr-8 py-2.5 min-h-[56px] rounded-xl font-semibold text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary/60 hover:border-primary/30 transition-all duration-200"
         />
+        {query && (
+          <button
+            type="button"
+            onClick={() => { onChange(null); setQuery(""); setOpen(false); }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-muted-foreground/20 hover:bg-muted-foreground/30 flex items-center justify-center transition-colors z-10"
+            tabIndex={-1}
+            aria-label="Clear selection"
+          >
+            <X className="w-3 h-3 text-muted-foreground" />
+          </button>
+        )}
       </div>
       {open && filtered.length > 0 && (
         <div className="absolute top-full left-0 right-0 z-[60] mt-1 bg-card border border-border/60 rounded-xl shadow-xl max-h-60 overflow-y-auto">
