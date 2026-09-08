@@ -8,7 +8,7 @@ import type { OfferViewModel } from "@/types/offer";
 import { mapApiOffer, type ApiOffer } from "@/domain/offerMapper";
 import { isOfferEligible } from "@/domain/offerValidity";
 import { rankAndLabelOffers } from "@/domain/offerRanking";
-import { DATE_STRIP_NO_OFFERS_LABEL, STRIP_DAY_FACTORS } from "@/constants";
+import { DATE_STRIP_NO_OFFERS_LABEL } from "@/constants";
 import { buildFlightSearchUrl, platformHomeUrl } from "@/domain/platformUrlBuilder";
 import { estimateSavings } from "@/domain/offerCalculation";
 import offersJson from "@/data/generated/offers.json";
@@ -78,7 +78,8 @@ export function searchLocalOffers(
     if (bookingAmount !== undefined && featureFlags.bookingAmountComparisonEnabled) {
       // Strip shows MARKET-BEST savings across ALL active offers (not just selected banks).
       // Tiles still filter by selected banks — strip is a market-wide indicator.
-      const dayFare = Math.round(bookingAmount * STRIP_DAY_FACTORS[index]);
+      // User's fare applies as-is to every day — day factors are only for the no-fare simulation.
+      const dayFare = bookingAmount;
       const eligible = activeThatDay.filter(
         (offer) => !offer.minTransaction || dayFare >= offer.minTransaction
       );
