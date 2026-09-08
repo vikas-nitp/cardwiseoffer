@@ -42,8 +42,18 @@ export function rankAndLabelOffers(
 
   if (selectedBanks.length === 1) {
     const primary = bestSelected[0] ?? null;
+
+    if (primary === null) {
+      // Selected bank has no active offers — surface the best available card offer
+      // so the user isn't left with only the no-card default.
+      return dedupe([
+        tag(bestOutside, "Best Available"),
+        tag(bestDefault, "Default"),
+      ]);
+    }
+
     const betterAlt =
-      bestOutside && primary && bestOutside.savings > primary.savings ? bestOutside : null;
+      bestOutside && bestOutside.savings > primary.savings ? bestOutside : null;
     return dedupe([
       tag(primary, "Your Card Offer"),
       tag(betterAlt, "Better Alternative"),
