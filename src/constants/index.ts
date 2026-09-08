@@ -51,7 +51,7 @@ export const API_RETRY_DELAY_MS = 1000;
 
 export const APP_NAME = "CardSage";
 export const APP_TAGLINE = "smart card picks for Indian flights";
-export const APP_HERO_SUBTITLE = "Compare bank card offers for any Indian flight route — instantly. Just the best deal for your card.";
+export const APP_HERO_SUBTITLE = "Compare bank card offers for any Indian flight route";
 export const DISCLAIMER_TEXT =
   "We are not affiliated with any platform or bank. Offers may change without notice. " +
   "Please verify details on the official website before booking.";

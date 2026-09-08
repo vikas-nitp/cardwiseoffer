@@ -4,6 +4,7 @@ import type { SearchState } from "@/hooks/useOfferSearch";
 import { TRUST_LABELS, APP_HERO_SUBTITLE } from "@/constants";
 import { useMeta } from "@/contexts/MetaContext";
 import { format, parseISO } from "date-fns";
+import { Sparkles } from "lucide-react";
 
 interface HomeSectionProps {
   searchState: SearchState | null;
@@ -30,7 +31,12 @@ const HomeSection = ({ searchState, onSearch }: HomeSectionProps) => {
       </h1>
       <p className="mt-4 text-[15px] md:text-[17px] text-foreground/75 leading-relaxed">
         {APP_HERO_SUBTITLE}
+        <span className="text-accent font-semibold"> — instantly.</span>
       </p>
+      <div className="mt-3 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent text-[12px] font-bold tracking-wide">
+        <Sparkles className="w-3.5 h-3.5 shrink-0" />
+        Just the best deal for your card
+      </div>
       <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
         {meta.total_offers > 0 && (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border/40 bg-muted/25 text-[12px] font-semibold text-foreground/60">
