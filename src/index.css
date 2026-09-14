@@ -30,10 +30,10 @@
     --background:           220 45% 12%;   /* #111A2C deep navy, clearly blue */
     --foreground:           218 54% 94%;   /* #E8EEF8 cool near-white        */
 
-    --card:                 221 38% 14%;   /* #0F1E30 elevated surface       */
+    --card:                 218 24% 15%;   /* warm-neutral elevated surface  */
     --card-foreground:      218 54% 94%;
 
-    --popover:              221 40% 16%;   /* slightly above card            */
+    --popover:              219 28% 17%;   /* slightly above card            */
     --popover-foreground:   218 54% 94%;
 
     /* Brand ------------------------------------------------------- */
@@ -45,7 +45,7 @@
     --accent-foreground:    225 37%  5%;   /* near-black on gold              */
 
     /* Secondary surface (bordered dark chip) ---------------------- */
-    --secondary:            221 42% 17%;   /* #172040 raised surface         */
+    --secondary:            219 32% 17%;   /* #162039 raised surface, warmer  */
     --secondary-foreground: 218 54% 94%;
 
     /* Muted ------------------------------------------------------- */
@@ -91,7 +91,7 @@
     --glow:                 216 84% 56%;   /* blue decorative glow           */
 
     /* ── Misc ────────────────────────────────────────────────────── */
-    --surface-elevated:     221 42% 17%;
+    --surface-elevated:     219 32% 17%;
 
     /* Sidebar */
     --sidebar-background:   222 28%  8%;
@@ -292,6 +292,13 @@
   }
   .card-hover-glow:hover .card-shimmer-overlay::after {
     transform: translateX(120%);
+  }
+
+  /* Warm gold top-corner glow — applied to prominent card surfaces */
+  .card-warm {
+    background:
+      radial-gradient(ellipse 70% 45% at 90% 0%, hsl(42 75% 55% / 0.05) 0%, transparent 70%),
+      hsl(var(--card));
   }
 
   /* ── Elevation shadows — directional on dark surface ──────────── */

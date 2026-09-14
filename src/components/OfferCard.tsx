@@ -80,7 +80,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
       role="article"
       aria-label={cardAriaLabel}
       className={cn(
-        "relative bg-card rounded-2xl border border-border/60 flex flex-col border-t-[3px]",
+        "relative card-warm rounded-2xl border border-border/60 flex flex-col border-t-[3px]",
         v.topBorder,
         "card-shadow card-hover-glow"
       )}
