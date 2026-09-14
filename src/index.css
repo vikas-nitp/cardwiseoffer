@@ -377,22 +377,29 @@
   /* ── Star twinkle keyframes ───────────────────────────────────── */
   @keyframes twinkle-a {
     0%, 100% { opacity: 0.55; transform: scale(1); }
-    45%      { opacity: 0.12; transform: scale(0.6); }
+    50%      { opacity: 0.10; transform: scale(0.55); }
   }
   @keyframes twinkle-b {
-    0%, 100% { opacity: 0.35; transform: scale(1); }
-    55%      { opacity: 0.08; transform: scale(0.5); }
+    0%, 100% { opacity: 0.32; transform: scale(1); }
+    60%      { opacity: 0.06; transform: scale(0.45); }
   }
   @keyframes twinkle-c {
-    0%, 100% { opacity: 0.65; transform: scale(1); }
-    35%      { opacity: 0.18; transform: scale(0.7); }
+    0%, 100% { opacity: 0.68; transform: scale(1); }
+    40%      { opacity: 0.15; transform: scale(0.65); }
   }
-  .star-a { animation: twinkle-a 4.2s ease-in-out infinite; }
-  .star-b { animation: twinkle-b 6.1s ease-in-out infinite; }
-  .star-c { animation: twinkle-c 5.0s ease-in-out infinite; }
+  @keyframes twinkle-d {
+    0%, 100% { opacity: 0.80; transform: scale(1); }
+    50%      { opacity: 0.38; transform: scale(0.85); }
+  }
+  /* Wider speed spread: 3.5s / 6.8s / 9.5s / 5.5s — each class twinkles at its own cadence */
+  .star-a { animation: twinkle-a 3.5s ease-in-out infinite; }
+  .star-b { animation: twinkle-b 6.8s ease-in-out infinite; }
+  .star-c { animation: twinkle-c 9.5s ease-in-out infinite; }
+  .star-d { animation: twinkle-d 5.5s ease-in-out infinite; }
 
   @media (prefers-reduced-motion: reduce) {
     .star-a, .star-b, .star-c { animation: none; opacity: 0.25; }
+    .star-d { animation: none; opacity: 0.55; }
   }
 
   /* ── Pulse glow — accent dot or badge pulsing ─────────────────── */

@@ -43,9 +43,10 @@ const HomeSection = ({ searchState, onSearch }: HomeSectionProps) => {
         <span className="block text-[28px] md:text-[42px] text-foreground leading-[1.15]">Which card saves the most</span>
         <span className="block text-[42px] md:text-[60px] text-accent mt-1 leading-[1.0]">on your flight?</span>
       </motion.h1>
-      <motion.p variants={item} className="mt-4 text-[15px] md:text-[17px] text-foreground/75 leading-relaxed">
+      <motion.p variants={item} className="mt-4 text-[13px] md:text-[14px] text-foreground/70 leading-snug whitespace-nowrap">
         {APP_HERO_SUBTITLE}
-        <span className="text-accent font-semibold"> — instantly.</span>
+        <span className="text-foreground/45"> - </span>
+        <span className="text-accent font-semibold">Just the best deal for your card</span>
       </motion.p>
       {meta.total_offers > 0 && (
         <motion.div variants={item} className="mt-3 flex items-center justify-center gap-2 flex-wrap">
