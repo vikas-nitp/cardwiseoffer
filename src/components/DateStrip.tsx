@@ -36,7 +36,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
     [savingsAmounts]
   );
 
-  const firstStripDate = useMemo(() => parseISO(strip7days[0].date), [strip7days]);
+  const firstStripDate = useMemo(() => strip7days[0] ? parseISO(strip7days[0].date) : new Date(), [strip7days]);
   const canGoPrev = selectedIndex > 0 || isAfter(firstStripDate, startOfDay(new Date()));
 
   const moveToPrev = () => {

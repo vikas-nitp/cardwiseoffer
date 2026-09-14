@@ -30,13 +30,12 @@ const backendContract = resolve(backendRoot, "contracts/openapi.json");
 
 await mkdir(destination, { recursive: true });
 
-// offers.snapshot.json → offers.json  (rename valid_to → expiry_date)
-const offersRaw = JSON.parse(await readFile(resolve(generatedSrc, "offers.snapshot.json"), "utf8"));
-const offersConverted = offersRaw.map((offer) => {
-  const { valid_to, ...rest } = offer;
-  return { ...rest, expiry_date: valid_to };
-});
-await writeFile(resolve(destination, "offers.json"), JSON.stringify(offersConverted, null, 2));
+// offers.snapshot.json → offers.json
+await cp(
+  resolve(generatedSrc, "offers.snapshot.json"),
+  resolve(destination, "offers.json"),
+  { force: true },
+);
 
 // metadata.snapshot.json → metadata.json
 await cp(
@@ -54,7 +53,7 @@ await cp(
 
 // feature_flags.json → featureFlags.json (camelCase filename)
 await cp(
-  resolve(backendRoot, "data/feature_flags.json"),
+  resolve(backendRoot, "data/config/feature_flags.json"),
   resolve(destination, "featureFlags.json"),
   { force: true },
 );
