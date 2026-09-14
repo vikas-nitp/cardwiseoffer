@@ -5,10 +5,13 @@ import { getDataMode } from "@/config/dataMode";
 import { repoFetchFeatureFlags } from "@/services/dataRepo";
 
 type FeatureFlagsResponse = components["schemas"]["FeatureFlagsResponse"];
-export type ProductFeatureFlags = Omit<FeatureFlagsResponse, "config_version">;
+export type ProductFeatureFlags = Omit<FeatureFlagsResponse, "config_version"> & {
+  visitorCountEnabled: boolean;
+  authEnabled: boolean;
+};
 export type FeatureFlags = ProductFeatureFlags;
 
-const LOCAL_FLAGS: ProductFeatureFlags = generatedFlags;
+const LOCAL_FLAGS: ProductFeatureFlags = { ...generatedFlags, visitorCountEnabled: false, authEnabled: false };
 
 interface FeatureFlagContextValue {
   flags: ProductFeatureFlags;
@@ -40,7 +43,7 @@ export const FeatureFlagProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await repoFetchFeatureFlags();
       const { config_version: _version, ...productFlags } = response;
-      setFlags(productFlags);
+      setFlags(prev => ({ ...prev, ...productFlags }));
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Feature configuration unavailable");
       // Keep existing flags (LOCAL_FLAGS on first load, last-known-good thereafter)

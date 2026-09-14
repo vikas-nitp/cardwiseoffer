@@ -1,11 +1,6 @@
 import { parseISO, isBefore, isAfter, format } from "date-fns";
 import type { OfferViewModel } from "@/types/offer";
-
-const startOfToday = () => {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-};
+import { startOfToday } from "@/lib/commonUtils";
 
 export function isOfferExpired(offer: Pick<OfferViewModel, "expiryDate">, now = startOfToday()): boolean {
   return isBefore(parseISO(offer.expiryDate), now);
@@ -20,12 +15,10 @@ export function isOfferActive(offer: Pick<OfferViewModel, "validFrom" | "expiryD
 }
 
 export function isOfferEligible(
-  offer: Pick<OfferViewModel, "validFrom" | "expiryDate" | "isActive" | "publishStatus" | "evidenceStatus" | "category">,
+  offer: Pick<OfferViewModel, "validFrom" | "expiryDate" | "isActive" | "category">,
   date = startOfToday()
 ): boolean {
   return offer.isActive &&
-    offer.publishStatus === "READY" &&
-    offer.evidenceStatus === "VERIFIED" &&
     offer.category === "FLIGHT_DOMESTIC" &&
     isOfferActive(offer, date);
 }

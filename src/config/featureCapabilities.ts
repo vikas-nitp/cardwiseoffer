@@ -7,5 +7,7 @@ export function resolveFeatureCapabilities(flags: FeatureFlags) {
     couponCode: flags.couponCodeEnabled,
     analytics: flags.analyticsEnabled,
     bookingAmountComparison: flags.bookingAmountComparisonEnabled,
+    visitorCount: flags.visitorCountEnabled,
+    auth: flags.authEnabled,
   };
 }

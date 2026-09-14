@@ -10,8 +10,7 @@ const base: OfferViewModel = {
   discountType: "FLAT", discountValue: 0, maxDiscount: null, minTransaction: null, savings: 0,
   couponCode: null, validFrom: "2026-01-01", expiryDate: "2030-01-01",
   newUserOnly: false, eligibilityNotes: [], platformUrl: null,
-  sourceType: "demo_excel", evidenceStatus: "UNVERIFIED", publishStatus: "READY", isActive: true,
-  verificationStatus: "demo", priorityScore: 0,
+  sourceType: "demo_excel", isActive: true, priorityScore: 0,
 };
 
 describe("offerCalculation", () => {

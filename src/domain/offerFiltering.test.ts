@@ -4,7 +4,7 @@ import { mapApiOffer, type ApiOffer } from "@/domain/offerMapper";
 import { filterCatalogueOffers } from "@/domain/offerFiltering";
 
 const offers = (generatedOffers as unknown as ApiOffer[]).map(mapApiOffer);
-const empty = { bank: [], platform: [], paymentMethod: [] };
+const empty = { bank: [], platform: [], paymentMethod: [], channel: [] };
 
 describe("filterCatalogueOffers", () => {
   it("applies a strict bank filter", () => {
@@ -27,6 +27,7 @@ describe("filterCatalogueOffers", () => {
       bank: ["HDFC", "SBI"],
       platform: ["MAKEMYTRIP", "CLEARTRIP"],
       paymentMethod: ["CREDIT"],
+      channel: [],
     });
     expect(result.length).toBeGreaterThan(0);
     expect(

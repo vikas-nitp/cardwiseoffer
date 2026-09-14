@@ -1,13 +1,14 @@
 import { ShieldCheck, RefreshCw, Scale } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useMeta } from "@/contexts/MetaContext";
+import { TRUST_LABELS } from "@/constants";
 
 const TrustIndicators = () => {
   const { meta } = useMeta();
   const indicators = [
-    { icon: ShieldCheck, label: "No booking bias" },
+    { icon: ShieldCheck, label: TRUST_LABELS.NO_BOOKING_BIAS },
     { icon: RefreshCw, label: `Offers last updated: ${format(parseISO(meta.dataset_last_updated_at), "dd MMM yyyy")}` },
-    { icon: Scale, label: "Independent comparison" },
+    { icon: Scale, label: TRUST_LABELS.INDEPENDENT_COMPARISON },
   ];
 
   return (

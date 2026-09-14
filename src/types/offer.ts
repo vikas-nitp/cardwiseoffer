@@ -46,10 +46,3 @@ export interface OfferViewModel {
   lastUpdatedAt?: string;
 }
 
-// Legacy tile shape kept during refactor — mirrors OfferViewModel fields the OfferCard reads.
-export interface OfferTileLike extends OfferViewModel {
-  labelIcon?: string;
-  accentClass?: string;
-  accentBorder?: string;
-  extraLabel?: string;
-}

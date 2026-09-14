@@ -6,8 +6,6 @@
 const ALLOWED_HOSTS = new Set([
   "www.makemytrip.com",
   "www.cleartrip.com",
-  "www.easemytrip.com",
-  "www.goibibo.com",
 ]);
 
 const HOMES: Record<string, string> = {
@@ -15,8 +13,6 @@ const HOMES: Record<string, string> = {
   MAKEMYTRIP: "https://www.makemytrip.com/",
   Cleartrip: "https://www.cleartrip.com/",
   CLEARTRIP: "https://www.cleartrip.com/",
-  EaseMyTrip: "https://www.easemytrip.com/",
-  Goibibo: "https://www.goibibo.com/",
 };
 
 export interface FlightSearchContext {
@@ -37,12 +33,6 @@ export function buildFlightSearchUrl(platform: string, ctx: FlightSearchContext)
     case "Cleartrip":
     case "CLEARTRIP":
       url = `https://www.cleartrip.com/flights/${from}-${to}-${date}`;
-      break;
-    case "EaseMyTrip":
-      url = `https://www.easemytrip.com/flight-booking/${from}-${to}-${date}`;
-      break;
-    case "Goibibo":
-      url = `https://www.goibibo.com/flights/${from}-${to}-${date}`;
       break;
     default:
       return null;

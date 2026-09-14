@@ -1,9 +1,15 @@
 import type { CityOption } from "@/components/CityAutocomplete";
 import type { OfferViewModel } from "@/types/offer";
 
+export interface StripDayEntry {
+  date: string;
+  displayText: string;
+  dayFare?: number;   // user-fare mode: actual day-adjusted fare for tile search
+}
+
 export interface OfferSearchResult {
   offers: OfferViewModel[];
-  strip7days: Array<{ date: string; displayText: string }>;
+  strip7days: StripDayEntry[];
 }
 
 export interface OfferRepository {

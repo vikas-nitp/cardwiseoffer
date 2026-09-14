@@ -1,13 +1,12 @@
-import { useMemo, useState, useEffect } from "react";
-import { format, parseISO } from "date-fns";
+import { useMemo } from "react";
+import { format, parseISO, subDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DATE_STRIP_NAVIGATION_STEP_DAYS, DATE_STRIP_VISIBLE_DAYS } from "@/constants";
+import { DATE_STRIP_NO_OFFERS_LABEL } from "@/constants";
+import type { StripDayEntry } from "@/data/repositories/OfferRepository";
 
-export interface StripDay {
-  date: string;
-  displayText: string;
-}
+// Re-export as StripDay for backward compat with existing imports
+export type StripDay = StripDayEntry;
 
 interface DateStripProps {
   selectedDate: Date;
@@ -16,82 +15,83 @@ interface DateStripProps {
 }
 
 const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) => {
-  const [offset, setOffset] = useState(0);
-
   const selectedDateStr = useMemo(() => format(selectedDate, "yyyy-MM-dd"), [selectedDate]);
-
-  useEffect(() => {
-    const selectedIndex = strip7days.findIndex((day) => day.date === format(selectedDate, "yyyy-MM-dd"));
-    setOffset(Math.max(0, selectedIndex));
-  }, [selectedDate, strip7days]);
-
-  const maxOffset = Math.max(0, strip7days.length - DATE_STRIP_VISIBLE_DAYS);
-  const visibleDays = strip7days.slice(offset, offset + DATE_STRIP_VISIBLE_DAYS);
-  const move = (direction: -1 | 1) => setOffset((current) =>
-    Math.min(maxOffset, Math.max(0, current + direction * DATE_STRIP_NAVIGATION_STEP_DAYS))
+  const selectedIndex = useMemo(
+    () => strip7days.findIndex((d) => d.date === selectedDateStr),
+    [strip7days, selectedDateStr]
   );
+
+  const moveToPrev = () => {
+    if (selectedIndex > 0) {
+      onDateChange(parseISO(strip7days[selectedIndex - 1].date));
+    } else {
+      // Navigate before the strip window — triggers full re-search anchored to that date
+      onDateChange(subDays(parseISO(strip7days[0].date), 1));
+    }
+  };
+  const moveToNext = () => {
+    if (selectedIndex < strip7days.length - 1) {
+      onDateChange(parseISO(strip7days[selectedIndex + 1].date));
+    } else {
+      // Navigate past the strip window — triggers full re-search anchored to that date
+      onDateChange(addDays(parseISO(strip7days[strip7days.length - 1].date), 1));
+    }
+  };
 
   if (!strip7days || strip7days.length === 0) return null;
 
   return (
-    <div>
-      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground mb-1.5 text-center">
-        Eligible offers by date
-      </p>
-      <div className="flex items-center gap-1.5 w-full justify-center relative">
-        <button
-          onClick={() => move(-1)}
-          disabled={offset === 0}
-          className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors z-10 shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Previous eligible dates"
-        >
-          <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-        </button>
+    <div className="flex items-center gap-1.5 w-full overflow-hidden">
+      <button
+        onClick={moveToPrev}
+        className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors shrink-0"
+        aria-label="Previous date"
+      >
+        <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+      </button>
 
-        <div
-          className="flex min-w-0 gap-2 overflow-x-auto scrollbar-hide py-1"
-        >
-          {visibleDays.map((day) => {
-            const isSelected = day.date === selectedDateStr;
-            const dateObj = parseISO(day.date);
+      <div className="flex gap-1.5 flex-1 min-w-0">
+        {strip7days.map((day) => {
+          const isSelected = day.date === selectedDateStr;
+          const dateObj = parseISO(day.date);
+          const hasOffers = day.displayText !== DATE_STRIP_NO_OFFERS_LABEL;
 
-            return (
-              <button
-                key={day.date}
-                onClick={() => onDateChange(dateObj)}
+          return (
+            <button
+              key={day.date}
+              onClick={() => onDateChange(dateObj)}
+              aria-label={`Select ${format(dateObj, "EEEE dd MMMM")}${hasOffers ? ` — ${day.displayText}` : ""}`}
+              aria-pressed={isSelected}
+              className={cn(
+                "flex flex-col items-center py-2.5 px-1 rounded-xl border transition-all duration-200 flex-1 min-w-0 overflow-hidden",
+                isSelected
+                  ? "bg-accent text-accent-foreground border-accent shadow-md"
+                  : "bg-card border-border/50 hover:border-accent/40 hover:shadow-sm"
+              )}
+            >
+              <span className={cn("text-[11px] font-semibold whitespace-nowrap", isSelected ? "opacity-80" : "text-muted-foreground")}>
+                {format(dateObj, "EEE, d MMM")}
+              </span>
+              <span
                 className={cn(
-                  "flex flex-col items-center px-3 py-2.5 rounded-xl border transition-all duration-200 min-w-[88px] shrink-0",
-                  isSelected
-                    ? "bg-primary text-primary-foreground border-primary shadow-md"
-                    : "bg-card border-border/40 hover:border-primary/30 hover:shadow-sm"
+                  "text-[10px] font-bold mt-1 w-full text-center leading-tight",
+                  isSelected ? "text-accent-foreground/90" : hasOffers ? "text-accent" : "text-muted-foreground/60"
                 )}
               >
-                <span className="text-[10px] font-semibold uppercase tracking-wider opacity-70">
-                  {format(dateObj, "EEE")}
-                </span>
-                <span className="text-xs font-bold mt-0.5">{format(dateObj, "dd MMM")}</span>
-                <span
-                  className={cn(
-                    "text-[11px] font-bold mt-1",
-                    isSelected ? "text-primary-foreground/90" : day.displayText !== "No offers" ? "text-accent" : "text-muted-foreground"
-                  )}
-                >
-                  {day.displayText}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        <button
-          onClick={() => move(1)}
-          disabled={offset === maxOffset}
-          className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors z-10 shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Next eligible dates"
-        >
-          <ChevronRight className="w-4 h-4 text-muted-foreground" />
-        </button>
+                {day.displayText}
+              </span>
+            </button>
+          );
+        })}
       </div>
+
+      <button
+        onClick={moveToNext}
+        className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors shrink-0"
+        aria-label="Next date"
+      >
+        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+      </button>
     </div>
   );
 };

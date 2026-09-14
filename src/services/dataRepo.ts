@@ -67,7 +67,12 @@ export async function repoFetchAllOffersPage(
   signal?: AbortSignal,
 ) {
   if (isLocalMode()) {
-    const offers = getLocalOffers();
+    let offers = getLocalOffers();
+    // Apply filters before paginating so filtered pages are correct
+    if (filters.bank?.length) offers = offers.filter((o) => filters.bank!.includes(o.bank ?? ""));
+    if (filters.platform?.length) offers = offers.filter((o) => filters.platform!.includes(o.platform));
+    if (filters.payment_method?.length) offers = offers.filter((o) => filters.payment_method!.includes(o.paymentMethod));
+    if (filters.booking_channel?.length) offers = offers.filter((o) => filters.booking_channel!.includes(o.bookingChannel));
     const page = filters.page ?? 1;
     const limit = filters.limit ?? 20;
     const start = (page - 1) * limit;

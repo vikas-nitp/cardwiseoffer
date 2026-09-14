@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useMeta } from "@/contexts/MetaContext";
+import { APP_NAME } from "@/constants";
 
 const FAQSection = () => {
   const { meta } = useMeta();
@@ -14,8 +15,8 @@ const FAQSection = () => {
 
   const faqs = [
     {
-      q: "Is CardWiseOffer free to use?",
-      a: "Yes, CardWiseOffer is completely free. We compare publicly available bank offers to help you find the best deal.",
+      q: `Is ${APP_NAME} free to use?`,
+      a: `Yes, ${APP_NAME} is completely free. We compare publicly available bank offers to help you find the best deal.`,
     },
     {
       q: "Do you sell flight tickets?",
@@ -30,10 +31,6 @@ const FAQSection = () => {
       a: `We aggregate publicly available promotions from major banks and travel platforms like ${platformNames}.`,
     },
     {
-      q: "Why do I need to log in?",
-      a: "Login lets you see all available offers. Non-logged-in users can preview a limited number of offers before signing in.",
-    },
-    {
       q: "How many cards can I compare at once?",
       a: "You can select up to 2 cards for comparison. The system will show the best offers for your selected cards and suggest better alternatives if available.",
     },
@@ -44,21 +41,18 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="w-full max-w-3xl mx-auto animate-fade-up">
-      <div className="bg-card rounded-2xl border border-border border-t-2 border-t-accent/60 card-shadow-lg p-8 md:p-10">
-        <h2 className="text-xl md:text-2xl font-bold text-foreground mb-1 tracking-tight">
+    <section className="w-full max-w-5xl mx-auto animate-fade-up">
+      <div className="bg-card rounded-2xl border border-border border-t-2 border-t-accent/60 card-shadow-lg p-5 md:p-6">
+        <h2 className="text-lg md:text-xl font-bold text-foreground mb-3 tracking-tight">
           Frequently Asked Questions
         </h2>
-        <p className="text-[13px] text-muted-foreground mb-6">
-          Common questions about CardWiseOffer.
-        </p>
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, i) => (
             <AccordionItem key={i} value={`faq-${i}`} className="border-border">
-              <AccordionTrigger className="text-[14px] font-semibold text-foreground hover:text-accent text-left py-4">
+              <AccordionTrigger className="text-[14px] font-semibold text-foreground hover:text-foreground/80 text-left py-3">
                 {faq.q}
               </AccordionTrigger>
-              <AccordionContent className="text-[14px] text-muted-foreground leading-relaxed pb-4">
+              <AccordionContent className="text-[13px] text-muted-foreground leading-relaxed pb-3">
                 {faq.a}
               </AccordionContent>
             </AccordionItem>
