@@ -4,14 +4,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useMeta } from "@/contexts/MetaContext";
+import { getLocalOffers } from "@/data/repositories/LocalOfferRepository";
 import { APP_NAME } from "@/constants";
 
-const FAQSection = () => {
-  const { meta } = useMeta();
+const _offers = getLocalOffers();
+const _bankNames = [...new Set(_offers.map((o) => o.bankDisplay).filter(Boolean))].sort().join(", ");
+const _platformNames = [...new Set(_offers.map((o) => o.platformName))].sort().join(", ");
 
-  const bankNames = meta.banks.map((b) => b.name).join(", ");
-  const platformNames = meta.platforms.map((p) => p.name).join(", ");
+const FAQSection = () => {
+  const bankNames = _bankNames;
+  const platformNames = _platformNames;
 
   const faqs = [
     {

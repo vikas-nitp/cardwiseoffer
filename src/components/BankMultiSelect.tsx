@@ -69,7 +69,7 @@ const BankMultiSelect = ({ selected, onChange, maxSelect = MAX_BANK_FILTERS, sho
         type="button"
         onClick={() => setOpen(!open)}
         className={cn(
-          "w-full bg-secondary/50 border border-transparent h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left relative flex items-center hover:bg-secondary/70 transition-colors",
+          "w-full bg-input border border-border h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left relative flex items-center hover:border-primary/30 transition-colors",
           hasError && "ring-2 ring-destructive border-destructive/50"
         )}
       >
