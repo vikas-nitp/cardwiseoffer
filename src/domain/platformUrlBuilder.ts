@@ -6,6 +6,10 @@
 const ALLOWED_HOSTS = new Set([
   "www.makemytrip.com",
   "www.cleartrip.com",
+  "www.easemytrip.com",
+  "www.ixigo.com",
+  "www.airindia.com",
+  "www.goindigo.in",
 ]);
 
 const HOMES: Record<string, string> = {
@@ -13,6 +17,14 @@ const HOMES: Record<string, string> = {
   MAKEMYTRIP: "https://www.makemytrip.com/",
   Cleartrip: "https://www.cleartrip.com/",
   CLEARTRIP: "https://www.cleartrip.com/",
+  EaseMyTrip: "https://www.easemytrip.com/",
+  EASEMYTRIP: "https://www.easemytrip.com/",
+  Ixigo: "https://www.ixigo.com/",
+  IXIGO: "https://www.ixigo.com/",
+  "Air India": "https://www.airindia.com/",
+  AIR_INDIA: "https://www.airindia.com/",
+  IndiGo: "https://www.goindigo.in/",
+  INDIGO: "https://www.goindigo.in/",
 };
 
 export interface FlightSearchContext {
@@ -33,6 +45,22 @@ export function buildFlightSearchUrl(platform: string, ctx: FlightSearchContext)
     case "Cleartrip":
     case "CLEARTRIP":
       url = `https://www.cleartrip.com/flights/${from}-${to}-${date}`;
+      break;
+    case "EaseMyTrip":
+    case "EASEMYTRIP":
+      url = `https://www.easemytrip.com/flight/search?org=${from}&dest=${to}&dd=${date}&tt=1&pax=1&cls=E`;
+      break;
+    case "Ixigo":
+    case "IXIGO":
+      url = `https://www.ixigo.com/search/result/flight?from=${from}&to=${to}&date=${date}&adults=1&children=0&infants=0&class=e&source=Search`;
+      break;
+    case "Air India":
+    case "AIR_INDIA":
+      url = `https://www.airindia.com/in/en/flight-booking/search-flights.html?type=OW&orig=${from}&dest=${to}&depDate=${date}&pax=1`;
+      break;
+    case "IndiGo":
+    case "INDIGO":
+      url = `https://www.goindigo.in/flight/search.html?src=${from}&dst=${to}&type=O&class=E&adult=1&child=0&infant=0&intl=n&dd=${date}`;
       break;
     default:
       return null;

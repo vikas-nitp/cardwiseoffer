@@ -39,6 +39,16 @@ const ChannelIcon = ({ channel }: { channel: string }) =>
 const channelLabel = (channel: string) =>
   channel === "APP" ? "App" : channel === "WEB" ? "Web" : "Web + App";
 
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+
+function formatValidDays(days: number[]): string | null {
+  const sorted = [...days].sort((a, b) => a - b);
+  if (sorted.length === 0 || sorted.length === 7) return null;
+  if (sorted.join() === "0,6") return "Weekends only";
+  if (sorted.join() === "1,2,3,4,5") return "Weekdays only";
+  return sorted.map((d) => DAY_NAMES[d]).join(" · ") + " only";
+}
+
 // Notes that repeat information already visible on the card (bank name, card type, channel)
 const REDUNDANT_NOTE_RE =
   /no card|required|new users?|selected .*cards?|partial evidence|unverified|draft|hidden|inactive|expired|app only|website only|valid on .*(credit|debit|bank).*card/i;
@@ -98,7 +108,9 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
       {/* Savings — the hero number */}
       <div className="px-4 pt-3 pb-0">
         <p className={cn("text-2xl font-black tracking-tight leading-none tabular-nums", v.savings)}>
-          {savingsLabel(offer)}
+          {userFareProvided && offer.amountEligible !== false && offer.savings > 0
+            ? `Save ₹${offer.savings.toLocaleString()}`
+            : savingsLabel(offer)}
         </p>
         {extraLabel && (
           <span className="inline-block mt-1.5 text-[10px] font-bold text-savings-soft-foreground bg-savings-soft px-2 py-0.5 rounded border border-savings/20">
@@ -136,6 +148,10 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
         ) : null}
         <Condition text={validity} tone={expired ? "danger" : upcoming ? "warn" : "muted"} />
         {offer.newUserOnly && <Condition text="New users only" />}
+        {offer.validDays && offer.validDays.length > 0 && offer.validDays.length < 7 && (() => {
+          const label = formatValidDays(offer.validDays!);
+          return label ? <Condition text={label} tone="warn" /> : null;
+        })()}
         {visibleNotes.map((note) => <Condition key={note} text={note} />)}
         {userFareProvided && offer.amountEligible === false && <Condition text="Below minimum booking amount" tone="warn" />}
       </div>

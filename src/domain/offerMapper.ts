@@ -72,6 +72,8 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     expiryDate: raw.expiry_date,
     eligibilityNotes: raw.eligibility_notes ?? [],
     category: raw.category,
+    // valid_days not yet in the generated API types; cast until backend PR merges
+    validDays: (raw as unknown as { valid_days?: number[] | null }).valid_days ?? null,
     sourceType: "api",
     isActive: true,
     priorityScore: 0,

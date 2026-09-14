@@ -5,7 +5,7 @@ describe("platformUrlBuilder", () => {
   const ctx = { from: "BLR", to: "DEL", date: "2026-07-15" };
 
   it("builds valid https URLs for supported platforms", () => {
-    for (const p of ["MakeMyTrip", "Cleartrip"]) {
+    for (const p of ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Ixigo", "Air India", "IndiGo"]) {
       const url = buildFlightSearchUrl(p, ctx);
       expect(url).toMatch(/^https:\/\//);
       expect(url).toContain("BLR");
@@ -13,9 +13,9 @@ describe("platformUrlBuilder", () => {
     }
   });
 
-  it("returns null for retired platforms", () => {
-    expect(buildFlightSearchUrl("EaseMyTrip", ctx)).toBeNull();
+  it("returns null for unsupported platforms", () => {
     expect(buildFlightSearchUrl("Goibibo", ctx)).toBeNull();
+    expect(buildFlightSearchUrl("Yatra", ctx)).toBeNull();
   });
 
   it("returns null for unknown platform", () => {

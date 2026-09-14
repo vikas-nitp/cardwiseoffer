@@ -14,13 +14,22 @@ export function isOfferActive(offer: Pick<OfferViewModel, "validFrom" | "expiryD
   return !isOfferExpired(offer, now) && !isOfferUpcoming(offer, now);
 }
 
+export function isOfferActiveOnDay(
+  offer: Pick<OfferViewModel, "validDays">,
+  date: Date
+): boolean {
+  if (!offer.validDays || offer.validDays.length === 0) return !offer.validDays;
+  return offer.validDays.includes(date.getDay()); // 0=Sun…6=Sat
+}
+
 export function isOfferEligible(
-  offer: Pick<OfferViewModel, "validFrom" | "expiryDate" | "isActive" | "category">,
+  offer: Pick<OfferViewModel, "validFrom" | "expiryDate" | "isActive" | "category" | "validDays">,
   date = startOfToday()
 ): boolean {
   return offer.isActive &&
     offer.category === "FLIGHT_DOMESTIC" &&
-    isOfferActive(offer, date);
+    isOfferActive(offer, date) &&
+    isOfferActiveOnDay(offer, date);
 }
 
 export function validityLabel(offer: Pick<OfferViewModel, "validFrom" | "expiryDate">, now = startOfToday()): string {

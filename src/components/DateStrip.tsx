@@ -13,7 +13,6 @@ interface DateStripProps {
   strip7days: StripDay[];
 }
 
-// Parse savings amount from displayText like "₹2,500" or "Save ₹1,200"
 function parseSavingsAmount(displayText: string): number {
   if (!displayText || displayText === DATE_STRIP_NO_OFFERS_LABEL) return 0;
   const match = displayText.replace(/,/g, "").match(/[\d]+/);
@@ -27,7 +26,6 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
     [strip7days, selectedDateStr]
   );
 
-  // Compute savings intensities for bar heights
   const savingsAmounts = useMemo(
     () => strip7days.map((d) => parseSavingsAmount(d.displayText)),
     [strip7days]
@@ -39,17 +37,14 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
   );
 
   const firstStripDate = useMemo(() => parseISO(strip7days[0].date), [strip7days]);
-  // Can go prev if not at the first tile, OR if the strip itself starts in the future (cross-strip navigation)
   const canGoPrev = selectedIndex > 0 || isAfter(firstStripDate, startOfDay(new Date()));
 
   const moveToPrev = () => {
     if (selectedIndex > 0) {
       onDateChange(parseISO(strip7days[selectedIndex - 1].date));
     } else if (isAfter(firstStripDate, startOfDay(new Date()))) {
-      // Cross strip boundary — go back to day before the current strip's first date
       onDateChange(subDays(firstStripDate, 1));
     }
-    // no-op when strip starts at/before today — prevents navigating to past dates
   };
   const moveToNext = () => {
     if (selectedIndex < strip7days.length - 1) {
@@ -62,11 +57,11 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
   if (!strip7days || strip7days.length === 0) return null;
 
   return (
-    <div className="flex items-stretch gap-1.5 w-full overflow-hidden">
+    <div className="flex items-stretch gap-2 w-full overflow-hidden">
       <button
         onClick={moveToPrev}
         disabled={!canGoPrev}
-        className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors shrink-0 self-center disabled:opacity-30 disabled:cursor-not-allowed"
+        className="p-2 rounded-xl bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors shrink-0 self-center disabled:opacity-30 disabled:cursor-not-allowed"
         aria-label="Previous date"
       >
         <ChevronLeft className="w-4 h-4 text-muted-foreground" />
@@ -79,8 +74,13 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
           const dateObj = parseISO(day.date);
           const hasOffers = day.displayText !== DATE_STRIP_NO_OFFERS_LABEL;
           const intensity = maxSavings > 0 ? savingsAmounts[i] / maxSavings : 0;
-          // Bar height: 4px min (no offers) to 28px max
-          const barH = hasOffers ? Math.max(4, Math.round(intensity * 28)) : 2;
+          // Bar height: min 3px (no offers) to 32px max
+          const barH = hasOffers ? Math.max(6, Math.round(intensity * 32)) : 3;
+
+          // Extract just the amount for compact display: "₹2,800" from "Save up to ₹2,800"
+          const savingsShort = hasOffers
+            ? day.displayText.replace(/Save up to\s*/i, "").replace(/Save\s*/i, "")
+            : null;
 
           return (
             <button
@@ -89,53 +89,63 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
               aria-label={`Select ${format(dateObj, "EEEE dd MMMM")}${hasOffers ? ` — ${day.displayText}` : ""}`}
               aria-pressed={isSelected}
               className={cn(
-                "flex flex-col items-center pt-1 pb-2.5 px-1 rounded-xl border transition-all duration-200 flex-1 min-w-0 overflow-hidden relative",
+                "flex flex-col items-center justify-end gap-0 rounded-xl border transition-all duration-200 flex-1 min-w-0 overflow-hidden relative",
+                "pb-2.5 pt-1 px-1",
                 isSelected
                   ? "bg-accent/15 border-accent shadow-md"
                   : "bg-card border-border/50 hover:border-accent/40 hover:shadow-sm"
               )}
             >
-              {/* Best day badge */}
+              {/* Best day badge — positioned absolutely so bar alignment is consistent */}
               {isBestDay && (
-                <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[8px] font-bold text-accent-foreground bg-accent px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap">
+                <span className="absolute top-1.5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-accent-foreground bg-accent px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap z-10">
                   Best
                 </span>
               )}
 
-              {/* Savings intensity bar */}
-              <div className="flex items-end justify-center w-full mt-4 mb-1.5" style={{ height: "28px" }}>
+              {/* Savings bar — fixed 36px container, bar grows from bottom */}
+              <div className="flex items-end justify-center w-full mb-1.5 mt-5" style={{ height: "36px" }}>
                 <div
                   className={cn(
-                    "w-3.5 rounded-t-sm transition-all duration-300",
+                    "w-4 rounded-t transition-all duration-300",
                     hasOffers
                       ? isSelected
                         ? "bg-savings"
                         : isBestDay
                         ? "bg-savings"
-                        : "bg-savings/50"
-                      : "bg-border/30"
+                        : "bg-savings/45"
+                      : "bg-border/25"
                   )}
                   style={{ height: `${barH}px` }}
                 />
               </div>
 
-              <span className={cn("text-[10px] font-semibold whitespace-nowrap", isSelected ? "text-accent" : "text-muted-foreground")}>
+              {/* Day name */}
+              <span className={cn(
+                "text-[11px] font-bold leading-none",
+                isSelected ? "text-accent" : "text-foreground/70"
+              )}>
                 {format(dateObj, "EEE")}
               </span>
-              <span className={cn("text-[9px] font-medium", isSelected ? "text-accent/80" : "text-muted-foreground/60")}>
+
+              {/* Date */}
+              <span className={cn(
+                "text-[9px] font-medium leading-none mt-0.5",
+                isSelected ? "text-accent/70" : "text-muted-foreground/55"
+              )}>
                 {format(dateObj, "d MMM")}
               </span>
-              <span
-                className={cn(
-                  "text-[10px] font-bold mt-1 w-full text-center leading-tight",
-                  isSelected
-                    ? "text-savings"
-                    : hasOffers
-                    ? "text-savings/80"
-                    : "text-muted-foreground/40"
-                )}
-              >
-                {day.displayText}
+
+              {/* Savings amount — compact form */}
+              <span className={cn(
+                "text-[10px] font-bold leading-none mt-1.5 w-full text-center",
+                isSelected
+                  ? "text-savings"
+                  : hasOffers
+                  ? "text-savings/75"
+                  : "text-muted-foreground/30"
+              )}>
+                {savingsShort ?? "—"}
               </span>
             </button>
           );
@@ -144,7 +154,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
 
       <button
         onClick={moveToNext}
-        className="p-1.5 rounded-lg bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors shrink-0 self-center"
+        className="p-2 rounded-xl bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors shrink-0 self-center"
         aria-label="Next date"
       >
         <ChevronRight className="w-4 h-4 text-muted-foreground" />

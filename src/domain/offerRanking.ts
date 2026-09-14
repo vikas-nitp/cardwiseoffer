@@ -23,7 +23,9 @@ export function rankAndLabelOffers(
   const bestDefault = pickBest(defaults);
 
   if (selectedBanks.length === 0) {
-    const bestCard = pickBest(cardOffers);
+    // When fare is provided, prefer eligible offers; only show ineligible as fallback
+    const eligibleCards = cardOffers.filter(o => o.amountEligible !== false);
+    const bestCard = pickBest(eligibleCards.length > 0 ? eligibleCards : cardOffers);
     return dedupe([
       tag(bestCard, "Best Offer"),
       tag(bestDefault, "Default"),

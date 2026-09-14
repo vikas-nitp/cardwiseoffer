@@ -313,7 +313,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
                   )}
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 z-[60]" align="start" side="bottom">
+              <PopoverContent className="w-auto p-0 z-[60]" align="start" side="bottom" avoidCollisions={false}>
                 <Calendar
                   mode="single"
                   selected={departDate}
