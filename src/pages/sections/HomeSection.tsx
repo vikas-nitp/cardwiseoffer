@@ -5,7 +5,6 @@ import type { SearchState } from "@/hooks/useOfferSearch";
 import { TRUST_LABELS, APP_HERO_SUBTITLE } from "@/constants";
 import { useMeta } from "@/contexts/MetaContext";
 import { format, parseISO } from "date-fns";
-import { Sparkles } from "lucide-react";
 
 const container = {
   hidden: {},
@@ -48,19 +47,15 @@ const HomeSection = ({ searchState, onSearch }: HomeSectionProps) => {
         {APP_HERO_SUBTITLE}
         <span className="text-accent font-semibold"> — instantly.</span>
       </motion.p>
-      <motion.div variants={item} className="mt-3 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent text-[12px] font-bold tracking-wide">
-        <Sparkles className="w-3.5 h-3.5 shrink-0" />
-        Just the best deal for your card
-      </motion.div>
-      <motion.div variants={item} className="mt-3 flex items-center justify-center gap-2 flex-wrap">
-        {meta.total_offers > 0 && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border/40 bg-muted/25 text-[12px] font-semibold text-foreground/60">
+      {meta.total_offers > 0 && (
+        <motion.div variants={item} className="mt-3 flex items-center justify-center gap-2 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border/40 bg-muted/25 text-[12px] font-semibold text-foreground/55">
             <span className="w-1.5 h-1.5 rounded-full bg-accent/70 inline-block shrink-0" />
             {meta.total_offers} active offers
-            {lastUpdated && <><span className="text-border/60 mx-0.5">·</span>Updated {lastUpdated}</>}
+            {lastUpdated && <><span className="text-border/50 mx-0.5">·</span>Updated {lastUpdated}</>}
           </span>
-        )}
-      </motion.div>
+        </motion.div>
+      )}
     </motion.section>
 
     <motion.div
