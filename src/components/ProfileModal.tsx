@@ -30,7 +30,7 @@ const ProfileModal = ({ open, onClose }: ProfileModalProps) => {
           </div>
           <div className="text-center">
             <p className="text-xl font-bold text-foreground tracking-tight">{user.maskedPhone}</p>
-            <p className="text-[12px] text-muted-foreground mt-0.5">CardWiseOffer account</p>
+            <p className="text-[12px] text-muted-foreground mt-0.5">CardSage account</p>
           </div>
         </div>
 

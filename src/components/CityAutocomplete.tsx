@@ -14,9 +14,10 @@ interface CityAutocompleteProps {
   value: CityOption | null;
   onChange: (city: CityOption | null) => void;
   excludeCode?: string;
+  hasError?: boolean;
 }
 
-const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityAutocompleteProps) => {
+const CityAutocomplete = ({ label, cities, value, onChange, excludeCode, hasError }: CityAutocompleteProps) => {
   const availableCities = useMemo(
     () => excludeCode ? cities.filter((city) => city.code !== excludeCode) : cities,
     [cities, excludeCode]
@@ -77,7 +78,10 @@ const CityAutocomplete = ({ label, cities, value, onChange, excludeCode }: CityA
           onChange={(e) => handleInputChange(e.target.value)}
           onFocus={() => { if (value) setQuery(""); setOpen(true); }}
           placeholder="Type city or airport..."
-          className="w-full bg-muted/50 border border-border h-auto text-[13px] pl-10 pr-8 py-2.5 min-h-[56px] rounded-xl font-semibold text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary/60 hover:border-primary/30 transition-all duration-200"
+          className={cn(
+            "w-full bg-muted/50 border border-border h-auto text-[13px] pl-10 pr-8 py-2.5 min-h-[56px] rounded-xl font-semibold text-foreground placeholder:font-normal placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary/60 hover:border-primary/30 transition-all duration-200",
+            hasError && "ring-2 ring-destructive border-destructive/50"
+          )}
         />
         {query && (
           <button

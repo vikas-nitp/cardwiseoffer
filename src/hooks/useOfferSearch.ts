@@ -66,14 +66,13 @@ export function useOfferSearch() {
     }
 
     // Date is within the strip — only re-fetch tiles; strip stays anchored.
-    // dayFare (user fare mode) → actual day-adjusted fare for tile ranking.
-    // No fare mode → pass undefined so ranking uses raw offer terms (maxDiscount).
-    const searchAmount = stripEntry.dayFare ?? current.bookingAmount;
+    // Always search with the user's original bookingAmount — dayFare == bookingAmount now
+    // (day factors only apply to the no-fare simulation, not user-provided fares).
+    const searchAmount = current.bookingAmount;
     controller.current?.abort();
     const ctrl = new AbortController();
     controller.current = ctrl;
-    const nextBookingAmount = stripEntry.dayFare !== undefined ? stripEntry.dayFare : current.bookingAmount;
-    setSearchState({ ...current, date: newDate, bookingAmount: nextBookingAmount });
+    setSearchState({ ...current, date: newDate });
     setSearchLoading(true);
     setSearchError(null);
     try {

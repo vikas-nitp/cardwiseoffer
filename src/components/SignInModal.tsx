@@ -201,7 +201,7 @@ const ConsentStep = () => {
             <a href="#" className="text-accent underline underline-offset-2 hover:opacity-80">
               Terms of Service
             </a>{" "}
-            — CardWiseOffer provides offer comparisons for informational purposes only.
+            — CardSage provides offer comparisons for informational purposes only.
             Savings estimates are not guaranteed.
           </Label>
         </div>
@@ -256,7 +256,7 @@ const SignInModal = () => {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && closeSignIn()}>
       <DialogContent className="sm:max-w-[380px] rounded-2xl border-border/50 bg-card p-6">
-        <DialogTitle className="sr-only">Sign in to CardWiseOffer</DialogTitle>
+        <DialogTitle className="sr-only">Sign in to CardSage</DialogTitle>
         {authStep === "phone" && <PhoneStep />}
         {authStep === "otp" && <OtpStep />}
         {authStep === "consent" && <ConsentStep />}

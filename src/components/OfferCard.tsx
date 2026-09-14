@@ -1,5 +1,4 @@
-import { ExternalLink, Star, TrendingUp, Gift, CreditCard, Smartphone, Globe, Tag, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { ExternalLink, Star, TrendingUp, Gift, CreditCard, Smartphone, Globe, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { OfferViewModel } from "@/types/offer";
 import { validityLabel, isOfferExpired, isOfferUpcoming } from "@/domain/offerValidity";
@@ -21,11 +20,15 @@ interface OfferCardProps {
   searchDate?: Date;
 }
 
-const VARIANTS: Record<Variant, { chip: string; savings: string; topBorder: string; icon: React.ElementType }> = {
-  primary:   { chip: "bg-primary/10 text-primary border-primary/25",       savings: "text-primary",   topBorder: "border-t-primary",   icon: Star },
-  highlight: { chip: "bg-highlight/10 text-highlight border-highlight/25", savings: "text-highlight", topBorder: "border-t-highlight", icon: TrendingUp },
-  default:   { chip: "bg-accent/10 text-accent border-accent/25",          savings: "text-accent",    topBorder: "border-t-accent",    icon: Gift },
-  neutral:   { chip: "bg-muted/60 text-muted-foreground border-border/40", savings: "text-foreground", topBorder: "border-t-border",   icon: CreditCard },
+const VARIANTS: Record<Variant, { chip: string; savings: string; topBorder: string; cta: string; icon: React.ElementType }> = {
+  // Best Offer: gold top stripe, green savings number, gold filled CTA
+  primary:   { chip: "bg-accent/10 text-accent border-accent/25",          savings: "text-savings",    topBorder: "border-t-accent",    cta: "gold",    icon: Star },
+  // Better Alternative: amber/highlight stripe, amber savings, amber outline CTA
+  highlight: { chip: "bg-highlight/10 text-highlight border-highlight/25", savings: "text-savings",    topBorder: "border-t-highlight", cta: "amber",   icon: TrendingUp },
+  // Default offer (no specific card): muted chip, still green savings, dim gold top stripe
+  default:   { chip: "bg-muted/50 text-muted-foreground border-border/50", savings: "text-savings", topBorder: "border-t-accent/35", cta: "outline", icon: Gift },
+  // Neutral/no-card: muted chip, green savings, faintest gold top stripe
+  neutral:   { chip: "bg-muted/60 text-muted-foreground border-border/40", savings: "text-savings", topBorder: "border-t-accent/20", cta: "outline", icon: CreditCard },
 };
 
 const ChannelIcon = ({ channel }: { channel: string }) =>
@@ -36,6 +39,16 @@ const ChannelIcon = ({ channel }: { channel: string }) =>
 const channelLabel = (channel: string) =>
   channel === "APP" ? "App" : channel === "WEB" ? "Web" : "Web + App";
 
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+
+function formatValidDays(days: number[]): string | null {
+  const sorted = [...days].sort((a, b) => a - b);
+  if (sorted.length === 0 || sorted.length === 7) return null;
+  if (sorted.join() === "0,6") return "Weekends only";
+  if (sorted.join() === "1,2,3,4,5") return "Weekdays only";
+  return sorted.map((d) => DAY_NAMES[d]).join(" · ") + " only";
+}
+
 // Notes that repeat information already visible on the card (bank name, card type, channel)
 const REDUNDANT_NOTE_RE =
   /no card|required|new users?|selected .*cards?|partial evidence|unverified|draft|hidden|inactive|expired|app only|website only|valid on .*(credit|debit|bank).*card/i;
@@ -43,7 +56,6 @@ const REDUNDANT_NOTE_RE =
 const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = false, userFareProvided = false, searchDate }: OfferCardProps) => {
   const { flags } = useFeatureFlags();
   const capabilities = resolveFeatureCapabilities(flags);
-  const [notesExpanded, setNotesExpanded] = useState(false);
   const v = VARIANTS[variant];
   const LabelIcon = v.icon;
 
@@ -57,9 +69,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
   const showCoupon = capabilities.couponCode && offer.couponCode && !/^(PARTIAL|DRAFT|TEST|UNKNOWN|N\/A)$/i.test(offer.couponCode);
 
   const filteredNotes = offer.eligibilityNotes.filter((note) => !REDUNDANT_NOTE_RE.test(note));
-  const visibleNotes = compact
-    ? (notesExpanded ? filteredNotes : [])
-    : filteredNotes.slice(0, 2);
+  const visibleNotes = filteredNotes.slice(0, 2);
 
   const cardAriaLabel = isNoCard
     ? `Default offer on ${offer.platformName}: ${savingsLabel(offer)}`
@@ -98,7 +108,9 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
       {/* Savings — the hero number */}
       <div className="px-4 pt-3 pb-0">
         <p className={cn("text-2xl font-black tracking-tight leading-none tabular-nums", v.savings)}>
-          {savingsLabel(offer)}
+          {userFareProvided && offer.amountEligible !== false && offer.savings > 0
+            ? `Save ₹${offer.savings.toLocaleString()}`
+            : savingsLabel(offer)}
         </p>
         {extraLabel && (
           <span className="inline-block mt-1.5 text-[10px] font-bold text-savings-soft-foreground bg-savings-soft px-2 py-0.5 rounded border border-savings/20">
@@ -136,42 +148,39 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
         ) : null}
         <Condition text={validity} tone={expired ? "danger" : upcoming ? "warn" : "muted"} />
         {offer.newUserOnly && <Condition text="New users only" />}
+        {offer.validDays && offer.validDays.length > 0 && offer.validDays.length < 7 && (() => {
+          const label = formatValidDays(offer.validDays!);
+          return label ? <Condition text={label} tone="warn" /> : null;
+        })()}
         {visibleNotes.map((note) => <Condition key={note} text={note} />)}
-        {!compact && userFareProvided && offer.amountEligible === false && <Condition text="Below minimum booking amount" tone="warn" />}
-        {!compact && userFareProvided && offer.amountEligible && offer.savings > 0 && (
-          <Condition text={`Est. saving ₹${offer.savings.toLocaleString()}`} strong />
-        )}
-        {compact && filteredNotes.length > 0 && (
-          <button
-            onClick={() => setNotesExpanded((x) => !x)}
-            className="flex items-center gap-1 text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors mt-0.5"
-          >
-            <ChevronDown className={`w-3 h-3 transition-transform ${notesExpanded ? "rotate-180" : ""}`} />
-            {notesExpanded ? "Less" : `${filteredNotes.length} condition${filteredNotes.length !== 1 ? "s" : ""}`}
-          </button>
-        )}
+        {userFareProvided && offer.amountEligible === false && <Condition text="Below minimum booking amount" tone="warn" />}
       </div>
 
-      {/* Coupon callout */}
-      {showCoupon && (
-        <div className="mx-4 mb-3 flex items-center gap-2 bg-accent/10 border border-accent/25 rounded-lg px-3 py-2">
-          <Tag className="w-3 h-3 text-accent shrink-0" />
-          <span className="text-[11px] font-bold text-accent tracking-wide">{offer.couponCode}</span>
-        </div>
-      )}
-
-      {/* CTA */}
+      {/* CTA — coupon sits inside so it's always bottom-anchored on equal-height cards */}
       <div className="px-4 pb-4 pt-0 mt-auto">
+        {showCoupon && (
+          <div className="mb-3 flex items-center gap-2 bg-accent/10 border border-accent/25 rounded-lg px-3 py-2">
+            <Tag className="w-3 h-3 text-accent shrink-0" />
+            <span className="text-[11px] font-bold text-accent tracking-wide min-w-0 truncate">{offer.couponCode}</span>
+          </div>
+        )}
         {canBook && offer.platformUrl ? (
           <>
             <a href={offer.platformUrl} target="_blank" rel="noopener noreferrer" className="block">
-              <Button className="gap-2 w-full font-semibold text-[13px] rounded-xl h-10 bg-accent text-accent-foreground hover:brightness-110 shadow-sm hover:shadow-md transition-all duration-200">
+              <Button className={cn(
+                "gap-2 w-full font-semibold text-[13px] rounded-xl h-10 transition-all duration-200 shadow-sm hover:shadow-md",
+                v.cta === "gold"
+                  ? "bg-accent text-accent-foreground hover:brightness-110"
+                  : v.cta === "amber"
+                  ? "bg-transparent border border-accent/50 text-accent hover:bg-accent/10"
+                  : "bg-transparent border border-accent/40 text-accent hover:bg-accent/10"
+              )}>
                 Continue to {offer.platformName}
                 <ExternalLink className="w-3.5 h-3.5" />
               </Button>
             </a>
             {!compact && (
-              <p className="text-center text-[10px] text-muted-foreground/50 mt-1.5">
+              <p className="text-center text-[10px] text-muted-foreground/70 mt-1.5">
                 Apply offer at checkout on {offer.platformName}
               </p>
             )}

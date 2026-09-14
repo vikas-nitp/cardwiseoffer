@@ -9,9 +9,10 @@ interface BankMultiSelectProps {
   onChange: (banks: string[]) => void;
   maxSelect?: number;
   showSignInHint?: boolean;
+  hasError?: boolean;
 }
 
-const BankMultiSelect = ({ selected, onChange, maxSelect = MAX_BANK_FILTERS, showSignInHint = false }: BankMultiSelectProps) => {
+const BankMultiSelect = ({ selected, onChange, maxSelect = MAX_BANK_FILTERS, showSignInHint = false, hasError }: BankMultiSelectProps) => {
   const { meta } = useMeta();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -67,7 +68,10 @@ const BankMultiSelect = ({ selected, onChange, maxSelect = MAX_BANK_FILTERS, sho
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full bg-secondary/50 border-0 h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left relative flex items-center hover:bg-secondary/70 transition-colors"
+        className={cn(
+          "w-full bg-secondary/50 border border-transparent h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left relative flex items-center hover:bg-secondary/70 transition-colors",
+          hasError && "ring-2 ring-destructive border-destructive/50"
+        )}
       >
         <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         {selected.length === 0 ? (

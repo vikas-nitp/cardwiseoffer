@@ -40,6 +40,9 @@ export interface OfferViewModel {
   eligibilityNotes: string[];
   category: string;
 
+  // 0=Sun … 6=Sat (JS getDay() convention). null/undefined = valid every day.
+  validDays?: number[] | null;
+
   sourceType: SourceType;
   isActive: boolean;
   priorityScore: number;
