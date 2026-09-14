@@ -37,9 +37,8 @@ describe("BankMultiSelect", () => {
       { wrapper },
     );
     fireEvent.click(getTrigger());
-    const items = screen.getAllByRole("button");
-    const unselected = items.find((b) => !["AXIS", "AU"].some((s) => b.textContent?.includes(s)));
-    if (unselected) fireEvent.click(unselected);
+    // Click an unselected bank (BOB = "Bank of Baroda") to trigger the max-limit message
+    fireEvent.click(screen.getByText(/bank of baroda/i));
     expect(screen.getByText(/Maximum 2 cards allowed/i)).toBeInTheDocument();
   });
 
@@ -50,13 +49,8 @@ describe("BankMultiSelect", () => {
       { wrapper },
     );
     fireEvent.click(getTrigger());
-    const items = screen.getAllByRole("button").filter(
-      (b) => b.textContent && !["AXIS", "AU"].some((s) => b.textContent!.includes(s))
-        && !b.textContent!.includes("Maximum")
-    );
-    if (items.length > 0) {
-      fireEvent.click(items[0]);
-      expect(onChange).toHaveBeenCalled();
-    }
+    // Click an unselected bank (BOB = "Bank of Baroda") — within the 4-card limit
+    fireEvent.click(screen.getByText(/bank of baroda/i));
+    expect(onChange).toHaveBeenCalled();
   });
 });
