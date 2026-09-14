@@ -1,4 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+
+vi.mock("@/data/generated/featureFlags.json", () => ({
+  default: {
+    phase2UserFeaturesEnabled: false,
+    publicAllOffersEnabled: true,
+    couponCodeEnabled: false,
+    analyticsEnabled: true,
+    bookingAmountComparisonEnabled: true,
+  },
+}));
+
 import { searchLocalOffers } from "./LocalOfferRepository";
 
 import type { CityOption } from "@/components/CityAutocomplete";
@@ -34,7 +45,7 @@ describe("LocalOfferRepository — strip", () => {
       });
     // No simFare field should be present
     result.strip7days.forEach((d) => {
-      expect((d as Record<string, unknown>).simFare).toBeUndefined();
+      expect((d as unknown as Record<string, unknown>).simFare).toBeUndefined();
     });
   });
 

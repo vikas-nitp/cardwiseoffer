@@ -8,9 +8,11 @@ const flags = (value: boolean): FeatureFlags => ({
   couponCodeEnabled: value,
   analyticsEnabled: value,
   bookingAmountComparisonEnabled: value,
+  visitorCountEnabled: value,
+  authEnabled: value,
 });
 
 describe("final feature configuration", () => {
-  it("maps every false state", () => expect(resolveFeatureCapabilities(flags(false))).toEqual({ phase2UserFeatures: false, publicAllOffers: false, couponCode: false, analytics: false, bookingAmountComparison: false }));
-  it("maps every true state", () => expect(resolveFeatureCapabilities(flags(true))).toEqual({ phase2UserFeatures: true, publicAllOffers: true, couponCode: true, analytics: true, bookingAmountComparison: true }));
+  it("maps every false state", () => expect(resolveFeatureCapabilities(flags(false))).toEqual({ phase2UserFeatures: false, publicAllOffers: false, couponCode: false, analytics: false, bookingAmountComparison: false, visitorCount: false, auth: false }));
+  it("maps every true state", () => expect(resolveFeatureCapabilities(flags(true))).toEqual({ phase2UserFeatures: true, publicAllOffers: true, couponCode: true, analytics: true, bookingAmountComparison: true, visitorCount: true, auth: true }));
 });
