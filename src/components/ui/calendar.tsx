@@ -14,36 +14,44 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
+        month: "space-y-3",
+        caption: "flex justify-center pt-1 pb-1 relative items-center",
+        caption_label: "text-[13px] font-semibold text-foreground tracking-wide",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
-          buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+          "inline-flex items-center justify-center rounded-lg p-0 w-7 h-7",
+          "bg-secondary/60 border border-border/40 text-muted-foreground",
+          "hover:bg-secondary hover:text-foreground transition-colors",
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
+        table: "w-full border-collapse",
         head_row: "flex",
-        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-        row: "flex w-full mt-2",
-        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-        day: cn(buttonVariants({ variant: "ghost" }), "h-9 w-9 p-0 font-normal aria-selected:opacity-100"),
+        head_cell: "text-muted-foreground/60 rounded-md w-9 font-medium text-[11px] uppercase tracking-wider",
+        row: "flex w-full mt-1",
+        cell: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
+        day: cn(
+          "h-9 w-9 p-0 font-normal rounded-lg text-sm text-foreground/80",
+          "hover:bg-secondary/70 hover:text-foreground transition-colors",
+          "aria-selected:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        ),
         day_range_end: "day-range-end",
-        day_selected:
-          "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-        day_today: "ring-1 ring-accent font-bold",
-        day_outside:
-          "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
-        day_disabled: "text-muted-foreground opacity-50",
-        day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+        day_selected: [
+          "bg-accent text-accent-foreground font-semibold",
+          "hover:bg-accent hover:text-accent-foreground",
+          "focus:bg-accent focus:text-accent-foreground",
+          "shadow-[0_0_12px_-2px_hsl(var(--accent)/0.5)]",
+        ].join(" "),
+        day_today: "ring-1 ring-accent/60 text-accent font-bold",
+        day_outside: "text-muted-foreground/35 aria-selected:bg-accent/30 aria-selected:text-muted-foreground aria-selected:opacity-50",
+        day_disabled: "text-muted-foreground/25 cursor-not-allowed",
+        day_range_middle: "aria-selected:bg-accent/20 aria-selected:text-foreground rounded-none",
         day_hidden: "invisible",
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
+        IconLeft: ({ ..._props }) => <ChevronLeft className="h-3.5 w-3.5" />,
+        IconRight: ({ ..._props }) => <ChevronRight className="h-3.5 w-3.5" />,
       }}
       {...props}
     />
