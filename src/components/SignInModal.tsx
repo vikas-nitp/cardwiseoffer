@@ -106,7 +106,7 @@ const OtpStep = () => {
     setVerifying(true);
     setTimeout(() => {
       const ok = verifyOtp(otp);
-      if (!ok) { setError("Invalid OTP — please try again"); setVerifying(false); }
+      if (!ok) { setError("Invalid OTP - please try again"); setVerifying(false); }
     }, 600);
   };
 
@@ -132,7 +132,7 @@ const OtpStep = () => {
 
       {local && (
         <div className="bg-accent/8 border border-accent/20 rounded-xl px-3 py-2 text-center">
-          <p className="text-[11px] text-accent font-medium">Demo mode — any 6-digit code works</p>
+          <p className="text-[11px] text-accent font-medium">Demo mode - any 6-digit code works</p>
         </div>
       )}
 
@@ -201,7 +201,7 @@ const ConsentStep = () => {
             <a href="#" className="text-accent underline underline-offset-2 hover:opacity-80">
               Terms of Service
             </a>{" "}
-            — CardSage provides offer comparisons for informational purposes only.
+            - CardSage provides offer comparisons for informational purposes only.
             Savings estimates are not guaranteed.
           </Label>
         </div>
@@ -218,7 +218,7 @@ const ConsentStep = () => {
             <a href="#" className="text-accent underline underline-offset-2 hover:opacity-80">
               Privacy Policy
             </a>{" "}
-            — we collect only your mobile number to identify your account. We do not share
+            - we collect only your mobile number to identify your account. We do not share
             it with booking platforms.
           </Label>
         </div>

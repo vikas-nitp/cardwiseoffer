@@ -8,7 +8,7 @@ const Footer = ({ onSectionChange }: FooterProps) => (
   <footer className="w-full py-4 px-4 border-t border-border/40">
     <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
       <p className="text-[13px] font-medium text-foreground/70">
-        {APP_NAME} <span className="text-foreground/40 mx-1">—</span> {APP_TAGLINE}.
+        {APP_NAME} <span className="text-foreground/40 mx-1"> - </span> {APP_TAGLINE}.
       </p>
       <div className="flex items-center gap-4">
         {onSectionChange && (

@@ -53,7 +53,7 @@ export const APP_NAME = "CardSage";
 export const APP_TAGLINE = "smart card picks for Indian flights";
 export const APP_HERO_SUBTITLE = "Compare bank card offers for any Indian flight route";
 export const DISCLAIMER_TEXT =
-  "Not affiliated with any platform or bank. Offers may change — verify on the official site before booking.";
+  "Not affiliated with any platform or bank. Offers may change - verify on the official site before booking.";
 
 // ────────────────────────────────────────────────────────────────────
 // Contact
