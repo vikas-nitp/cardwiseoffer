@@ -11,7 +11,7 @@ const steps = [
     icon: BarChart3,
     step: "02",
     title: "We compare active offers",
-    desc: "We check bank promotions across major travel platforms — savings, eligibility, and exclusions.",
+    desc: "We check bank promotions across major travel platforms - savings, eligibility, and exclusions.",
   },
   {
     icon: CheckCircle,

@@ -131,7 +131,7 @@ const ResultsSection = ({
               {searchState.from.city} → {searchState.to.city} · {format(searchState.date, "dd MMM yyyy")}
             </p>
             <p className="text-[12px] text-muted-foreground/70 mb-6 max-w-sm mx-auto">
-              Try a different date — offers change frequently.
+              Try a different date - offers change frequently.
             </p>
             <Button onClick={onEditSearch} variant="outline" className="rounded-xl font-medium text-[13px] gap-2 mr-2">Edit search</Button>
           </div>

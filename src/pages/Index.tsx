@@ -18,6 +18,7 @@ import { useAllOffers } from "@/hooks/useAllOffers";
 import HomeSection from "@/pages/sections/HomeSection";
 import ResultsSection from "@/pages/sections/ResultsSection";
 import AllOffersSection from "@/pages/sections/AllOffersSection";
+import StarField from "@/components/StarField";
 
 const pageVariants = {
   initial: { opacity: 0 },
@@ -61,6 +62,7 @@ const Index = () => {
   return (
     <div className="h-screen w-full min-w-0 overflow-hidden flex flex-col relative">
       <div className="pointer-events-none fixed inset-0 overflow-hidden z-0 sovereign-ground" />
+      <StarField />
 
       <div className="relative z-10 flex flex-col h-full">
         <Header

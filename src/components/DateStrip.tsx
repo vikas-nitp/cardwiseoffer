@@ -86,7 +86,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
             <button
               key={day.date}
               onClick={() => onDateChange(dateObj)}
-              aria-label={`Select ${format(dateObj, "EEEE dd MMMM")}${hasOffers ? ` — ${day.displayText}` : ""}`}
+              aria-label={`Select ${format(dateObj, "EEEE dd MMMM")}${hasOffers ? ` - ${day.displayText}` : ""}`}
               aria-pressed={isSelected}
               className={cn(
                 "flex flex-col items-center justify-end gap-0 rounded-xl border transition-all duration-200 flex-1 min-w-0 overflow-hidden relative",
@@ -145,7 +145,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
                   ? "text-savings/75"
                   : "text-muted-foreground/30"
               )}>
-                {savingsShort ?? "—"}
+                {savingsShort ?? "-"}
               </span>
             </button>
           );
