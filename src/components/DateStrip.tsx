@@ -35,6 +35,10 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
     () => savingsAmounts.indexOf(Math.max(...savingsAmounts)),
     [savingsAmounts]
   );
+  const hasMeaningfulBest = useMemo(() => {
+    const sortedDesc = [...savingsAmounts].sort((a, b) => b - a);
+    return sortedDesc[0] > 0 && (sortedDesc[1] === 0 || sortedDesc[0] > sortedDesc[1] * 1.1);
+  }, [savingsAmounts]);
 
   const firstStripDate = useMemo(() => strip7days[0] ? parseISO(strip7days[0].date) : new Date(), [strip7days]);
   const canGoPrev = selectedIndex > 0 || isAfter(firstStripDate, startOfDay(new Date()));
@@ -70,7 +74,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
       <div className="flex gap-1.5 flex-1 min-w-0">
         {strip7days.map((day, i) => {
           const isSelected = day.date === selectedDateStr;
-          const isBestDay = i === bestDayIndex && savingsAmounts[i] > 0;
+          const isBestDay = i === bestDayIndex && hasMeaningfulBest;
           const dateObj = parseISO(day.date);
           const hasOffers = day.displayText !== DATE_STRIP_NO_OFFERS_LABEL;
           const intensity = maxSavings > 0 ? savingsAmounts[i] / maxSavings : 0;
@@ -110,7 +114,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
                     "w-4 rounded-t transition-all duration-300",
                     hasOffers
                       ? isSelected
-                        ? "bg-savings"
+                        ? "bg-accent"
                         : isBestDay
                         ? "bg-savings"
                         : "bg-savings/45"
@@ -140,7 +144,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
               <span className={cn(
                 "text-[10px] font-bold leading-none mt-1.5 w-full text-center",
                 isSelected
-                  ? "text-savings"
+                  ? "text-accent"
                   : hasOffers
                   ? "text-savings/75"
                   : "text-muted-foreground/30"

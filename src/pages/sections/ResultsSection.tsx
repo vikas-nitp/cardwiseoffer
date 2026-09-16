@@ -19,7 +19,7 @@ function decorateResults(offers: OfferViewModel[], hasUserFare: boolean) {
         : offer.label === "Better Alternative" || offer.label === "Second Selected Card" ? "highlight"
         : "default"
       ) as "primary" | "highlight" | "default" | "neutral",
-      label: isDefault ? "Default" : offer.label,
+      label: isDefault ? "Platform Offer" : offer.label,
       extraLabel: hasUserFare ? (offer.comparisonText ?? undefined) : undefined,
     };
   });
@@ -38,7 +38,7 @@ function gridCols(count: number): string {
   if (count <= 1) return "grid-cols-1";
   if (count === 2) return "grid-cols-1 sm:grid-cols-2";
   if (count === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
-  return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
+  return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
 }
 
 interface ResultsSectionProps {

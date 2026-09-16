@@ -21,14 +21,14 @@ interface OfferCardProps {
 }
 
 const VARIANTS: Record<Variant, { chip: string; savings: string; topBorder: string; cta: string; icon: React.ElementType }> = {
-  // Best Offer: gold top stripe, green savings number, gold filled CTA
-  primary:   { chip: "bg-accent/10 text-accent border-accent/25",          savings: "text-savings",    topBorder: "border-t-accent",    cta: "gold",    icon: Star },
-  // Better Alternative: amber/highlight stripe, amber savings, amber outline CTA
-  highlight: { chip: "bg-highlight/10 text-highlight border-highlight/25", savings: "text-savings",    topBorder: "border-t-highlight", cta: "amber",   icon: TrendingUp },
-  // Default offer (no specific card): muted chip, still green savings, dim gold top stripe
-  default:   { chip: "bg-muted/50 text-muted-foreground border-border/50", savings: "text-savings", topBorder: "border-t-accent/35", cta: "outline", icon: Gift },
-  // Neutral/no-card: muted chip, green savings, faintest gold top stripe
-  neutral:   { chip: "bg-muted/60 text-muted-foreground border-border/40", savings: "text-savings", topBorder: "border-t-accent/20", cta: "outline", icon: CreditCard },
+  // Best Offer: gold top stripe, gold savings number (CardSage recommendation), gold filled CTA
+  primary:   { chip: "bg-accent/10 text-accent border-accent/25",          savings: "text-accent",      topBorder: "border-t-accent",    cta: "gold",  icon: Star },
+  // Better Alternative: amber/highlight stripe, green savings, amber outline CTA
+  highlight: { chip: "bg-highlight/10 text-highlight border-highlight/25", savings: "text-savings",     topBorder: "border-t-highlight", cta: "amber", icon: TrendingUp },
+  // General card offer: muted chip, muted-green savings, dim top stripe, muted CTA
+  default:   { chip: "bg-muted/50 text-muted-foreground border-border/50", savings: "text-savings/75",  topBorder: "border-t-accent/35", cta: "muted", icon: Gift },
+  // Platform Offer (no specific card): muted chip, dimmer savings, plain border, muted CTA
+  neutral:   { chip: "bg-muted/60 text-muted-foreground border-border/40", savings: "text-savings/55",  topBorder: "border-t-border",    cta: "muted", icon: CreditCard },
 };
 
 const ChannelIcon = ({ channel }: { channel: string }) =>
@@ -72,7 +72,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
   const visibleNotes = filteredNotes.slice(0, 2);
 
   const cardAriaLabel = isNoCard
-    ? `Default offer on ${offer.platformName}: ${savingsLabel(offer)}`
+    ? `Platform Offer on ${offer.platformName}: ${savingsLabel(offer)}`
     : `${offer.bankDisplay ?? offer.bank} offer on ${offer.platformName}: ${savingsLabel(offer)}`;
 
   return (
@@ -173,6 +173,8 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
                   ? "bg-accent text-accent-foreground hover:brightness-110"
                   : v.cta === "amber"
                   ? "bg-transparent border border-accent/50 text-accent hover:bg-accent/10"
+                  : v.cta === "muted"
+                  ? "bg-transparent border border-border text-muted-foreground hover:border-accent/25 hover:text-foreground"
                   : "bg-transparent border border-accent/40 text-accent hover:bg-accent/10"
               )}>
                 Continue to {offer.platformName}
