@@ -9,7 +9,7 @@ import type { OfferViewModel } from "@/types/offer";
 import { useMeta } from "@/contexts/MetaContext";
 import { format, parseISO } from "date-fns";
 
-const GRID = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4";
+const GRID = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4";
 
 const PerPageDropdown = ({ value, onChange }: { value: number; onChange: (n: number) => void }) => {
   const [open, setOpen] = useState(false);
@@ -51,11 +51,9 @@ const PerPageDropdown = ({ value, onChange }: { value: number; onChange: (n: num
   );
 };
 
-function catalogVariant(offer: OfferViewModel): "highlight" | "default" | "neutral" {
-  const s = offer.savings;
-  if (s >= 1400) return "highlight";
-  if (s >= 700) return "default";
-  return "neutral";
+function catalogVariant(offer: OfferViewModel): "default" | "neutral" {
+  if (offer.bank === null || offer.paymentMethod === "NO_CARD") return "neutral";
+  return "default";
 }
 
 interface AllOffersSectionProps {
@@ -138,7 +136,7 @@ const AllOffersSection = ({
                 key={offer.id}
                 offer={offer}
                 variant={catalogVariant(offer)}
-                label={offer.bankDisplay ?? "Default"}
+                label={offer.bankDisplay ?? "Platform Offer"}
                 compact
               />
             ))}
