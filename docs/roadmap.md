@@ -127,6 +127,80 @@ Retrofitting these when the agent is producing 30 platforms worth of data is exp
 
 ---
 
+## Product Decisions (Sep 2026)
+
+### Offer Display & Ranking
+
+**Show best CC + best DC per selected bank** (not one winner per bank).
+
+Current behaviour picks one best offer per bank ignoring payment method, then labels it "Your Card Offer" — misleading if the user's card type doesn't match. The new rule:
+- Per selected bank → show best CREDIT offer + best DEBIT offer separately
+- If a bank has only one type, show one card
+- Labels: `"HDFC Credit Card Offer"` / `"HDFC Debit Card Offer"` (honest, not personalised claims)
+- Better Alternative: 1 card from a non-selected bank if it beats all selected offers
+- Platform Offer: no-card default, always last
+
+**Do not show all offers for a bank.** As data grows a bank could have 5 campaigns. Default view stays best-per-type; runtime filter handles narrowing.
+
+---
+
+### Runtime Filter Bar (results page)
+
+Replace the Progressive Precision upfront prompt with a lightweight inline filter bar on the results page. Filters appear only when relevant:
+
+| Filter | Show when | Options |
+|---|---|---|
+| Payment type | Selected bank has both CC and DC offers | CC / DC / Both (default: Both) |
+| Booking channel | Offers differ by channel | Web / App / Both (default: Both) |
+| Card name | Specific card products exist in data | dropdown, deferred until ingestion supports it |
+
+No upfront questions. User sees results immediately, filters after. The CC/DC filter replaces the credit-or-debit prompt entirely.
+
+---
+
+### Bank Selection Limits — Keep 2 / 4
+
+**Keep 2 banks (guest) / 4 banks (signed-in). Do not reduce to 1/3.**
+
+Comparison across 2 banks ("Should I use HDFC or AXIS for this booking?") is the core guest value prop. Runtime filter handles display complexity without reducing the bank limit.
+
+---
+
+### Card Name Precision (Ingestion Task)
+
+When a source offer names a specific card product (e.g. "HDFC Pixel Credit Card", "Flipkart Axis Credit Card"), the ingestion normaliser must store the exact product name in `card_name` — not flatten it to "HDFC Credit Card". A new `card_specificity` field (`ALL` | `SPECIFIC`) will be added to the model, populated by an LLM extraction step (`claude-haiku-4-5-20251001`) behind a `--llm-enrichment` CLI flag. Confidence gate: < 0.6 falls back to regex and logs a WARNING.
+
+Current data (Sep 2026) is entirely bank-tier generic. Card name filter in the UI is deferred until this ingestion work ships.
+
+---
+
+### LLM Extraction Prompt (card specificity)
+
+```
+Extract card eligibility from the following offer text.
+
+Determine:
+1. bank_name — the issuing bank (e.g. "HDFC Bank", "SBI")
+2. payment_type — one of: CREDIT | DEBIT | BOTH | NO_CARD
+3. card_specificity — ALL (any card of that bank/type) | SPECIFIC (named product)
+4. card_name — if SPECIFIC, exact product name; if ALL, generic "<Bank> Credit/Debit Card"
+
+Return JSON only:
+{
+  "bank_name": "...",
+  "payment_type": "CREDIT|DEBIT|BOTH|NO_CARD",
+  "card_specificity": "ALL|SPECIFIC",
+  "card_name": "..."
+}
+
+Offer text:
+{{OFFER_TEXT}}
+```
+
+Feed: offer title + eligibility line + first 2–3 bullet points. Key signals appear in the headline, not buried in T&C.
+
+---
+
 ## Open Questions
 
 - Which Indian bank offer pages are structured enough to parse reliably?
