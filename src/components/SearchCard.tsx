@@ -49,7 +49,7 @@ const FareDropdown = ({ value, onChange }: { value: string; onChange: (v: string
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full bg-secondary/50 border-0 h-auto text-sm pl-4 pr-3 py-2.5 min-h-[56px] rounded-xl text-left flex items-center justify-between hover:bg-secondary/70 transition-colors"
+        className="w-full bg-input border border-border h-auto text-sm pl-4 pr-3 py-2.5 min-h-[56px] rounded-xl text-left flex items-center justify-between hover:border-primary/30 transition-colors"
       >
         {displayValue
           ? <span className="font-bold text-foreground">{displayValue}</span>
@@ -217,10 +217,14 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
     onSearch(fromAirport, toAirport, departDate, banks, effectiveAmount);
   };
 
-  const minDate = useMemo(
-    () => (meta.availability_start ? parseISO(meta.availability_start) : startOfDay(new Date())),
-    [meta.availability_start],
-  );
+  const minDate = useMemo(() => {
+    const today = startOfDay(new Date());
+    if (meta.availability_start) {
+      const dataStart = parseISO(meta.availability_start);
+      return dataStart > today ? dataStart : today;
+    }
+    return today;
+  }, [meta.availability_start]);
   const maxDate = useMemo(
     () => (meta.availability_end ? parseISO(meta.availability_end) : addMonths(new Date(), 6)),
     [meta.availability_end],

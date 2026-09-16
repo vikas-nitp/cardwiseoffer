@@ -1,5 +1,5 @@
-// 66 background stars + 6 prominent feature stars
-const STARS = Array.from({ length: 66 }, (_, i) => {
+// 12 background stars + 6 prominent feature stars
+const STARS = Array.from({ length: 12 }, (_, i) => {
   const s = (i + 1) * 7919;
   return {
     id: i,

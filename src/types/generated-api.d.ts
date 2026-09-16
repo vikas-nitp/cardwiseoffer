@@ -234,6 +234,16 @@ export interface components {
              * @default true
              */
             publicAllOffersEnabled: boolean;
+            /**
+             * Visitorcountenabled
+             * @default false
+             */
+            visitorCountEnabled: boolean;
+            /**
+             * Authenabled
+             * @default false
+             */
+            authEnabled: boolean;
         };
         /** HTTPValidationError */
         HTTPValidationError: {

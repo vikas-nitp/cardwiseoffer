@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Plane, X, User, LogOut, ChevronDown, LayoutDashboard } from "lucide-react";
+import { Menu, X, User, LogOut, ChevronDown, LayoutDashboard } from "lucide-react";
+
+const CardSageMark = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
+    <rect x="0.75" y="0.75" width="20.5" height="14.5" rx="2.75" fill="currentColor" fillOpacity="0.18" stroke="currentColor" strokeWidth="1.5"/>
+    <rect x="0.75" y="3.75" width="20.5" height="2.75" fill="currentColor" fillOpacity="0.5"/>
+    <rect x="2.75" y="8" width="5.5" height="4" rx="0.75" stroke="currentColor" strokeWidth="1.2" fill="currentColor" fillOpacity="0.28"/>
+    <line x1="11" y1="9" x2="17.5" y2="9" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeOpacity="0.55"/>
+    <line x1="11" y1="11.5" x2="15" y2="11.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeOpacity="0.35"/>
+  </svg>
+);
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/constants";
 import { useAuth } from "@/contexts/AuthContext";
@@ -83,7 +93,7 @@ const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authE
       <header className="w-full py-4 px-4 md:px-8 flex items-center justify-between relative z-20 border-b border-white/[0.08] bg-background/[0.15] backdrop-blur-xl">
         <Link to="/" className="flex items-center gap-2.5 group" onClick={() => handleNav("home")}>
           <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-sm">
-            <Plane className="w-4.5 h-4.5 text-accent-foreground" />
+            <CardSageMark className="w-[20px] h-[14px] text-accent-foreground" />
           </div>
           <span className="hidden sm:inline text-lg font-bold text-foreground tracking-tight">{APP_NAME}</span>
         </Link>

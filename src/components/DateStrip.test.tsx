@@ -32,7 +32,7 @@ describe("DateStrip", () => {
 
   it("includes savings in aria-label when available", () => {
     render(<DateStrip {...defaultProps} />);
-    const btn = screen.getByRole("button", { name: /01 September — Save ₹800/i });
+    const btn = screen.getByRole("button", { name: /01 September - Save ₹800/i });
     expect(btn).toBeInTheDocument();
   });
 
