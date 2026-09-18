@@ -198,7 +198,7 @@ const ConsentStep = () => {
           />
           <Label htmlFor="terms" className="text-[13px] text-foreground leading-relaxed cursor-pointer">
             I agree to the{" "}
-            <a href="#" className="text-accent underline underline-offset-2 hover:opacity-80">
+            <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-accent underline underline-offset-2 hover:opacity-80">
               Terms of Service
             </a>{" "}
             - CardSage provides offer comparisons for informational purposes only.
@@ -215,7 +215,7 @@ const ConsentStep = () => {
           />
           <Label htmlFor="privacy" className="text-[13px] text-foreground leading-relaxed cursor-pointer">
             I agree to the{" "}
-            <a href="#" className="text-accent underline underline-offset-2 hover:opacity-80">
+            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-accent underline underline-offset-2 hover:opacity-80">
               Privacy Policy
             </a>{" "}
             - we collect only your mobile number to identify your account. We do not share
