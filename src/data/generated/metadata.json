@@ -64,8 +64,24 @@
       "name": "Cleartrip"
     },
     {
+      "id": "EASEMYTRIP",
+      "name": "EaseMyTrip"
+    },
+    {
+      "id": "GOIBIBO",
+      "name": "Goibibo"
+    },
+    {
+      "id": "IXIGO",
+      "name": "ixigo"
+    },
+    {
       "id": "MAKEMYTRIP",
       "name": "MakeMyTrip"
+    },
+    {
+      "id": "YATRA",
+      "name": "Yatra"
     }
   ],
   "payment_methods": [
@@ -785,5 +801,5 @@
   ],
   "availability_start": "2026-07-01",
   "availability_end": "2027-12-31",
-  "dataset_last_updated_at": "2026-09-04"
+  "dataset_last_updated_at": "2026-09-17"
 }

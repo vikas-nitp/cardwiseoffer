@@ -17,6 +17,7 @@ export interface SearchState {
 
 export function useOfferSearch() {
   const [searchState, setSearchState] = useState<SearchState | null>(null);
+  const [formDate, setFormDate] = useState<Date | null>(null); // date typed in the form, not strip-navigated
   const [searchResults, setSearchResults] = useState<OfferViewModel[]>([]);
   const [strip7days, setStrip7days] = useState<StripDay[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -30,6 +31,7 @@ export function useOfferSearch() {
     controller.current?.abort();
     const ctrl = new AbortController();
     controller.current = ctrl;
+    setFormDate(date); // remember form-submitted date so edit search shows this, not strip date
     setSearchState({ from, to, date, banks, bookingAmount });
     setSearchError(null);
     setSearchLoading(true);
@@ -91,7 +93,7 @@ export function useOfferSearch() {
   }, [searchState, strip7days, handleSearch]);
 
   return {
-    searchState, searchResults, strip7days,
+    searchState, formDate, searchResults, strip7days,
     searchLoading, searchError,
     handleSearch, handleDateChange,
   };

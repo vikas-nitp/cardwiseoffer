@@ -32,6 +32,16 @@ export function isOfferEligible(
     isOfferActiveOnDay(offer, date);
 }
 
+/** Catalog eligibility: ignores valid_days so all non-expired offers appear regardless of today's weekday. */
+export function isOfferCatalogEligible(
+  offer: Pick<OfferViewModel, "validFrom" | "expiryDate" | "isActive" | "category">,
+  date = startOfToday()
+): boolean {
+  return offer.isActive &&
+    offer.category === "FLIGHT_DOMESTIC" &&
+    isOfferActive(offer, date);
+}
+
 export function validityLabel(offer: Pick<OfferViewModel, "validFrom" | "expiryDate">, now = startOfToday()): string {
   if (isOfferExpired(offer, now)) return "Expired";
   if (isOfferUpcoming(offer, now)) return `Starts on ${format(parseISO(offer.validFrom), "dd MMM yyyy")}`;

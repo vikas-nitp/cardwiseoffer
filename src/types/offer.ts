@@ -13,6 +13,7 @@ export interface OfferViewModel {
   bank: string | null;         // canonical bank id, e.g. "HDFC"; null = default/no-card
   bankDisplay: string | null;  // resolved display name
   cardName: string | null;
+  cardSpecificity: "ALL" | "SPECIFIC" | null;  // null = not yet enriched by ingestion
   platform: string;
   platformName: string;
   offerTitle: string;

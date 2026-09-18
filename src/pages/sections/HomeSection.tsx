@@ -4,8 +4,9 @@ import type { CityOption } from "@/components/CityAutocomplete";
 import type { SearchState } from "@/hooks/useOfferSearch";
 import { TRUST_LABELS, APP_HERO_SUBTITLE } from "@/constants";
 import { useMeta } from "@/contexts/MetaContext";
-import { format, parseISO } from "date-fns";
-
+import { useVisitorCount } from "@/hooks/useVisitorCount";
+import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
+import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
 const container = {
   hidden: {},
   show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
@@ -17,15 +18,15 @@ const item = {
 
 interface HomeSectionProps {
   searchState: SearchState | null;
+  formDate: Date | null;
   onSearch: (from: CityOption, to: CityOption, date: Date, banks: string[], bookingAmount?: number) => Promise<void>;
 }
 
-const HomeSection = ({ searchState, onSearch }: HomeSectionProps) => {
+const HomeSection = ({ searchState, formDate, onSearch }: HomeSectionProps) => {
   const { meta } = useMeta();
-  const lastUpdated = meta.dataset_last_updated_at
-    ? format(parseISO(meta.dataset_last_updated_at), "MMM yyyy")
-    : null;
-
+  const flags = useFeatureFlags();
+  const capabilities = resolveFeatureCapabilities(flags);
+  const visitorCount = useVisitorCount(capabilities.visitorCount);
 
   return (
   <div className="w-full flex flex-col items-center">
@@ -43,20 +44,9 @@ const HomeSection = ({ searchState, onSearch }: HomeSectionProps) => {
         <span className="block text-[28px] md:text-[42px] text-foreground leading-[1.15]">Which card saves the most</span>
         <span className="block text-[42px] md:text-[60px] text-accent mt-1 leading-[1.0]">on your flight?</span>
       </motion.h1>
-      <motion.p variants={item} className="mt-4 text-[13px] md:text-[14px] text-foreground/70 leading-snug whitespace-nowrap">
+      <motion.p variants={item} className="mt-4 text-[13px] md:text-[14px] text-foreground/70 leading-snug">
         {APP_HERO_SUBTITLE}
-        <span className="text-foreground/45"> - </span>
-        <span className="text-accent font-semibold">Just the best deal for your card</span>
       </motion.p>
-      {meta.total_offers > 0 && (
-        <motion.div variants={item} className="mt-3 flex items-center justify-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border/40 bg-muted/25 text-[12px] font-semibold text-foreground/55">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent/70 inline-block shrink-0" />
-            {meta.total_offers} active offers
-            {lastUpdated && <><span className="text-border/50 mx-0.5">·</span>Updated {lastUpdated}</>}
-          </span>
-        </motion.div>
-      )}
     </motion.section>
 
     <motion.div
@@ -69,7 +59,7 @@ const HomeSection = ({ searchState, onSearch }: HomeSectionProps) => {
         onSearch={onSearch}
         initialFrom={searchState?.from ?? null}
         initialTo={searchState?.to ?? null}
-        initialDate={searchState?.date ?? undefined}
+        initialDate={formDate ?? searchState?.date ?? undefined}
         initialBanks={searchState?.banks ?? []}
       />
 
@@ -77,14 +67,26 @@ const HomeSection = ({ searchState, onSearch }: HomeSectionProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.72 }}
-        className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-4"
+        className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-4"
       >
+        {meta.total_offers > 0 && (
+          <span className="flex items-center gap-1.5 text-[13px] font-semibold text-foreground/80">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent/80 inline-block shrink-0" />
+            {meta.total_offers} offers tracked
+          </span>
+        )}
         {[TRUST_LABELS.NO_BOOKING_BIAS, TRUST_LABELS.UPDATED_DAILY, TRUST_LABELS.INDEPENDENT_COMPARISON].map((label) => (
-          <span key={label} className="flex items-center gap-1.5 text-[13px] font-semibold text-foreground/65">
+          <span key={label} className="flex items-center gap-1.5 text-[13px] font-semibold text-foreground/80">
             <span className="w-1.5 h-1.5 rounded-full bg-accent/80 inline-block shrink-0" />
             {label}
           </span>
         ))}
+        {visitorCount !== null && visitorCount > 1 && (
+          <span className="flex items-center gap-1.5 text-[13px] font-semibold text-foreground/80">
+            <span className="w-1.5 h-1.5 rounded-full bg-savings/80 inline-block shrink-0 animate-pulse" />
+            {visitorCount} people browsing now
+          </span>
+        )}
       </motion.div>
     </motion.div>
   </div>

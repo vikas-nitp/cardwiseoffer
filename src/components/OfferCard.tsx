@@ -1,4 +1,4 @@
-import { ExternalLink, Star, TrendingUp, Gift, CreditCard, Smartphone, Globe, Tag } from "lucide-react";
+import { ExternalLink, Star, TrendingUp, Gift, CreditCard, Smartphone, Globe, Tag, Calendar, UserCheck, Clock, ArrowDownCircle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { OfferViewModel } from "@/types/offer";
 import { validityLabel, isOfferExpired, isOfferUpcoming } from "@/domain/offerValidity";
@@ -51,7 +51,7 @@ function formatValidDays(days: number[]): string | null {
 
 // Notes that repeat information already visible on the card (bank name, card type, channel)
 const REDUNDANT_NOTE_RE =
-  /no card|required|new users?|selected .*cards?|partial evidence|unverified|draft|hidden|inactive|expired|app only|website only|valid on .*(credit|debit|bank).*card/i;
+  /no card|required|new users?|selected .*cards?|partial evidence|unverified|draft|hidden|inactive|expired|app only|website only|valid on .*(credit|debit|bank).*card|expires\s+\d+|valid\s+(mon|tue|wed|thu|fri|sat|sun)/i;
 
 const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = false, userFareProvided = false, searchDate }: OfferCardProps) => {
   const { flags } = useFeatureFlags();
@@ -106,7 +106,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
       </div>
 
       {/* Savings — the hero number */}
-      <div className="px-4 pt-3 pb-0">
+      <div className="px-4 pt-4 pb-2">
         <p className={cn("text-2xl font-black tracking-tight leading-none tabular-nums", v.savings)}>
           {userFareProvided && offer.amountEligible !== false && offer.savings > 0
             ? `Save ₹${offer.savings.toLocaleString()}`
@@ -124,10 +124,10 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
 
       {/* Conditions */}
       <div className="px-4 py-3 space-y-1.5">
-        {/* Card name — first condition row, dot-aligned with other conditions */}
+        {/* Card name — first condition row */}
         {!isNoCard && (offer.cardName || offer.bankDisplay) && (
           <div className="flex items-start gap-1.5">
-            <span className="w-1 h-1 rounded-full bg-border/60 mt-[5px] flex-shrink-0" />
+            <CreditCard className="w-3 h-3 text-muted-foreground/50 mt-[2px] flex-shrink-0" />
             <div className="flex items-center gap-2 flex-wrap">
               <p className="text-[13px] font-semibold text-foreground tracking-tight leading-relaxed">
                 {offer.cardName ?? offer.bankDisplay}
@@ -141,19 +141,19 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
           </div>
         )}
         {offer.minTransaction ? (
-          <Condition text={`Min. ₹${offer.minTransaction.toLocaleString()}`} />
+          <Condition icon={ArrowDownCircle} text={`Min. ₹${offer.minTransaction.toLocaleString()}`} />
         ) : null}
         {offer.discountType === "FLAT" && offer.maxDiscount && offer.maxDiscount !== offer.discountValue ? (
-          <Condition text={`Max discount ₹${offer.maxDiscount.toLocaleString()}`} />
+          <Condition icon={Tag} text={`Max discount ₹${offer.maxDiscount.toLocaleString()}`} />
         ) : null}
-        <Condition text={validity} tone={expired ? "danger" : upcoming ? "warn" : "muted"} />
-        {offer.newUserOnly && <Condition text="New users only" />}
+        <Condition icon={Calendar} text={validity} tone={expired ? "danger" : upcoming ? "warn" : "muted"} />
+        {offer.newUserOnly && <Condition icon={UserCheck} text="New users only" />}
         {offer.validDays && offer.validDays.length > 0 && offer.validDays.length < 7 && (() => {
           const label = formatValidDays(offer.validDays!);
-          return label ? <Condition text={label} tone="warn" /> : null;
+          return label ? <Condition icon={Clock} text={label} tone="warn" /> : null;
         })()}
-        {visibleNotes.map((note) => <Condition key={note} text={note} />)}
-        {userFareProvided && offer.amountEligible === false && <Condition text="Below minimum booking amount" tone="warn" />}
+        {visibleNotes.map((note) => <Condition key={note} icon={Info} text={note} />)}
+        {userFareProvided && offer.amountEligible === false && <Condition icon={Info} text="Below minimum booking amount" tone="warn" />}
       </div>
 
       {/* CTA — coupon sits inside so it's always bottom-anchored on equal-height cards */}
@@ -165,28 +165,21 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
           </div>
         )}
         {canBook && offer.platformUrl ? (
-          <>
-            <a href={offer.platformUrl} target="_blank" rel="noopener noreferrer" className="block">
-              <Button className={cn(
-                "gap-2 w-full font-semibold text-[13px] rounded-xl h-10 transition-all duration-200 shadow-sm hover:shadow-md",
-                v.cta === "gold"
-                  ? "bg-accent text-accent-foreground hover:brightness-110"
-                  : v.cta === "amber"
-                  ? "bg-transparent border border-accent/50 text-accent hover:bg-accent/10"
-                  : v.cta === "muted"
-                  ? "bg-transparent border border-border text-muted-foreground hover:border-accent/25 hover:text-foreground"
-                  : "bg-transparent border border-accent/40 text-accent hover:bg-accent/10"
-              )}>
-                Continue to {offer.platformName}
-                <ExternalLink className="w-3.5 h-3.5" />
-              </Button>
-            </a>
-            {!compact && (
-              <p className="text-center text-[10px] text-muted-foreground/70 mt-1.5">
-                Apply offer at checkout on {offer.platformName}
-              </p>
-            )}
-          </>
+          <a href={offer.platformUrl} target="_blank" rel="noopener noreferrer" className="block">
+            <Button className={cn(
+              "gap-2 w-full font-semibold text-[13px] rounded-xl h-10 transition-all duration-200 shadow-sm hover:shadow-md",
+              v.cta === "gold"
+                ? "bg-accent text-accent-foreground hover:brightness-110"
+                : v.cta === "amber"
+                ? "bg-transparent border border-accent/50 text-accent hover:bg-accent/10"
+                : v.cta === "muted"
+                ? "bg-transparent border border-border text-muted-foreground hover:border-accent/25 hover:text-foreground"
+                : "bg-transparent border border-accent/40 text-accent hover:bg-accent/10"
+            )}>
+              Continue to {offer.platformName}
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Button>
+          </a>
         ) : (
           <Button
             disabled
@@ -196,17 +189,28 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
             {expired ? "Expired" : upcoming ? "Not yet active" : "Choose travel details"}
           </Button>
         )}
+        {/* Verify note — legal shield: savings not guaranteed, user should confirm before booking */}
+        {!compact && (
+          <p className="text-center text-[10px] text-muted-foreground/50 mt-1.5 min-h-[14px]">
+            {canBook
+              ? `Verify offer on ${offer.platformName} before booking`
+              : ""}
+          </p>
+        )}
       </div>
     </div>
   );
 };
 
-const Condition = ({ text, tone = "muted", strong = false }: { text: string; tone?: "muted" | "warn" | "danger"; strong?: boolean }) => (
+const Condition = ({ text, tone = "muted", strong = false, icon: Icon }: { text: string; tone?: "muted" | "warn" | "danger"; strong?: boolean; icon?: React.ElementType }) => (
   <div className={cn(
     "text-xs flex items-start gap-1.5 leading-relaxed",
     tone === "danger" ? "text-destructive" : tone === "warn" ? "text-highlight" : strong ? "font-semibold text-foreground" : "text-muted-foreground"
   )}>
-    <span className="w-1 h-1 rounded-full bg-border/60 mt-[5px] flex-shrink-0" />
+    {Icon
+      ? <Icon className="w-3 h-3 mt-[1px] flex-shrink-0 opacity-60" />
+      : <span className="w-1 h-1 rounded-full bg-border/60 mt-[5px] flex-shrink-0" />
+    }
     {text}
   </div>
 );

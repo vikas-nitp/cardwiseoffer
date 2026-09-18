@@ -63,7 +63,7 @@ const BankMultiSelect = ({ selected, onChange, maxSelect = MAX_BANK_FILTERS, sho
     <div className="space-y-1.5 relative z-30" ref={wrapperRef}>
       <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.10em] flex items-center gap-1.5">
         <CreditCard className="w-3.5 h-3.5" />
-        Card <span className="font-normal normal-case tracking-normal text-[10px] opacity-60">(optional)</span>
+        Bank <span className="font-normal normal-case tracking-normal text-[10px] opacity-60">(optional)</span>
       </label>
       <button
         type="button"

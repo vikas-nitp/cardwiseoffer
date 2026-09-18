@@ -41,7 +41,7 @@ src/
 │   ├── generated/      # offers.json, airports.json, featureFlags.json (committed demo data)
 │   └── repositories/   # LocalOfferRepository, OfferRepository interface
 ├── domain/             # Pure business logic (ranking, eligibility, savings calc, validity)
-├── hooks/              # useOfferSearch, useAllOffers
+├── hooks/              # useOfferSearch, useAllOffers, useVisitorCount
 ├── lib/                # utils.ts (Tailwind helper), commonUtils.ts, logger.ts
 ├── pages/              # Index.tsx, sections/ (Home, Results, AllOffers)
 ├── scripts/            # Data maintenance scripts (sync-backend-data, check-offer-expiry)
@@ -53,8 +53,11 @@ src/
 
 - **Auth is memory-only.** `AuthContext` holds sign-in state in React memory. Nothing is persisted to `localStorage` or `sessionStorage`. See `phase2/README.md`.
 - **Strip vs. tiles.** The 7-day date strip computes market-best savings across *all* active offers. Tiles filter by the user's selected banks. This gives a market-wide indicator without leaking bank-specific detail into the strip.
-- **`simFare`** is used only for strip display text when no fare is entered; it is never passed to tile searches, so "Est. saving" and "Below minimum" never appear without a real fare.
-- **DAY_FACTORS** (`STRIP_DAY_FACTORS` in constants) simulate realistic fare variance across the strip by weighting each day's hypothetical fare.
+- **Strip no-fare mode** shows "Save up to ₹X" using `maxDiscount` (PERCENT) or `discountValue` (FLAT) — the hard cap, never a simulated fare. Flat identical bars across all 7 days is honest behavior when the same offer is best every day; strip variation requires day-restricted offers in the data with different caps.
+- **DAY_FACTORS** — removed. Both no-fare and fare-mode strips use the exact amount per day (no artificial day weighting). Flat bars across 7 days when data is dominated by one offer is honest; variation comes from day-restricted offers in the data.
+- **CC/DC filter in ResultsSection.** A "All / Credit / Debit" segmented control appears in results when card-based offers are present. `NO_CARD` platform offers always bypass the filter regardless of selection.
+- **Ghost cards removed.** Two decorative fanned card shapes were removed from `HomeSection` — `backdrop-blur-sm` on `SearchCard` creates a CSS stacking context that caused rotated card borders to bleed through the FROM/TO fields regardless of z-index. Removed entirely in Sep 17 session.
+- **Live visitor count.** `useVisitorCount(enabled)` polls `GET /api/v1/visitors/count?v={sessionId}` every 60 seconds when `visitorCountEnabled` FF is on. Returns `null` while disabled or before first response; badge shown only when count > 1.
 
 ## Feature Flags
 

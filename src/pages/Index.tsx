@@ -34,7 +34,7 @@ const Index = () => {
   useEffect(() => analytics.configure(capabilities.analytics), [capabilities.analytics]);
 
   const {
-    searchState, searchResults, strip7days,
+    searchState, formDate, searchResults, strip7days,
     searchLoading, searchError,
     handleSearch, handleDateChange,
   } = useOfferSearch();
@@ -78,7 +78,7 @@ const Index = () => {
           <AnimatePresence mode="wait">
             {showHome && (
               <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
-                <HomeSection searchState={searchState} onSearch={handleSearchAndNavigate} />
+                <HomeSection searchState={searchState} formDate={formDate} onSearch={handleSearchAndNavigate} />
               </motion.div>
             )}
 

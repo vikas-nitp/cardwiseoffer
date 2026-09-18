@@ -102,6 +102,14 @@
     --sidebar-accent-foreground: 218 54% 94%;
     --sidebar-border:       224 30% 22%;
     --sidebar-ring:         216 84% 50%;
+
+    /* ── Type scale (6 stops) ────────────────────────────────────── */
+    --text-micro:   0.625rem;    /* 10px — overlines, captions          */
+    --text-caption: 0.6875rem;   /* 11px — field labels, badges         */
+    --text-body-sm: 0.75rem;     /* 12px — secondary text, pagination   */
+    --text-body:    0.8125rem;   /* 13px — primary body, card text      */
+    --text-body-lg: 0.9375rem;   /* 15px — prominent body, nav          */
+    --text-display: 1.5rem;      /* 24px — savings hero number          */
   }
 
   /* ── Light mode variant (future toggle) ─────────────────────────── */
@@ -230,6 +238,7 @@
     pointer-events: none;
     z-index: 0;
     animation: orb-drift 18s ease-in-out infinite alternate;
+    /* honour reduced-motion — defined below alongside star guards */
   }
 
   /* Glass panel mixin — used on premium surfaces */
@@ -407,6 +416,7 @@
   @media (prefers-reduced-motion: reduce) {
     .star-a, .star-b, .star-c { animation: none; opacity: 0.25; }
     .star-d { animation: none; opacity: 0.55; }
+    .sovereign-ground::after { animation: none; }
   }
 
   /* ── Pulse glow — accent dot or badge pulsing ─────────────────── */

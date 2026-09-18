@@ -213,6 +213,11 @@ export interface components {
              */
             analyticsEnabled: boolean;
             /**
+             * Authenabled
+             * @default false
+             */
+            authEnabled: boolean;
+            /**
              * Bookingamountcomparisonenabled
              * @default false
              */
@@ -239,11 +244,6 @@ export interface components {
              * @default false
              */
             visitorCountEnabled: boolean;
-            /**
-             * Authenabled
-             * @default false
-             */
-            authEnabled: boolean;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -318,6 +318,8 @@ export interface components {
             booking_url?: string | null;
             /** Card Name */
             card_name?: string | null;
+            /** Card Specificity */
+            card_specificity?: string | null;
             /**
              * Category
              * @constant
@@ -410,6 +412,8 @@ export interface components {
             booking_url?: string | null;
             /** Card Name */
             card_name?: string | null;
+            /** Card Specificity */
+            card_specificity?: string | null;
             /**
              * Category
              * @constant
