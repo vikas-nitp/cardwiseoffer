@@ -24,7 +24,7 @@ interface HomeSectionProps {
 
 const HomeSection = ({ searchState, formDate, onSearch }: HomeSectionProps) => {
   const { meta } = useMeta();
-  const flags = useFeatureFlags();
+  const { flags } = useFeatureFlags();
   const capabilities = resolveFeatureCapabilities(flags);
   const visitorCount = useVisitorCount(capabilities.visitorCount);
 
