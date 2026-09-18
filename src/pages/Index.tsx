@@ -7,7 +7,6 @@ import AboutSection from "@/components/AboutSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import ContactSection from "@/components/ContactSection";
 import FAQSection from "@/components/FAQSection";
-import TrustDisclaimer from "@/components/TrustDisclaimer";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
@@ -149,7 +148,6 @@ const Index = () => {
           </AnimatePresence>
         </main>
 
-        {showHome && <TrustDisclaimer />}
         <Footer onSectionChange={setActiveSection} />
       </div>
     </div>
