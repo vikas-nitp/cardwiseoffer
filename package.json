@@ -10,6 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc -b --pretty false",
     "data:check": "node scripts/validate-data-bundle.mjs",
+    "data:validate": "node scripts/validate-offer-quality.mjs",
+    "data:tag-synthetic": "node scripts/tag-synthetic-data.mjs --write",
     "data:build": "npm run data:sync-backend && npm run data:check",
     "data:sync-backend": "node scripts/sync-backend-data.mjs",
     "generate:api": "openapi-typescript contracts/openapi.json -o src/types/generated-api.d.ts",

@@ -5,7 +5,7 @@ import type { OfferViewModel } from "@/types/offer";
 const base: OfferViewModel = {
   id: "x", label: "x", offerTitle: "x",
   platformName: "MakeMyTrip", platform: "MAKEMYTRIP",
-  bank: "HDFC", bankDisplay: "HDFC", cardName: null,
+  bank: "HDFC", bankDisplay: "HDFC", cardName: null, cardSpecificity: null,
   paymentMethod: "CREDIT", category: "FLIGHT_DOMESTIC", bookingChannel: "WEB_AND_APP",
   discountType: "FLAT", discountValue: 0, maxDiscount: null, minTransaction: null, savings: 0,
   couponCode: null, validFrom: "2026-01-01", expiryDate: "2030-01-01",

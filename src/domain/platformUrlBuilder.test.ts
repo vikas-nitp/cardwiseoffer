@@ -5,17 +5,12 @@ describe("platformUrlBuilder", () => {
   const ctx = { from: "BLR", to: "DEL", date: "2026-07-15" };
 
   it("builds valid https URLs for supported platforms", () => {
-    for (const p of ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Ixigo", "Air India", "IndiGo"]) {
+    for (const p of ["MakeMyTrip", "Cleartrip", "EaseMyTrip", "Ixigo", "Air India", "IndiGo", "Goibibo", "Yatra"]) {
       const url = buildFlightSearchUrl(p, ctx);
       expect(url).toMatch(/^https:\/\//);
       expect(url).toContain("BLR");
       expect(url).toContain("DEL");
     }
-  });
-
-  it("returns null for unsupported platforms", () => {
-    expect(buildFlightSearchUrl("Goibibo", ctx)).toBeNull();
-    expect(buildFlightSearchUrl("Yatra", ctx)).toBeNull();
   });
 
   it("returns null for unknown platform", () => {
@@ -34,7 +29,11 @@ describe("platformUrlBuilder", () => {
   it("supports canonical backend platform IDs", () => {
     expect(buildFlightSearchUrl("MAKEMYTRIP", ctx)).toContain("makemytrip.com");
     expect(buildFlightSearchUrl("CLEARTRIP", ctx)).toContain("cleartrip.com");
+    expect(buildFlightSearchUrl("GOIBIBO", ctx)).toContain("goibibo.com");
+    expect(buildFlightSearchUrl("YATRA", ctx)).toContain("yatra.com");
     expect(platformHomeUrl("MAKEMYTRIP")).toContain("makemytrip.com");
     expect(platformHomeUrl("CLEARTRIP")).toContain("cleartrip.com");
+    expect(platformHomeUrl("GOIBIBO")).toContain("goibibo.com");
+    expect(platformHomeUrl("YATRA")).toContain("yatra.com");
   });
 });

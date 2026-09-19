@@ -28,7 +28,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        sans:    ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        display: ["Bricolage Grotesque", "system-ui", "sans-serif"],
       },
       colors: {
         /* Surfaces */

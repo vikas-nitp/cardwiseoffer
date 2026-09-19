@@ -201,6 +201,43 @@ Feed: offer title + eligibility line + first 2–3 bullet points. Key signals ap
 
 ---
 
+### Parser Integration — DOM vs API
+
+Confirmed from live testing (Sep 2026):
+
+**ClearTrip** (`/all-offers/` detail page) — DOM-scraped:
+```
+Title:    "Flat 10% off on SBI Cards"       ← bank_name
+Subtitle: "Applicable on Credit Cards"      ← payment_type
+T&C:      "...with SBI Credit Cards..."     ← ALL signal
+           OR "...using HDFC Pixel Credit Card..." ← SPECIFIC signal
+```
+`raw_title + raw_description[:500]` is exactly `{{OFFER_TEXT}}`.
+
+**MakeMyTrip** — API intercept path:
+```json
+{ "title": "FLAT 15% OFF", "bankName": "Visa", "coupon": "VISAINFINITE" }
+```
+Already structured — `bankName` + coupon suffix often encodes bank and card specificity without LLM.
+
+**Extraction pipeline (per offer):**
+```
+DOM text / API JSON
+      ↓
+Regex path (default, free):
+  bank_name      — title keywords (~95% reliable)
+  payment_type   — "Credit" / "Debit" / "Credit & Debit" in subtitle (~90%)
+  card_name      — verbatim product name in title/first T&C line (~80%)
+  card_specificity — "all HDFC" / named product heuristic (~75%)
+      ↓ if confidence < 0.6
+LLM path (--llm-enrichment flag, claude-haiku-4-5-20251001):
+  same text → structured JSON → confidence gate → WARNING if still < 0.6
+```
+
+Regex covers ~80% of offers at zero API cost. LLM handles the remaining 20%: co-brand names mid-sentence, EMI-only offers, ambiguous eligibility lines.
+
+---
+
 ## Open Questions
 
 - Which Indian bank offer pages are structured enough to parse reliably?

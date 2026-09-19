@@ -51,7 +51,7 @@ export const API_RETRY_DELAY_MS = 1000;
 
 export const APP_NAME = "CardSage";
 export const APP_TAGLINE = "smart card picks for Indian flights";
-export const APP_HERO_SUBTITLE = "Compare bank card offers for any Indian flight route";
+export const APP_HERO_SUBTITLE = "Your card could save more than you think.";
 export const DISCLAIMER_TEXT =
   "Not affiliated with any platform or bank. Offers may change - verify on the official site before booking.";
 
@@ -69,22 +69,13 @@ export const SUPPORT_EMAIL = "support@cardsage.in";
 // Must match the value produced by LocalOfferRepository.
 export const DATE_STRIP_NO_OFFERS_LABEL = "No offers";
 
-// Day-weighting factors used to simulate realistic fare variance across the 7-day strip.
-// Index = days offset from the searched date. Applied to both real fares (dayFare) and
-// the simulated fare (SIM_FARE_BASE) used when the user hasn't entered a booking amount.
-export const STRIP_DAY_FACTORS = [1.0, 0.88, 0.94, 1.05, 0.91, 0.97, 0.83] as const;
-
-// Baseline fare (₹) used for strip display-text when no booking amount is entered.
-// Never used for tile eligibility checks.
-export const STRIP_SIM_FARE_BASE = 10_000;
-
 // ────────────────────────────────────────────────────────────────────
 // Trust Labels
 // ────────────────────────────────────────────────────────────────────
 
 export const TRUST_LABELS = {
   NO_BOOKING_BIAS: "No booking bias",
-  UPDATED_DAILY: "Updated daily",
+  UPDATED_DAILY: "Regularly updated",
   INDEPENDENT_COMPARISON: "Independent comparison",
 } as const;
 

@@ -8,10 +8,12 @@ const tag = (offer: OfferViewModel | null, label: string): OfferViewModel | null
 
 /**
  * Ranks and labels search results per product rules:
- *  - 0 cards → Best Offer + Default (2 max)
- *  - 1 card  → Your Card Offer + Better Alternative (only if genuinely better) + Default
- *  - 2 cards → Your Card Offer + Second Selected Card + Better Alternative (only if better) + Default
- * Labels map to display variants in ResultsSection.decorateResults.
+ *  - 0 banks → Best Offer + top 2 platform defaults, sorted by savings
+ *  - 1+ banks → ALL offers for selected banks, deduped by bank+platform+paymentType
+ *               sorted by savings; first = "Selected" (primary), rest = "Selected Alt"
+ *               Better Alternative shown only when outside bank beats the primary
+ *               + best single platform default
+ * Labels are internal keys; ResultsSection.decorateResults converts them to display text.
  * Never duplicates. Never pads to a fixed count.
  */
 export function rankAndLabelOffers(
@@ -20,59 +22,51 @@ export function rankAndLabelOffers(
 ): OfferViewModel[] {
   const cardOffers = active.filter((o) => o.bank !== null && o.paymentMethod !== "NO_CARD");
   const defaults = active.filter((o) => o.bank === null || o.paymentMethod === "NO_CARD");
-  const bestDefault = pickBest(defaults);
+
+  // Best default offer per platform, sorted by savings descending
+  const bestDefaultByPlatform = new Map<string, OfferViewModel>();
+  for (const o of [...defaults].sort(sortBy)) {
+    if (!bestDefaultByPlatform.has(o.platform)) bestDefaultByPlatform.set(o.platform, o);
+  }
+  const platformDefaults = [...bestDefaultByPlatform.values()].sort(sortBy);
 
   if (selectedBanks.length === 0) {
-    // When fare is provided, prefer eligible offers; only show ineligible as fallback
+    // No bank selected: best market card offer + top 2 platform offers (capped to avoid noise)
+    const defaultCards = platformDefaults.slice(0, 2).map(o => tag(o, "Default"));
     const eligibleCards = cardOffers.filter(o => o.amountEligible !== false);
     const bestCard = pickBest(eligibleCards.length > 0 ? eligibleCards : cardOffers);
-    return dedupe([
-      tag(bestCard, "Best Offer"),
-      tag(bestDefault, "Default"),
-    ]);
+    return dedupe([tag(bestCard, "Best Offer"), ...defaultCards]);
   }
+
+  // Bank(s) selected: show only the single best platform default (avoids clutter)
+  const defaultCards = [tag(platformDefaults[0] ?? null, "Default")];
 
   const selectedOffers = cardOffers.filter((o) => o.bank && selectedBanks.includes(o.bank));
   const outsideOffers = cardOffers.filter((o) => o.bank && !selectedBanks.includes(o.bank));
-
-  const bestByBank = new Map<string, OfferViewModel>();
-  for (const o of [...selectedOffers].sort(sortBy)) {
-    if (o.bank && !bestByBank.has(o.bank)) bestByBank.set(o.bank, o);
-  }
-  const bestSelected = [...bestByBank.values()].sort(sortBy);
   const bestOutside = pickBest(outsideOffers);
 
-  if (selectedBanks.length === 1) {
-    const primary = bestSelected[0] ?? null;
-
-    if (primary === null) {
-      // Selected bank has no active offers — surface the best available card offer
-      // so the user isn't left with only the no-card default.
-      return dedupe([
-        tag(bestOutside, "Best Available"),
-        tag(bestDefault, "Default"),
-      ]);
-    }
-
-    const betterAlt =
-      bestOutside && bestOutside.savings > primary.savings ? bestOutside : null;
-    return dedupe([
-      tag(primary, "Your Card Offer"),
-      tag(betterAlt, "Better Alternative"),
-      tag(bestDefault, "Default"),
-    ]);
+  // All offers for selected banks — deduped by bank+platform+paymentType so the same
+  // bank+platform pair never appears twice, but users see every platform for their bank.
+  const seenKey = new Set<string>();
+  const allSelected: OfferViewModel[] = [];
+  for (const o of [...selectedOffers].sort(sortBy)) {
+    if (!o.bank) continue;
+    const key = `${o.bank}:${o.platform}:${o.paymentMethod}`;
+    if (!seenKey.has(key)) { seenKey.add(key); allSelected.push(o); }
   }
 
-  // 2+ cards
-  const primary = bestSelected[0] ?? null;
-  const secondary = bestSelected[1] ?? null;
-  const betterAlt =
-    bestOutside && primary && bestOutside.savings > primary.savings ? bestOutside : null;
+  if (allSelected.length === 0) {
+    return dedupe([tag(bestOutside, "Best Available"), ...defaultCards]);
+  }
+
+  const primary = allSelected[0];
+  const betterAlt = bestOutside && bestOutside.savings > primary.savings ? bestOutside : null;
+
   return dedupe([
-    tag(primary, "Your Card Offer"),
-    tag(secondary, "Second Selected Card"),
+    tag(primary, "Selected"),
+    ...allSelected.slice(1).map(o => tag(o, "Selected Alt")),
     tag(betterAlt, "Better Alternative"),
-    tag(bestDefault, "Default"),
+    ...defaultCards,
   ]);
 }
 

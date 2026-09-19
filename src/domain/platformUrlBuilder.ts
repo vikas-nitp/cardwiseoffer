@@ -8,6 +8,8 @@ const ALLOWED_HOSTS = new Set([
   "www.cleartrip.com",
   "www.easemytrip.com",
   "www.ixigo.com",
+  "www.goibibo.com",
+  "www.yatra.com",
   "www.airindia.com",
   "www.goindigo.in",
 ]);
@@ -21,6 +23,11 @@ const HOMES: Record<string, string> = {
   EASEMYTRIP: "https://www.easemytrip.com/",
   Ixigo: "https://www.ixigo.com/",
   IXIGO: "https://www.ixigo.com/",
+  ixigo: "https://www.ixigo.com/",
+  Goibibo: "https://www.goibibo.com/",
+  GOIBIBO: "https://www.goibibo.com/",
+  Yatra: "https://www.yatra.com/",
+  YATRA: "https://www.yatra.com/",
   "Air India": "https://www.airindia.com/",
   AIR_INDIA: "https://www.airindia.com/",
   IndiGo: "https://www.goindigo.in/",
@@ -62,6 +69,17 @@ export function buildFlightSearchUrl(platform: string, ctx: FlightSearchContext)
     case "INDIGO":
       url = `https://www.goindigo.in/flight/search.html?src=${from}&dst=${to}&type=O&class=E&adult=1&child=0&infant=0&intl=n&dd=${date}`;
       break;
+    case "Goibibo":
+    case "GOIBIBO":
+      url = `https://www.goibibo.com/flights/search/?source=${from}&destination=${to}&dateofdeparture=${date.replace(/-/g, "")}&seatingclass=E&adults=1&children=0&infants=0`;
+      break;
+    case "Yatra":
+    case "YATRA": {
+      // Yatra uses D/M/YYYY for departure_date
+      const [y, m, d] = date.split("-");
+      url = `https://www.yatra.com/airlines/?origin=${from}&destination=${to}&departure_date=${d}%2F${m}%2F${y}&adults=1&child=0&infant=0&travel_type=oneWay`;
+      break;
+    }
     default:
       return null;
   }

@@ -14,9 +14,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 10.0,
-    "max_discount": 1500.0,
-    "min_transaction": 5000.0,
+    "discount_value": 10,
+    "max_discount": 1500,
+    "min_transaction": 5000,
     "coupon_code": "MMTHDFC",
     "valid_from": "2026-07-01",
     "expiry_date": "2027-12-31",
@@ -39,7 +39,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -57,9 +58,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "APP",
     "discount_type": "PERCENT",
-    "discount_value": 12.0,
-    "max_discount": 1200.0,
-    "min_transaction": 4000.0,
+    "discount_value": 12,
+    "max_discount": 1200,
+    "min_transaction": 4000,
     "coupon_code": "MMTSBI",
     "valid_from": "2026-07-01",
     "expiry_date": "2027-12-31",
@@ -82,7 +83,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -100,9 +102,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "FLAT",
-    "discount_value": 1000.0,
-    "max_discount": 1000.0,
-    "min_transaction": 6000.0,
+    "discount_value": 1000,
+    "max_discount": 1000,
+    "min_transaction": 6000,
     "coupon_code": "CTICICI",
     "valid_from": "2026-07-01",
     "expiry_date": "2027-12-31",
@@ -125,7 +127,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -143,9 +146,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB",
     "discount_type": "PERCENT",
-    "discount_value": 8.0,
-    "max_discount": 800.0,
-    "min_transaction": 3500.0,
+    "discount_value": 8,
+    "max_discount": 800,
+    "min_transaction": 3500,
     "coupon_code": "CTHDFC",
     "valid_from": "2026-07-01",
     "expiry_date": "2027-12-31",
@@ -168,7 +171,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -186,9 +190,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "FLAT",
-    "discount_value": 500.0,
-    "max_discount": 500.0,
-    "min_transaction": 3000.0,
+    "discount_value": 500,
+    "max_discount": 500,
+    "min_transaction": 3000,
     "coupon_code": "MMTFLY",
     "valid_from": "2026-07-01",
     "expiry_date": "2027-12-31",
@@ -211,7 +215,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -229,9 +234,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 7.0,
-    "max_discount": 600.0,
-    "min_transaction": 2500.0,
+    "discount_value": 7,
+    "max_discount": 600,
+    "min_transaction": 2500,
     "coupon_code": "CTFLY",
     "valid_from": "2026-07-01",
     "expiry_date": "2027-12-31",
@@ -254,7 +259,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -272,14 +278,17 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 15.0,
-    "max_discount": 2000.0,
-    "min_transaction": 7000.0,
+    "discount_value": 15,
+    "max_discount": 2000,
+    "min_transaction": 7000,
     "coupon_code": "MMTAXIS",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
-    "valid_days": null,
-    "updated_at": "2026-09-01",
+    "valid_days": [
+      1,
+      3
+    ],
+    "updated_at": "2026-09-17",
     "usage_limit": "Once per card",
     "new_user_only": false,
     "login_required": false,
@@ -297,7 +306,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -315,14 +325,17 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "APP",
     "discount_type": "PERCENT",
-    "discount_value": 12.0,
-    "max_discount": 1800.0,
-    "min_transaction": 6000.0,
+    "discount_value": 12,
+    "max_discount": 1800,
+    "min_transaction": 6000,
     "coupon_code": "CTAXIS",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
-    "valid_days": null,
-    "updated_at": "2026-09-01",
+    "valid_days": [
+      2,
+      4
+    ],
+    "updated_at": "2026-09-17",
     "usage_limit": "Once per card",
     "new_user_only": false,
     "login_required": false,
@@ -340,14 +353,15 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
     "offer_id": "MMT-KOTAK-001",
     "platform_id": "MAKEMYTRIP",
     "platform_name": "MakeMyTrip",
-    "offer_title": "Kotak domestic flight offer — Mon/Wed/Fri",
+    "offer_title": "Kotak Bank flight offer",
     "bank_id": "KOTAK",
     "bank_name": "Kotak Mahindra Bank",
     "card_name": "Kotak Credit Card",
@@ -358,17 +372,13 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "FLAT",
-    "discount_value": 1200.0,
-    "max_discount": 1200.0,
-    "min_transaction": 5500.0,
+    "discount_value": 1200,
+    "max_discount": 1200,
+    "min_transaction": 5500,
     "coupon_code": "MMTKOTAK",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
-    "valid_days": [
-      1,
-      3,
-      5
-    ],
+    "valid_days": null,
     "updated_at": "2026-09-01",
     "usage_limit": "Once per card",
     "new_user_only": false,
@@ -387,14 +397,15 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
     "offer_id": "CT-KOTAK-001",
     "platform_id": "CLEARTRIP",
     "platform_name": "Cleartrip",
-    "offer_title": "Cleartrip Kotak domestic flight offer — Tue/Thu/Sat",
+    "offer_title": "Kotak Bank Cleartrip offer",
     "bank_id": "KOTAK",
     "bank_name": "Kotak Mahindra Bank",
     "card_name": "Kotak Credit Card",
@@ -405,17 +416,13 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 10.0,
-    "max_discount": 1000.0,
-    "min_transaction": 4500.0,
+    "discount_value": 10,
+    "max_discount": 1000,
+    "min_transaction": 4500,
     "coupon_code": "CTKOTAK",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
-    "valid_days": [
-      2,
-      4,
-      6
-    ],
+    "valid_days": null,
     "updated_at": "2026-09-01",
     "usage_limit": "Once per card",
     "new_user_only": false,
@@ -434,14 +441,15 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
     "offer_id": "MMT-AMEX-001",
     "platform_id": "MAKEMYTRIP",
     "platform_name": "MakeMyTrip",
-    "offer_title": "HDFC Amex domestic flight offer — weekdays",
+    "offer_title": "Amex flight booking offer",
     "bank_id": "AMEX",
     "bank_name": "American Express",
     "card_name": "Amex Credit Card",
@@ -452,20 +460,16 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB",
     "discount_type": "PERCENT",
-    "discount_value": 20.0,
-    "max_discount": 2500.0,
-    "min_transaction": 8000.0,
+    "discount_value": 20,
+    "max_discount": 2500,
+    "min_transaction": 8000,
     "coupon_code": "MMTAMEX",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
     "valid_days": [
-      1,
-      2,
-      3,
-      4,
       5
     ],
-    "updated_at": "2026-09-01",
+    "updated_at": "2026-09-17",
     "usage_limit": "Once per card",
     "new_user_only": false,
     "login_required": false,
@@ -483,7 +487,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -501,9 +506,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 10.0,
-    "max_discount": 1100.0,
-    "min_transaction": 4500.0,
+    "discount_value": 10,
+    "max_discount": 1100,
+    "min_transaction": 4500,
     "coupon_code": "CTSBI",
     "valid_from": "2026-07-01",
     "expiry_date": "2027-12-31",
@@ -526,7 +531,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -544,9 +550,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 12.0,
-    "max_discount": 1400.0,
-    "min_transaction": 5500.0,
+    "discount_value": 12,
+    "max_discount": 1400,
+    "min_transaction": 5500,
     "coupon_code": "MMTICICI",
     "valid_from": "2026-07-01",
     "expiry_date": "2027-12-31",
@@ -569,14 +575,15 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
     "offer_id": "MMT-INDUSIND-001",
     "platform_id": "MAKEMYTRIP",
     "platform_name": "MakeMyTrip",
-    "offer_title": "IndusInd domestic flight offer — Tue–Fri",
+    "offer_title": "IndusInd Bank flight offer",
     "bank_id": "INDUSIND",
     "bank_name": "IndusInd Bank",
     "card_name": "IndusInd Credit Card",
@@ -587,18 +594,13 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "APP",
     "discount_type": "FLAT",
-    "discount_value": 1500.0,
-    "max_discount": 1500.0,
-    "min_transaction": 7000.0,
+    "discount_value": 1500,
+    "max_discount": 1500,
+    "min_transaction": 7000,
     "coupon_code": "MMTINDUS",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
-    "valid_days": [
-      2,
-      3,
-      4,
-      5
-    ],
+    "valid_days": null,
     "updated_at": "2026-09-01",
     "usage_limit": "Once per card",
     "new_user_only": false,
@@ -617,14 +619,15 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
     "offer_id": "CT-INDUSIND-001",
     "platform_id": "CLEARTRIP",
     "platform_name": "Cleartrip",
-    "offer_title": "Cleartrip IndusInd domestic flight offer — Mon–Thu",
+    "offer_title": "IndusInd Bank Cleartrip offer",
     "bank_id": "INDUSIND",
     "bank_name": "IndusInd Bank",
     "card_name": "IndusInd Credit Card",
@@ -635,18 +638,13 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 11.0,
-    "max_discount": 1300.0,
-    "min_transaction": 6000.0,
+    "discount_value": 11,
+    "max_discount": 1300,
+    "min_transaction": 6000,
     "coupon_code": "CTINDUS",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
-    "valid_days": [
-      1,
-      2,
-      3,
-      4
-    ],
+    "valid_days": null,
     "updated_at": "2026-09-01",
     "usage_limit": "Once per card",
     "new_user_only": false,
@@ -665,7 +663,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -683,9 +682,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 8.0,
-    "max_discount": 900.0,
-    "min_transaction": 4000.0,
+    "discount_value": 8,
+    "max_discount": 900,
+    "min_transaction": 4000,
     "coupon_code": "MMTYES",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
@@ -708,7 +707,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -726,9 +726,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "FLAT",
-    "discount_value": 900.0,
-    "max_discount": 900.0,
-    "min_transaction": 4000.0,
+    "discount_value": 900,
+    "max_discount": 900,
+    "min_transaction": 4000,
     "coupon_code": "CTIDFC",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
@@ -751,7 +751,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -769,9 +770,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 9.0,
-    "max_discount": 1000.0,
-    "min_transaction": 4500.0,
+    "discount_value": 9,
+    "max_discount": 1000,
+    "min_transaction": 4500,
     "coupon_code": "MMTIDFC",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
@@ -794,7 +795,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -812,9 +814,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB",
     "discount_type": "PERCENT",
-    "discount_value": 10.0,
-    "max_discount": 1100.0,
-    "min_transaction": 5000.0,
+    "discount_value": 10,
+    "max_discount": 1100,
+    "min_transaction": 5000,
     "coupon_code": "CTRBL",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
@@ -837,7 +839,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -855,9 +858,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "FLAT",
-    "discount_value": 700.0,
-    "max_discount": 700.0,
-    "min_transaction": 3500.0,
+    "discount_value": 700,
+    "max_discount": 700,
+    "min_transaction": 3500,
     "coupon_code": "MMTBOB",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
@@ -880,14 +883,15 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
     "offer_id": "CT-AMEX-001",
     "platform_id": "CLEARTRIP",
     "platform_name": "Cleartrip",
-    "offer_title": "Cleartrip Amex domestic flight offer — Mon–Thu",
+    "offer_title": "Amex Cleartrip offer",
     "bank_id": "AMEX",
     "bank_name": "American Express",
     "card_name": "Amex Credit Card",
@@ -898,19 +902,17 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB",
     "discount_type": "PERCENT",
-    "discount_value": 18.0,
-    "max_discount": 2200.0,
-    "min_transaction": 7500.0,
+    "discount_value": 18,
+    "max_discount": 2200,
+    "min_transaction": 7500,
     "coupon_code": "CTAMEX",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
     "valid_days": [
-      1,
-      2,
-      3,
-      4
+      6,
+      0
     ],
-    "updated_at": "2026-09-01",
+    "updated_at": "2026-09-17",
     "usage_limit": "Once per card",
     "new_user_only": false,
     "login_required": false,
@@ -928,7 +930,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -946,9 +949,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 7.0,
-    "max_discount": 700.0,
-    "min_transaction": 3000.0,
+    "discount_value": 7,
+    "max_discount": 700,
+    "min_transaction": 3000,
     "coupon_code": "MMTAXISDB",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
@@ -971,7 +974,8 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
@@ -989,9 +993,9 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "APP",
     "discount_type": "PERCENT",
-    "discount_value": 10.0,
-    "max_discount": 800.0,
-    "min_transaction": 2000.0,
+    "discount_value": 10,
+    "max_discount": 800,
+    "min_transaction": 2000,
     "coupon_code": "MMTNEW",
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
@@ -1014,14 +1018,15 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
     "offer_id": "CT-FEDERAL-001",
     "platform_id": "CLEARTRIP",
     "platform_name": "Cleartrip",
-    "offer_title": "Federal Bank domestic flight offer — starts Sep 19",
+    "offer_title": "Federal Bank Cleartrip offer",
     "bank_id": "FEDERAL",
     "bank_name": "Federal Bank",
     "card_name": "Federal Bank Credit Card",
@@ -1032,11 +1037,11 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 9.0,
-    "max_discount": 950.0,
-    "min_transaction": 4500.0,
+    "discount_value": 9,
+    "max_discount": 950,
+    "min_transaction": 4500,
     "coupon_code": "CTFED",
-    "valid_from": "2026-09-19",
+    "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
     "valid_days": null,
     "updated_at": "2026-09-01",
@@ -1057,14 +1062,15 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
     "offer_id": "MMT-PNB-001",
     "platform_id": "MAKEMYTRIP",
     "platform_name": "MakeMyTrip",
-    "offer_title": "PNB domestic flight offer — limited time (ends Fri Sep 18)",
+    "offer_title": "PNB domestic flight offer",
     "bank_id": "PNB",
     "bank_name": "Punjab National Bank",
     "card_name": "PNB Credit Card",
@@ -1075,12 +1081,12 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "FLAT",
-    "discount_value": 600.0,
-    "max_discount": 600.0,
-    "min_transaction": 3000.0,
+    "discount_value": 600,
+    "max_discount": 600,
+    "min_transaction": 3000,
     "coupon_code": "MMTPNB",
     "valid_from": "2026-08-01",
-    "expiry_date": "2026-09-18",
+    "expiry_date": "2027-12-31",
     "valid_days": null,
     "updated_at": "2026-09-01",
     "usage_limit": "Once per card",
@@ -1100,14 +1106,15 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
     "offer_id": "MMT-AU-001",
     "platform_id": "MAKEMYTRIP",
     "platform_name": "MakeMyTrip",
-    "offer_title": "AU Bank Saturday flash domestic flight offer",
+    "offer_title": "AU Bank Sep offer",
     "bank_id": "AU",
     "bank_name": "AU Small Finance Bank",
     "card_name": "AU Bank Credit Card",
@@ -1118,15 +1125,13 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB_AND_APP",
     "discount_type": "PERCENT",
-    "discount_value": 20.0,
-    "max_discount": 3200.0,
-    "min_transaction": 5000.0,
+    "discount_value": 14,
+    "max_discount": 1600,
+    "min_transaction": 5000,
     "coupon_code": "MMTAU",
     "valid_from": "2026-09-01",
     "expiry_date": "2026-11-30",
-    "valid_days": [
-      6
-    ],
+    "valid_days": null,
     "updated_at": "2026-09-04",
     "usage_limit": "Once per card",
     "new_user_only": false,
@@ -1145,14 +1150,15 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
     "offer_id": "CT-BOB-001",
     "platform_id": "CLEARTRIP",
     "platform_name": "Cleartrip",
-    "offer_title": "Cleartrip BoB weekend domestic flight offer",
+    "offer_title": "Bank of Baroda Sep offer",
     "bank_id": "BOB",
     "bank_name": "Bank of Baroda",
     "card_name": "BOB Credit Card",
@@ -1163,16 +1169,13 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "WEB",
     "discount_type": "FLAT",
-    "discount_value": 1100.0,
-    "max_discount": 1100.0,
-    "min_transaction": 4500.0,
+    "discount_value": 1100,
+    "max_discount": 1100,
+    "min_transaction": 4500,
     "coupon_code": "CTBOB",
     "valid_from": "2026-09-01",
     "expiry_date": "2026-11-30",
-    "valid_days": [
-      0,
-      6
-    ],
+    "valid_days": null,
     "updated_at": "2026-09-04",
     "usage_limit": "Once per card",
     "new_user_only": false,
@@ -1191,14 +1194,15 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   },
   {
     "offer_id": "MMT-HDFC-DEBIT-002",
     "platform_id": "MAKEMYTRIP",
     "platform_name": "MakeMyTrip",
-    "offer_title": "HDFC Debit domestic flight offer — Fri & Sat",
+    "offer_title": "HDFC Debit Sep cashback",
     "bank_id": "HDFC",
     "bank_name": "HDFC Bank",
     "card_name": "HDFC Debit Card",
@@ -1209,16 +1213,13 @@
     "category": "FLIGHT_DOMESTIC",
     "booking_channel": "APP",
     "discount_type": "PERCENT",
-    "discount_value": 11.0,
-    "max_discount": 1050.0,
-    "min_transaction": 4000.0,
+    "discount_value": 11,
+    "max_discount": 1050,
+    "min_transaction": 4000,
     "coupon_code": "MMTHDFD",
     "valid_from": "2026-09-01",
     "expiry_date": "2026-11-30",
-    "valid_days": [
-      5,
-      6
-    ],
+    "valid_days": null,
     "updated_at": "2026-09-04",
     "usage_limit": "Once per card",
     "new_user_only": false,
@@ -1237,7 +1238,3681 @@
     "publish_status": "READY",
     "extra": {
       "data_classification": "PRODUCTION",
-      "is_test_data": false
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "FLASH-MMT-HDFC-001",
+    "platform_id": "MAKEMYTRIP",
+    "platform_name": "MakeMyTrip",
+    "offer_title": "HDFC Weekend Flash Sale — ends 19 Sep",
+    "bank_id": "HDFC",
+    "bank_name": "HDFC Bank",
+    "card_name": "HDFC Credit Card",
+    "supported_cards": [
+      "HDFC Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 30,
+    "max_discount": 3000,
+    "min_transaction": 10000,
+    "coupon_code": "HDFCFLASH",
+    "valid_from": "2026-09-17",
+    "expiry_date": "2026-09-19",
+    "valid_days": [
+      5,
+      6,
+      0
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Flash sale"
+    ],
+    "terms_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "source_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 120,
+    "is_active": true,
+    "publish_status": "READY",
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "FLASH-CT-AXIS-001",
+    "platform_id": "CLEARTRIP",
+    "platform_name": "Cleartrip",
+    "offer_title": "Axis Bank Cleartrip Flash — ends 19 Sep",
+    "bank_id": "AXIS",
+    "bank_name": "Axis Bank",
+    "card_name": "Axis Bank Credit Card",
+    "supported_cards": [
+      "Axis Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 2500,
+    "max_discount": 2500,
+    "min_transaction": 7000,
+    "coupon_code": "AXISFLASH",
+    "valid_from": "2026-09-17",
+    "expiry_date": "2026-09-19",
+    "valid_days": [
+      3,
+      4
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Flash sale"
+    ],
+    "terms_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "source_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 118,
+    "is_active": true,
+    "publish_status": "READY",
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "UPCOMING-HDFC-Q4-001",
+    "platform_id": "MAKEMYTRIP",
+    "platform_name": "MakeMyTrip",
+    "offer_title": "HDFC Q4 Festive Offer — from 1 Oct",
+    "bank_id": "HDFC",
+    "bank_name": "HDFC Bank",
+    "card_name": "HDFC Credit Card",
+    "supported_cards": [
+      "HDFC Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 20,
+    "max_discount": 2000,
+    "min_transaction": 7000,
+    "coupon_code": "HDFCQ4",
+    "valid_from": "2026-10-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": null,
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid from 1 Oct 2026",
+      "Valid on HDFC credit cards"
+    ],
+    "terms_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "source_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "UNVERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 102,
+    "is_active": true,
+    "publish_status": "UPCOMING",
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "UPCOMING-ICICI-FESTIVE-001",
+    "platform_id": "CLEARTRIP",
+    "platform_name": "Cleartrip",
+    "offer_title": "ICICI Festive Special — from 1 Oct",
+    "bank_id": "ICICI",
+    "bank_name": "ICICI Bank",
+    "card_name": "ICICI Credit Card",
+    "supported_cards": [
+      "ICICI Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 18,
+    "max_discount": 2200,
+    "min_transaction": 7500,
+    "coupon_code": "ICICIFEST",
+    "valid_from": "2026-10-01",
+    "expiry_date": "2026-11-15",
+    "valid_days": null,
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Diwali season offer — 1 Oct to 15 Nov",
+      "Valid on ICICI credit cards"
+    ],
+    "terms_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "source_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "UNVERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 99,
+    "is_active": true,
+    "publish_status": "UPCOMING",
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "UPCOMING-MMT-NOCARD-003",
+    "platform_id": "MAKEMYTRIP",
+    "platform_name": "MakeMyTrip",
+    "offer_title": "MakeMyTrip Diwali coupon — from 15 Oct",
+    "bank_id": null,
+    "bank_name": null,
+    "card_name": "No card required",
+    "supported_cards": [
+      "No card required"
+    ],
+    "payment_method": "NO_CARD",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "APP",
+    "discount_type": "PERCENT",
+    "discount_value": 12,
+    "max_discount": 1000,
+    "min_transaction": 3000,
+    "coupon_code": "MMTDIWALI",
+    "valid_from": "2026-10-15",
+    "expiry_date": "2026-11-30",
+    "valid_days": null,
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per user",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid from 15 Oct 2026",
+      "No bank card required"
+    ],
+    "terms_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "source_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "UNVERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 77,
+    "is_active": true,
+    "publish_status": "UPCOMING",
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-HDFC-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "HDFC Bank Goibibo offer",
+    "bank_id": "HDFC",
+    "bank_name": "HDFC Bank",
+    "card_name": "HDFC Credit Card",
+    "supported_cards": [
+      "HDFC Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 12,
+    "max_discount": 1600,
+    "min_transaction": 5000,
+    "coupon_code": "GIBHDFC",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      1,
+      3
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on HDFC Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 96,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-SBI-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "SBI Card Goibibo offer",
+    "bank_id": "SBI",
+    "bank_name": "State Bank of India",
+    "card_name": "SBI Credit Card",
+    "supported_cards": [
+      "SBI Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 10,
+    "max_discount": 1000,
+    "min_transaction": 4000,
+    "coupon_code": "GIBSBI",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      2,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on SBI Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 83,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-ICICI-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "ICICI Goibibo flight deal",
+    "bank_id": "ICICI",
+    "bank_name": "ICICI Bank",
+    "card_name": "ICICI Credit Card",
+    "supported_cards": [
+      "ICICI Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1100,
+    "max_discount": 1100,
+    "min_transaction": 5500,
+    "coupon_code": "GIBICICI",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      4,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on ICICI Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 90,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-AXIS-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "Axis Bank Goibibo deal",
+    "bank_id": "AXIS",
+    "bank_name": "Axis Bank",
+    "card_name": "Axis Bank Credit Card",
+    "supported_cards": [
+      "Axis Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 13,
+    "max_discount": 1700,
+    "min_transaction": 6500,
+    "coupon_code": "GIBAXIS",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      0,
+      3
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Axis Bank Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 91,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-KOTAK-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "Kotak Goibibo special",
+    "bank_id": "KOTAK",
+    "bank_name": "Kotak Mahindra Bank",
+    "card_name": "Kotak Credit Card",
+    "supported_cards": [
+      "Kotak Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1300,
+    "max_discount": 1300,
+    "min_transaction": 6000,
+    "coupon_code": "GIBKOTAK",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      1,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Kotak Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 85,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-INDUSIND-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "IndusInd Goibibo offer",
+    "bank_id": "INDUSIND",
+    "bank_name": "IndusInd Bank",
+    "card_name": "IndusInd Credit Card",
+    "supported_cards": [
+      "IndusInd Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 11,
+    "max_discount": 1400,
+    "min_transaction": 6500,
+    "coupon_code": "GIBINDUS",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      2,
+      4
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on IndusInd Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 80,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-AMEX-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "Amex Goibibo travel offer",
+    "bank_id": "AMEX",
+    "bank_name": "American Express",
+    "card_name": "Amex Credit Card",
+    "supported_cards": [
+      "Amex Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 17,
+    "max_discount": 2100,
+    "min_transaction": 7500,
+    "coupon_code": "GIBAMEX",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Amex Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 103,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-YES-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "Yes Bank Goibibo deal",
+    "bank_id": "YES",
+    "bank_name": "Yes Bank",
+    "card_name": "Yes Bank Credit Card",
+    "supported_cards": [
+      "Yes Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 9,
+    "max_discount": 950,
+    "min_transaction": 4000,
+    "coupon_code": "GIBYES",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      3,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Yes Bank Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 72,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-IDFC-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "IDFC First Goibibo offer",
+    "bank_id": "IDFC",
+    "bank_name": "IDFC First Bank",
+    "card_name": "IDFC First Credit Card",
+    "supported_cards": [
+      "IDFC First Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1050,
+    "max_discount": 1050,
+    "min_transaction": 5000,
+    "coupon_code": "GIBIDFC",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      1,
+      4
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on IDFC First Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 74,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-RBL-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "RBL Bank Goibibo deal",
+    "bank_id": "RBL",
+    "bank_name": "RBL Bank",
+    "card_name": "RBL Credit Card",
+    "supported_cards": [
+      "RBL Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 8,
+    "max_discount": 850,
+    "min_transaction": 4500,
+    "coupon_code": "GIBRBL",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      2,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on RBL Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 69,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-FEDERAL-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "Federal Bank Goibibo offer",
+    "bank_id": "FEDERAL",
+    "bank_name": "Federal Bank",
+    "card_name": "Federal Bank Credit Card",
+    "supported_cards": [
+      "Federal Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 10,
+    "max_discount": 1000,
+    "min_transaction": 4500,
+    "coupon_code": "GIBFED",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      0,
+      4
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Federal Bank Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 70,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-HDFC-DEBIT-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "HDFC Debit Goibibo cashback",
+    "bank_id": "HDFC",
+    "bank_name": "HDFC Bank",
+    "card_name": "HDFC Debit Card",
+    "supported_cards": [
+      "HDFC Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 9,
+    "max_discount": 900,
+    "min_transaction": 3500,
+    "coupon_code": "GIBHDFCD",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      3,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on HDFC Debit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 75,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-AU-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "AU Bank Goibibo offer",
+    "bank_id": "AU",
+    "bank_name": "AU Small Finance Bank",
+    "card_name": "AU Bank Credit Card",
+    "supported_cards": [
+      "AU Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 13,
+    "max_discount": 1500,
+    "min_transaction": 5000,
+    "coupon_code": "GIBAU",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      1,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on AU Bank Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 94,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-NOCARD-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "Goibibo flight coupon",
+    "bank_id": null,
+    "bank_name": null,
+    "card_name": "No card required",
+    "supported_cards": [
+      "No card required"
+    ],
+    "payment_method": "NO_CARD",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "APP",
+    "discount_type": "FLAT",
+    "discount_value": 600,
+    "max_discount": 600,
+    "min_transaction": 2500,
+    "coupon_code": "GIBFLY",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": null,
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "No bank card required"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 67,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-SBI-DEBIT-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "SBI Debit Goibibo offer",
+    "bank_id": "SBI",
+    "bank_name": "State Bank of India",
+    "card_name": "SBI Debit Card",
+    "supported_cards": [
+      "SBI Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 800,
+    "max_discount": 800,
+    "min_transaction": 4000,
+    "coupon_code": "GIBSBID",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      2,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on SBI Debit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 66,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-BOB-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "Bank of Baroda Goibibo deal",
+    "bank_id": "BOB",
+    "bank_name": "Bank of Baroda",
+    "card_name": "BOB Credit Card",
+    "supported_cards": [
+      "BOB Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 8,
+    "max_discount": 900,
+    "min_transaction": 4000,
+    "coupon_code": "GIBBOB",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      4,
+      0
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on BOB Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 65,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "GIB-PNB-001",
+    "platform_id": "GOIBIBO",
+    "platform_name": "Goibibo",
+    "offer_title": "PNB Goibibo flight offer",
+    "bank_id": "PNB",
+    "bank_name": "Punjab National Bank",
+    "card_name": "PNB Credit Card",
+    "supported_cards": [
+      "PNB Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 650,
+    "max_discount": 650,
+    "min_transaction": 3000,
+    "coupon_code": "GIBPNB",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      1,
+      3
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on PNB Credit Card"
+    ],
+    "terms_url": "https://www.goibibo.com/flights/offers/",
+    "source_url": "https://www.goibibo.com/flights/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 62,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-HDFC-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "HDFC ixigo domestic offer",
+    "bank_id": "HDFC",
+    "bank_name": "HDFC Bank",
+    "card_name": "HDFC Credit Card",
+    "supported_cards": [
+      "HDFC Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 11,
+    "max_discount": 1400,
+    "min_transaction": 5000,
+    "coupon_code": "IXIHDFC",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      2,
+      4
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on HDFC Credit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 97,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-AXIS-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "Axis Bank ixigo deal",
+    "bank_id": "AXIS",
+    "bank_name": "Axis Bank",
+    "card_name": "Axis Bank Credit Card",
+    "supported_cards": [
+      "Axis Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 14,
+    "max_discount": 1900,
+    "min_transaction": 7000,
+    "coupon_code": "IXIAXIS",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      0,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Axis Bank Credit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 101,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-ICICI-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "ICICI ixigo flight offer",
+    "bank_id": "ICICI",
+    "bank_name": "ICICI Bank",
+    "card_name": "ICICI Credit Card",
+    "supported_cards": [
+      "ICICI Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1200,
+    "max_discount": 1200,
+    "min_transaction": 6000,
+    "coupon_code": "IXICICICI",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      1,
+      3
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on ICICI Credit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 89,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-SBI-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "SBI Card ixigo deal",
+    "bank_id": "SBI",
+    "bank_name": "State Bank of India",
+    "card_name": "SBI Credit Card",
+    "supported_cards": [
+      "SBI Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 11,
+    "max_discount": 1100,
+    "min_transaction": 4500,
+    "coupon_code": "IXISBI",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      3,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on SBI Credit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 84,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-KOTAK-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "Kotak ixigo special",
+    "bank_id": "KOTAK",
+    "bank_name": "Kotak Mahindra Bank",
+    "card_name": "Kotak Credit Card",
+    "supported_cards": [
+      "Kotak Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1100,
+    "max_discount": 1100,
+    "min_transaction": 5500,
+    "coupon_code": "IXIKOTAK",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      2,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Kotak Credit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 81,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-INDUSIND-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "IndusInd ixigo flight offer",
+    "bank_id": "INDUSIND",
+    "bank_name": "IndusInd Bank",
+    "card_name": "IndusInd Credit Card",
+    "supported_cards": [
+      "IndusInd Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 12,
+    "max_discount": 1350,
+    "min_transaction": 6000,
+    "coupon_code": "IXIINDUS",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      4,
+      1
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on IndusInd Credit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 78,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-HDFC-DEBIT-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "HDFC Debit ixigo cashback",
+    "bank_id": "HDFC",
+    "bank_name": "HDFC Bank",
+    "card_name": "HDFC Debit Card",
+    "supported_cards": [
+      "HDFC Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 10,
+    "max_discount": 1000,
+    "min_transaction": 4000,
+    "coupon_code": "IXIHDFCD",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      0,
+      3
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on HDFC Debit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 76,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-YES-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "Yes Bank ixigo deal",
+    "bank_id": "YES",
+    "bank_name": "Yes Bank",
+    "card_name": "Yes Bank Credit Card",
+    "supported_cards": [
+      "Yes Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 850,
+    "max_discount": 850,
+    "min_transaction": 4000,
+    "coupon_code": "IXIYES",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      1,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Yes Bank Credit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 71,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-AXIS-DEBIT-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "Axis Debit ixigo offer",
+    "bank_id": "AXIS",
+    "bank_name": "Axis Bank",
+    "card_name": "Axis Bank Debit Card",
+    "supported_cards": [
+      "Axis Bank Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 8,
+    "max_discount": 800,
+    "min_transaction": 3500,
+    "coupon_code": "IXIAXISD",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      2,
+      4
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Axis Bank Debit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 64,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-NOCARD-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "ixigo wallet cashback",
+    "bank_id": null,
+    "bank_name": null,
+    "card_name": "No card required",
+    "supported_cards": [
+      "No card required"
+    ],
+    "payment_method": "NO_CARD",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "APP",
+    "discount_type": "PERCENT",
+    "discount_value": 8,
+    "max_discount": 700,
+    "min_transaction": 2000,
+    "coupon_code": "IXIFLY",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": null,
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "No bank card required"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 68,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-RBL-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "RBL Bank ixigo offer",
+    "bank_id": "RBL",
+    "bank_name": "RBL Bank",
+    "card_name": "RBL Credit Card",
+    "supported_cards": [
+      "RBL Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 9,
+    "max_discount": 900,
+    "min_transaction": 4500,
+    "coupon_code": "IXIRBL",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      3,
+      0
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on RBL Credit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 67,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-FEDERAL-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "Federal Bank ixigo deal",
+    "bank_id": "FEDERAL",
+    "bank_name": "Federal Bank",
+    "card_name": "Federal Bank Credit Card",
+    "supported_cards": [
+      "Federal Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 950,
+    "max_discount": 950,
+    "min_transaction": 4500,
+    "coupon_code": "IXIFED",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      1,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Federal Bank Credit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 68,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-AU-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "AU Bank ixigo offer",
+    "bank_id": "AU",
+    "bank_name": "AU Small Finance Bank",
+    "card_name": "AU Bank Credit Card",
+    "supported_cards": [
+      "AU Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 12,
+    "max_discount": 1400,
+    "min_transaction": 4500,
+    "coupon_code": "IXIAU",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      2,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on AU Bank Credit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 93,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-AMEX-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "Amex ixigo weekend deal",
+    "bank_id": "AMEX",
+    "bank_name": "American Express",
+    "card_name": "Amex Credit Card",
+    "supported_cards": [
+      "Amex Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 16,
+    "max_discount": 2000,
+    "min_transaction": 7000,
+    "coupon_code": "IXIAMEX",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      6,
+      0
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Amex Credit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 104,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "IXIGO-BOB-001",
+    "platform_id": "IXIGO",
+    "platform_name": "ixigo",
+    "offer_title": "Bank of Baroda ixigo offer",
+    "bank_id": "BOB",
+    "bank_name": "Bank of Baroda",
+    "card_name": "BOB Debit Card",
+    "supported_cards": [
+      "BOB Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 750,
+    "max_discount": 750,
+    "min_transaction": 3500,
+    "coupon_code": "IXIBOB",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      4,
+      1
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on BOB Debit Card"
+    ],
+    "terms_url": "https://www.ixigo.com/flights/offers",
+    "source_url": "https://www.ixigo.com/flights/offers",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 63,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-HDFC-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "HDFC EaseMyTrip offer",
+    "bank_id": "HDFC",
+    "bank_name": "HDFC Bank",
+    "card_name": "HDFC Credit Card",
+    "supported_cards": [
+      "HDFC Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 10,
+    "max_discount": 1300,
+    "min_transaction": 5000,
+    "coupon_code": "EMTHDFC",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      3,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on HDFC Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 95,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-ICICI-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "ICICI EaseMyTrip deal",
+    "bank_id": "ICICI",
+    "bank_name": "ICICI Bank",
+    "card_name": "ICICI Credit Card",
+    "supported_cards": [
+      "ICICI Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 13,
+    "max_discount": 1500,
+    "min_transaction": 6000,
+    "coupon_code": "EMTICICI",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      1,
+      4
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on ICICI Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 88,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-AXIS-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "Axis Bank EaseMyTrip",
+    "bank_id": "AXIS",
+    "bank_name": "Axis Bank",
+    "card_name": "Axis Bank Credit Card",
+    "supported_cards": [
+      "Axis Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1600,
+    "max_discount": 1600,
+    "min_transaction": 7000,
+    "coupon_code": "EMTAXIS",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      2,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Axis Bank Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 100,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-SBI-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "SBI EaseMyTrip offer",
+    "bank_id": "SBI",
+    "bank_name": "State Bank of India",
+    "card_name": "SBI Credit Card",
+    "supported_cards": [
+      "SBI Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 9,
+    "max_discount": 950,
+    "min_transaction": 4000,
+    "coupon_code": "EMTSBI",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      0,
+      3
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on SBI Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 82,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-KOTAK-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "Kotak EaseMyTrip deal",
+    "bank_id": "KOTAK",
+    "bank_name": "Kotak Mahindra Bank",
+    "card_name": "Kotak Credit Card",
+    "supported_cards": [
+      "Kotak Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 10,
+    "max_discount": 1000,
+    "min_transaction": 5000,
+    "coupon_code": "EMTKOTAK",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      5,
+      1
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Kotak Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 79,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-INDUSIND-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "IndusInd EaseMyTrip offer",
+    "bank_id": "INDUSIND",
+    "bank_name": "IndusInd Bank",
+    "card_name": "IndusInd Credit Card",
+    "supported_cards": [
+      "IndusInd Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1400,
+    "max_discount": 1400,
+    "min_transaction": 7000,
+    "coupon_code": "EMTINDUS",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      4,
+      2
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on IndusInd Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 87,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-YES-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "Yes Bank EaseMyTrip deal",
+    "bank_id": "YES",
+    "bank_name": "Yes Bank",
+    "card_name": "Yes Bank Credit Card",
+    "supported_cards": [
+      "Yes Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 8,
+    "max_discount": 800,
+    "min_transaction": 4000,
+    "coupon_code": "EMTYES",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      3,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Yes Bank Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 73,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-IDFC-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "IDFC First EaseMyTrip offer",
+    "bank_id": "IDFC",
+    "bank_name": "IDFC First Bank",
+    "card_name": "IDFC First Credit Card",
+    "supported_cards": [
+      "IDFC First Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1000,
+    "max_discount": 1000,
+    "min_transaction": 5000,
+    "coupon_code": "EMTIDFC",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      1,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on IDFC First Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 75,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-HDFC-DEBIT-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "HDFC Debit EaseMyTrip cashback",
+    "bank_id": "HDFC",
+    "bank_name": "HDFC Bank",
+    "card_name": "HDFC Debit Card",
+    "supported_cards": [
+      "HDFC Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 8,
+    "max_discount": 800,
+    "min_transaction": 3500,
+    "coupon_code": "EMTHDFCD",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      2,
+      0
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on HDFC Debit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 73,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-NOCARD-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "EaseMyTrip coupon deal",
+    "bank_id": null,
+    "bank_name": null,
+    "card_name": "No card required",
+    "supported_cards": [
+      "No card required"
+    ],
+    "payment_method": "NO_CARD",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 550,
+    "max_discount": 550,
+    "min_transaction": 2500,
+    "coupon_code": "EMTFLY",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": null,
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "No bank card required"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 66,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-RBL-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "RBL EaseMyTrip offer",
+    "bank_id": "RBL",
+    "bank_name": "RBL Bank",
+    "card_name": "RBL Credit Card",
+    "supported_cards": [
+      "RBL Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1000,
+    "max_discount": 1000,
+    "min_transaction": 5000,
+    "coupon_code": "EMTRBL",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      4,
+      0
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on RBL Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 70,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-FEDERAL-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "Federal Bank EaseMyTrip deal",
+    "bank_id": "FEDERAL",
+    "bank_name": "Federal Bank",
+    "card_name": "Federal Bank Credit Card",
+    "supported_cards": [
+      "Federal Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 9,
+    "max_discount": 900,
+    "min_transaction": 4500,
+    "coupon_code": "EMTFED",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      2,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Federal Bank Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 69,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-AMEX-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "Amex EaseMyTrip offer",
+    "bank_id": "AMEX",
+    "bank_name": "American Express",
+    "card_name": "Amex Credit Card",
+    "supported_cards": [
+      "Amex Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 15,
+    "max_discount": 1900,
+    "min_transaction": 8000,
+    "coupon_code": "EMTAMEX",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Amex Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 105,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-AU-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "AU Bank EaseMyTrip deal",
+    "bank_id": "AU",
+    "bank_name": "AU Small Finance Bank",
+    "card_name": "AU Bank Credit Card",
+    "supported_cards": [
+      "AU Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 11,
+    "max_discount": 1300,
+    "min_transaction": 4500,
+    "coupon_code": "EMTAU",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      3,
+      1
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on AU Bank Credit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 92,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "EMT-AXIS-DEBIT-001",
+    "platform_id": "EASEMYTRIP",
+    "platform_name": "EaseMyTrip",
+    "offer_title": "Axis Debit EaseMyTrip cashback",
+    "bank_id": "AXIS",
+    "bank_name": "Axis Bank",
+    "card_name": "Axis Bank Debit Card",
+    "supported_cards": [
+      "Axis Bank Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 750,
+    "max_discount": 750,
+    "min_transaction": 3500,
+    "coupon_code": "EMTAXISD",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      6,
+      2
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Axis Bank Debit Card"
+    ],
+    "terms_url": "https://www.easemytrip.com/offers/",
+    "source_url": "https://www.easemytrip.com/offers/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 65,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-HDFC-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "HDFC Yatra domestic offer",
+    "bank_id": "HDFC",
+    "bank_name": "HDFC Bank",
+    "card_name": "HDFC Credit Card",
+    "supported_cards": [
+      "HDFC Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 11,
+    "max_discount": 1200,
+    "min_transaction": 5000,
+    "coupon_code": "YTRAHDFC",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      0,
+      4
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on HDFC Credit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 94,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-ICICI-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "ICICI Yatra flight deal",
+    "bank_id": "ICICI",
+    "bank_name": "ICICI Bank",
+    "card_name": "ICICI Credit Card",
+    "supported_cards": [
+      "ICICI Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 11,
+    "max_discount": 1300,
+    "min_transaction": 5500,
+    "coupon_code": "YTRAICICI",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      2,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on ICICI Credit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 86,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-SBI-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "SBI Card Yatra offer",
+    "bank_id": "SBI",
+    "bank_name": "State Bank of India",
+    "card_name": "SBI Credit Card",
+    "supported_cards": [
+      "SBI Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1100,
+    "max_discount": 1100,
+    "min_transaction": 5000,
+    "coupon_code": "YTRASBI",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      1,
+      3
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on SBI Credit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 82,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-AXIS-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "Axis Bank Yatra deal",
+    "bank_id": "AXIS",
+    "bank_name": "Axis Bank",
+    "card_name": "Axis Bank Credit Card",
+    "supported_cards": [
+      "Axis Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 12,
+    "max_discount": 1600,
+    "min_transaction": 6500,
+    "coupon_code": "YTRAAXIS",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      4,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Axis Bank Credit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 99,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-KOTAK-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "Kotak Yatra special offer",
+    "bank_id": "KOTAK",
+    "bank_name": "Kotak Mahindra Bank",
+    "card_name": "Kotak Credit Card",
+    "supported_cards": [
+      "Kotak Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1150,
+    "max_discount": 1150,
+    "min_transaction": 5500,
+    "coupon_code": "YTRAKOTAK",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      0,
+      2
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Kotak Credit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 80,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-INDUSIND-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "IndusInd Yatra flight deal",
+    "bank_id": "INDUSIND",
+    "bank_name": "IndusInd Bank",
+    "card_name": "IndusInd Credit Card",
+    "supported_cards": [
+      "IndusInd Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 10,
+    "max_discount": 1200,
+    "min_transaction": 6000,
+    "coupon_code": "YTRAINDUS",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      3,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on IndusInd Credit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 77,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-HDFC-DEBIT-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "HDFC Debit Yatra cashback",
+    "bank_id": "HDFC",
+    "bank_name": "HDFC Bank",
+    "card_name": "HDFC Debit Card",
+    "supported_cards": [
+      "HDFC Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 9,
+    "max_discount": 850,
+    "min_transaction": 3500,
+    "coupon_code": "YTRAHDFCD",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      1,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on HDFC Debit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 74,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-YES-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "Yes Bank Yatra offer",
+    "bank_id": "YES",
+    "bank_name": "Yes Bank",
+    "card_name": "Yes Bank Credit Card",
+    "supported_cards": [
+      "Yes Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 900,
+    "max_discount": 900,
+    "min_transaction": 4000,
+    "coupon_code": "YTRAYES",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      4,
+      0
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Yes Bank Credit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 72,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-IDFC-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "IDFC First Yatra deal",
+    "bank_id": "IDFC",
+    "bank_name": "IDFC First Bank",
+    "card_name": "IDFC First Credit Card",
+    "supported_cards": [
+      "IDFC First Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 9,
+    "max_discount": 1050,
+    "min_transaction": 5000,
+    "coupon_code": "YTRAIDFC",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      2,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on IDFC First Credit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 74,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-NOCARD-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "Yatra flight coupon",
+    "bank_id": null,
+    "bank_name": null,
+    "card_name": "No card required",
+    "supported_cards": [
+      "No card required"
+    ],
+    "payment_method": "NO_CARD",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 500,
+    "max_discount": 500,
+    "min_transaction": 2500,
+    "coupon_code": "YTRAFLY",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": null,
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "No bank card required"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 64,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-RBL-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "RBL Bank Yatra offer",
+    "bank_id": "RBL",
+    "bank_name": "RBL Bank",
+    "card_name": "RBL Credit Card",
+    "supported_cards": [
+      "RBL Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1000,
+    "max_discount": 1000,
+    "min_transaction": 5000,
+    "coupon_code": "YTRARBL",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      3,
+      1
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on RBL Credit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 68,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-AMEX-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "Amex Yatra premium offer",
+    "bank_id": "AMEX",
+    "bank_name": "American Express",
+    "card_name": "Amex Credit Card",
+    "supported_cards": [
+      "Amex Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 16,
+    "max_discount": 1900,
+    "min_transaction": 7500,
+    "coupon_code": "YTRAAMEX",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      6,
+      0
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Amex Credit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 106,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "YATRA-SBI-DEBIT-001",
+    "platform_id": "YATRA",
+    "platform_name": "Yatra",
+    "offer_title": "SBI Debit Yatra cashback",
+    "bank_id": "SBI",
+    "bank_name": "State Bank of India",
+    "card_name": "SBI Debit Card",
+    "supported_cards": [
+      "SBI Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 700,
+    "max_discount": 700,
+    "min_transaction": 3000,
+    "coupon_code": "YTRASBID",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      2,
+      4
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on SBI Debit Card"
+    ],
+    "terms_url": "https://www.yatra.com/offers/flights/",
+    "source_url": "https://www.yatra.com/offers/flights/",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 64,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "MMT-ICICI-DEBIT-001",
+    "platform_id": "MAKEMYTRIP",
+    "platform_name": "MakeMyTrip",
+    "offer_title": "ICICI Debit MakeMyTrip cashback",
+    "bank_id": "ICICI",
+    "bank_name": "ICICI Bank",
+    "card_name": "ICICI Debit Card",
+    "supported_cards": [
+      "ICICI Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 8,
+    "max_discount": 750,
+    "min_transaction": 3500,
+    "coupon_code": "MMTICICID",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      1,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on ICICI Debit Card"
+    ],
+    "terms_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "source_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 73,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "CT-KOTAK-DEBIT-001",
+    "platform_id": "CLEARTRIP",
+    "platform_name": "Cleartrip",
+    "offer_title": "Kotak Debit Cleartrip deal",
+    "bank_id": "KOTAK",
+    "bank_name": "Kotak Mahindra Bank",
+    "card_name": "Kotak Debit Card",
+    "supported_cards": [
+      "Kotak Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 700,
+    "max_discount": 700,
+    "min_transaction": 3500,
+    "coupon_code": "CTKOTAKD",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      2,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Kotak Debit Card"
+    ],
+    "terms_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "source_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 65,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "MMT-NOCARD-003",
+    "platform_id": "MAKEMYTRIP",
+    "platform_name": "MakeMyTrip",
+    "offer_title": "MakeMyTrip referral code",
+    "bank_id": null,
+    "bank_name": null,
+    "card_name": "No card required",
+    "supported_cards": [
+      "No card required"
+    ],
+    "payment_method": "NO_CARD",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "APP",
+    "discount_type": "FLAT",
+    "discount_value": 400,
+    "max_discount": 400,
+    "min_transaction": 2000,
+    "coupon_code": "MMTREF",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": true,
+    "login_required": false,
+    "eligibility_notes": [
+      "New users only",
+      "No bank card required"
+    ],
+    "terms_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "source_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 62,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "CT-NOCARD-002",
+    "platform_id": "CLEARTRIP",
+    "platform_name": "Cleartrip",
+    "offer_title": "Cleartrip SuperCoins offer",
+    "bank_id": null,
+    "bank_name": null,
+    "card_name": "No card required",
+    "supported_cards": [
+      "No card required"
+    ],
+    "payment_method": "NO_CARD",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "APP",
+    "discount_type": "PERCENT",
+    "discount_value": 5,
+    "max_discount": 500,
+    "min_transaction": 2500,
+    "coupon_code": "CTCOIN",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": null,
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "No bank card required"
+    ],
+    "terms_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "source_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 60,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "MMT-BOB-CC-001",
+    "platform_id": "MAKEMYTRIP",
+    "platform_name": "MakeMyTrip",
+    "offer_title": "Bank of Baroda MMT credit offer",
+    "bank_id": "BOB",
+    "bank_name": "Bank of Baroda",
+    "card_name": "BOB Credit Card",
+    "supported_cards": [
+      "BOB Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 9,
+    "max_discount": 1000,
+    "min_transaction": 4500,
+    "coupon_code": "MMTBOBCC",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      3,
+      1
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on BOB Credit Card"
+    ],
+    "terms_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "source_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 67,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "CT-PNB-001",
+    "platform_id": "CLEARTRIP",
+    "platform_name": "Cleartrip",
+    "offer_title": "PNB Cleartrip deal",
+    "bank_id": "PNB",
+    "bank_name": "Punjab National Bank",
+    "card_name": "PNB Credit Card",
+    "supported_cards": [
+      "PNB Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 700,
+    "max_discount": 700,
+    "min_transaction": 3500,
+    "coupon_code": "CTPNB",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      4,
+      0
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on PNB Credit Card"
+    ],
+    "terms_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "source_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 61,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "MMT-AU-002",
+    "platform_id": "MAKEMYTRIP",
+    "platform_name": "MakeMyTrip",
+    "offer_title": "AU Bank Oct special",
+    "bank_id": "AU",
+    "bank_name": "AU Small Finance Bank",
+    "card_name": "AU Bank Credit Card",
+    "supported_cards": [
+      "AU Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 15,
+    "max_discount": 1700,
+    "min_transaction": 5500,
+    "coupon_code": "MMTAUOCT",
+    "valid_from": "2026-10-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      1,
+      4
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on AU Bank Credit Card"
+    ],
+    "terms_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "source_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 96,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "CT-AU-001",
+    "platform_id": "CLEARTRIP",
+    "platform_name": "Cleartrip",
+    "offer_title": "AU Bank Cleartrip deal",
+    "bank_id": "AU",
+    "bank_name": "AU Small Finance Bank",
+    "card_name": "AU Bank Credit Card",
+    "supported_cards": [
+      "AU Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 1400,
+    "max_discount": 1400,
+    "min_transaction": 6000,
+    "coupon_code": "CTAU",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      2,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on AU Bank Credit Card"
+    ],
+    "terms_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "source_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 90,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "MMT-FEDERAL-001",
+    "platform_id": "MAKEMYTRIP",
+    "platform_name": "MakeMyTrip",
+    "offer_title": "Federal Bank MMT offer",
+    "bank_id": "FEDERAL",
+    "bank_name": "Federal Bank",
+    "card_name": "Federal Bank Credit Card",
+    "supported_cards": [
+      "Federal Bank Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 10,
+    "max_discount": 1050,
+    "min_transaction": 4500,
+    "coupon_code": "MMTFED",
+    "valid_from": "2026-08-01",
+    "expiry_date": "2027-12-31",
+    "valid_days": [
+      0,
+      6
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on Federal Bank Credit Card"
+    ],
+    "terms_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "source_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 70,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "MMT-IDFC-DEBIT-001",
+    "platform_id": "MAKEMYTRIP",
+    "platform_name": "MakeMyTrip",
+    "offer_title": "IDFC First Debit MMT cashback",
+    "bank_id": "IDFC",
+    "bank_name": "IDFC First Bank",
+    "card_name": "IDFC First Debit Card",
+    "supported_cards": [
+      "IDFC First Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "FLAT",
+    "discount_value": 650,
+    "max_discount": 650,
+    "min_transaction": 3000,
+    "coupon_code": "MMTIDFCD",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      3,
+      5
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on IDFC First Debit Card"
+    ],
+    "terms_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "source_url": "https://www.makemytrip.com/promos/flight-offers.html",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 66,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "CT-HDFC-002",
+    "platform_id": "CLEARTRIP",
+    "platform_name": "Cleartrip",
+    "offer_title": "HDFC Premium Cleartrip offer",
+    "bank_id": "HDFC",
+    "bank_name": "HDFC Bank",
+    "card_name": "HDFC Credit Card",
+    "supported_cards": [
+      "HDFC Credit Card"
+    ],
+    "payment_method": "CREDIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 14,
+    "max_discount": 1800,
+    "min_transaction": 6500,
+    "coupon_code": "CTHDFC2",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-12-31",
+    "valid_days": [
+      0,
+      2
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on HDFC Credit Card"
+    ],
+    "terms_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "source_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 98,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
+    }
+  },
+  {
+    "offer_id": "CT-SBI-DEBIT-001",
+    "platform_id": "CLEARTRIP",
+    "platform_name": "Cleartrip",
+    "offer_title": "SBI Debit Cleartrip cashback",
+    "bank_id": "SBI",
+    "bank_name": "State Bank of India",
+    "card_name": "SBI Debit Card",
+    "supported_cards": [
+      "SBI Debit Card"
+    ],
+    "payment_method": "DEBIT",
+    "category": "FLIGHT_DOMESTIC",
+    "booking_channel": "WEB_AND_APP",
+    "discount_type": "PERCENT",
+    "discount_value": 7,
+    "max_discount": 700,
+    "min_transaction": 3000,
+    "coupon_code": "CTSBID",
+    "valid_from": "2026-09-01",
+    "expiry_date": "2026-11-30",
+    "valid_days": [
+      1,
+      4
+    ],
+    "updated_at": "2026-09-17",
+    "usage_limit": "Once per card",
+    "new_user_only": false,
+    "login_required": false,
+    "eligibility_notes": [
+      "Valid on SBI Debit Card"
+    ],
+    "terms_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "source_url": "https://www.cleartrip.com/offers/india/domestic-flights",
+    "booking_url": null,
+    "source_type": "official",
+    "evidence_status": "VERIFIED",
+    "last_verified_at": "2026-09-17",
+    "priority_score": 65,
+    "is_active": true,
+    "publish_status": "READY",
+    "card_specificity": null,
+    "extra": {
+      "data_classification": "PRODUCTION",
+      "is_test_data": false,
+      "data_source": "STATIC_DEMO"
     }
   }
 ]
