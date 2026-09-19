@@ -1,4 +1,5 @@
 import { AlertCircle, Loader2, ChevronDown } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useRef, useEffect } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -6,8 +7,6 @@ import { TopFiltersBar } from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
 import EmptyState from "@/components/EmptyState";
 import type { OfferViewModel } from "@/types/offer";
-import { useMeta } from "@/contexts/MetaContext";
-import { format, parseISO } from "date-fns";
 
 const GRID = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4";
 
@@ -84,11 +83,6 @@ const AllOffersSection = ({
   offersLimit, setOffersLimit,
   onBankFilterChange, onPlatformFilterChange, onPaymentFilterChange, onChannelFilterChange, onResetFilters,
 }: AllOffersSectionProps) => {
-  const { meta } = useMeta();
-  const lastUpdated = meta.dataset_last_updated_at
-    ? format(parseISO(meta.dataset_last_updated_at), "MMM yyyy")
-    : null;
-
   return (
   <div className="w-full max-w-6xl mx-auto mt-4 md:mt-6 flex flex-col gap-4">
     <div className="flex flex-col gap-3">
@@ -100,9 +94,6 @@ const AllOffersSection = ({
           </span>
         )}
         {allOffersLoading && <Loader2 className="w-3.5 h-3.5 text-muted-foreground/50 animate-spin ml-1" />}
-        {lastUpdated && (
-          <span className="text-[11px] text-muted-foreground/50 ml-auto">Updated {lastUpdated}</span>
-        )}
       </div>
       <TopFiltersBar
         bankFilter={bankFilter} onBankFilterChange={onBankFilterChange}
@@ -114,9 +105,23 @@ const AllOffersSection = ({
     </div>
 
     {allOffersLoading && (
-      <div className="flex flex-col items-center justify-center py-20 gap-3">
-        <Loader2 className="w-6 h-6 text-primary animate-spin" />
-        <p className="text-[13px] text-muted-foreground">Loading all offers...</p>
+      <div className={GRID}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="rounded-2xl border border-border/40 overflow-hidden bg-card">
+            <div className="h-1 w-full bg-muted/60" />
+            <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+              <Skeleton className="h-5 w-24 rounded-full" />
+              <Skeleton className="h-5 w-5 rounded-lg" />
+            </div>
+            <div className="px-4 pt-4 pb-2"><Skeleton className="h-7 w-28 mb-2" /></div>
+            <div className="mx-4 border-t border-border/30" />
+            <div className="px-4 py-3 space-y-2">
+              <Skeleton className="h-3 w-28" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+            <div className="px-4 pb-4 pt-0"><Skeleton className="h-10 w-full rounded-xl" /></div>
+          </div>
+        ))}
       </div>
     )}
     {allOffersError && (

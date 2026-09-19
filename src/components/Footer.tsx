@@ -1,25 +1,26 @@
-import { APP_NAME, APP_TAGLINE } from "@/constants";
+import { Link } from "react-router-dom";
+import { APP_NAME, DISCLAIMER_TEXT } from "@/constants";
 
 interface FooterProps {
   onSectionChange?: (section: "about" | "contact") => void;
 }
 
 const Footer = ({ onSectionChange }: FooterProps) => (
-  <footer className="w-full py-4 px-4 border-t border-border/40">
-    <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-      <p className="text-[13px] font-medium text-foreground/70">
-        {APP_NAME} <span className="text-foreground/40 mx-1"> - </span> {APP_TAGLINE}.
-      </p>
-      <div className="flex items-center gap-4">
+  <footer className="w-full border-t border-border/40">
+    <p className="text-[11px] text-foreground/40 text-center px-4 pt-3 pb-1 leading-relaxed">
+      {DISCLAIMER_TEXT}
+    </p>
+    <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center justify-center">
+      <div className="flex items-center gap-4 flex-wrap justify-center">
         {onSectionChange && (
           <>
-            <button onClick={() => onSectionChange("about")} className="text-[13px] text-foreground/60 hover:text-foreground transition-colors font-medium">About</button>
-            <button onClick={() => onSectionChange("contact")} className="text-[13px] text-foreground/60 hover:text-foreground transition-colors font-medium">Contact</button>
+            <button onClick={() => onSectionChange("about")} className="text-[12px] text-foreground/50 hover:text-foreground transition-colors">About</button>
+            <button onClick={() => onSectionChange("contact")} className="text-[12px] text-foreground/50 hover:text-foreground transition-colors">Contact</button>
           </>
         )}
-        <p className="text-[12px] text-foreground/40">
-          © {new Date().getFullYear()} {APP_NAME}
-        </p>
+        <Link to="/privacy" className="text-[12px] text-foreground/50 hover:text-foreground transition-colors">Privacy</Link>
+        <Link to="/terms" className="text-[12px] text-foreground/50 hover:text-foreground transition-colors">Terms</Link>
+        <span className="text-[11px] text-foreground/35">© {new Date().getFullYear()} {APP_NAME}</span>
       </div>
     </div>
   </footer>
