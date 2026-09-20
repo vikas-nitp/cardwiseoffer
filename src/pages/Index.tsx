@@ -12,6 +12,7 @@ import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
+import { useAuth } from "@/contexts/AuthContext";
 import { analytics } from "@/services/analytics";
 import { useOfferSearch } from "@/hooks/useOfferSearch";
 import { useAllOffers } from "@/hooks/useAllOffers";
@@ -31,6 +32,7 @@ const Index = () => {
   const capabilities = useMemo(() => resolveFeatureCapabilities(featureFlags), [featureFlags]);
   const [activeSection, setActiveSection] = useState<ActiveSection>("home");
   const [splashDone, setSplashDone] = useState(!capabilities.splashScreen);
+  const { isSignedIn, openSignIn } = useAuth();
 
   useEffect(() => analytics.configure(capabilities.analytics), [capabilities.analytics]);
 
@@ -120,6 +122,9 @@ const Index = () => {
                   onPaymentFilterChange={handlePaymentFilterChange}
                   onChannelFilterChange={handleChannelFilterChange}
                   onResetFilters={handleResetFilters}
+                  authEnabled={capabilities.auth}
+                  isSignedIn={isSignedIn}
+                  onSignIn={openSignIn}
                 />
               </motion.div>
             )}
