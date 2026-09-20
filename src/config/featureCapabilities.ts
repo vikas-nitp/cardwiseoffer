@@ -14,5 +14,7 @@ export function resolveFeatureCapabilities(flags: FeatureFlags) {
     contact: flags.contactEnabled,
     privacyPolicy: flags.privacyPolicyEnabled,
     termsOfService: flags.termsOfServiceEnabled,
+    splashScreen: flags.splashScreenEnabled,
+    homeEntranceAnimation: flags.homeEntranceAnimationEnabled,
   };
 }

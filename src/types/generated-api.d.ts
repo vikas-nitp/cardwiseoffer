@@ -225,6 +225,11 @@ export interface components {
         /** FeatureFlagsResponse */
         FeatureFlagsResponse: {
             /**
+             * Aboutenabled
+             * @default true
+             */
+            aboutEnabled: boolean;
+            /**
              * Analyticsenabled
              * @default true
              */
@@ -242,20 +247,50 @@ export interface components {
             /** Config Version */
             config_version: string;
             /**
+             * Contactenabled
+             * @default true
+             */
+            contactEnabled: boolean;
+            /**
              * Couponcodeenabled
              * @default false
              */
             couponCodeEnabled: boolean;
+            /**
+             * Homeentranceanimationenabled
+             * @default true
+             */
+            homeEntranceAnimationEnabled: boolean;
+            /**
+             * Howitworksenabled
+             * @default true
+             */
+            howItWorksEnabled: boolean;
             /**
              * Phase2Userfeaturesenabled
              * @default false
              */
             phase2UserFeaturesEnabled: boolean;
             /**
+             * Privacypolicyenabled
+             * @default true
+             */
+            privacyPolicyEnabled: boolean;
+            /**
              * Publicalloffersenabled
              * @default true
              */
             publicAllOffersEnabled: boolean;
+            /**
+             * Splashscreenenabled
+             * @default true
+             */
+            splashScreenEnabled: boolean;
+            /**
+             * Termsofserviceenabled
+             * @default true
+             */
+            termsOfServiceEnabled: boolean;
             /**
              * Visitorcountenabled
              * @default false

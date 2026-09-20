@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import SplashScreen from "@/components/SplashScreen";
 import Header from "@/components/Header";
 import type { ActiveSection } from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -29,6 +30,7 @@ const Index = () => {
   const { flags: featureFlags } = useFeatureFlags();
   const capabilities = useMemo(() => resolveFeatureCapabilities(featureFlags), [featureFlags]);
   const [activeSection, setActiveSection] = useState<ActiveSection>("home");
+  const [splashDone, setSplashDone] = useState(!capabilities.splashScreen);
 
   useEffect(() => analytics.configure(capabilities.analytics), [capabilities.analytics]);
 
@@ -60,6 +62,7 @@ const Index = () => {
 
   return (
     <div className="h-screen w-full min-w-0 overflow-hidden flex flex-col relative">
+      {!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}
       <div className="pointer-events-none fixed inset-0 overflow-hidden z-0 sovereign-ground" />
       {showHome && <StarField />}
 

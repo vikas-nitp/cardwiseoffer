@@ -233,6 +233,11 @@
       "FeatureFlagsResponse": {
         "additionalProperties": false,
         "properties": {
+          "aboutEnabled": {
+            "default": true,
+            "title": "Aboutenabled",
+            "type": "boolean"
+          },
           "analyticsEnabled": {
             "default": true,
             "title": "Analyticsenabled",
@@ -252,9 +257,24 @@
             "title": "Config Version",
             "type": "string"
           },
+          "contactEnabled": {
+            "default": true,
+            "title": "Contactenabled",
+            "type": "boolean"
+          },
           "couponCodeEnabled": {
             "default": false,
             "title": "Couponcodeenabled",
+            "type": "boolean"
+          },
+          "homeEntranceAnimationEnabled": {
+            "default": true,
+            "title": "Homeentranceanimationenabled",
+            "type": "boolean"
+          },
+          "howItWorksEnabled": {
+            "default": true,
+            "title": "Howitworksenabled",
             "type": "boolean"
           },
           "phase2UserFeaturesEnabled": {
@@ -262,9 +282,24 @@
             "title": "Phase2Userfeaturesenabled",
             "type": "boolean"
           },
+          "privacyPolicyEnabled": {
+            "default": true,
+            "title": "Privacypolicyenabled",
+            "type": "boolean"
+          },
           "publicAllOffersEnabled": {
             "default": true,
             "title": "Publicalloffersenabled",
+            "type": "boolean"
+          },
+          "splashScreenEnabled": {
+            "default": true,
+            "title": "Splashscreenenabled",
+            "type": "boolean"
+          },
+          "termsOfServiceEnabled": {
+            "default": true,
+            "title": "Termsofserviceenabled",
             "type": "boolean"
           },
           "visitorCountEnabled": {
