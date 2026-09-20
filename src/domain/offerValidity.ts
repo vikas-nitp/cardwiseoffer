@@ -23,22 +23,24 @@ export function isOfferActiveOnDay(
 }
 
 export function isOfferEligible(
-  offer: Pick<OfferViewModel, "validFrom" | "expiryDate" | "isActive" | "category" | "validDays">,
+  offer: Pick<OfferViewModel, "validFrom" | "expiryDate" | "isActive" | "category" | "validDays" | "evidenceStatus">,
   date = startOfToday()
 ): boolean {
   return offer.isActive &&
     offer.category === "FLIGHT_DOMESTIC" &&
+    offer.evidenceStatus !== "UNVERIFIED" &&
     isOfferActive(offer, date) &&
     isOfferActiveOnDay(offer, date);
 }
 
 /** Catalog eligibility: ignores valid_days so all non-expired offers appear regardless of today's weekday. */
 export function isOfferCatalogEligible(
-  offer: Pick<OfferViewModel, "validFrom" | "expiryDate" | "isActive" | "category">,
+  offer: Pick<OfferViewModel, "validFrom" | "expiryDate" | "isActive" | "category" | "evidenceStatus">,
   date = startOfToday()
 ): boolean {
   return offer.isActive &&
     offer.category === "FLIGHT_DOMESTIC" &&
+    offer.evidenceStatus !== "UNVERIFIED" &&
     isOfferActive(offer, date);
 }
 

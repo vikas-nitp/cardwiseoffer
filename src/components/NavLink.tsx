@@ -1,3 +1,5 @@
+// DEAD CODE — not imported anywhere; remove in next cleanup pass (2026-09-20)
+/*
 import { NavLink as RouterNavLink, NavLinkProps } from "react-router-dom";
 import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
@@ -26,3 +28,4 @@ const NavLink = forwardRef<HTMLAnchorElement, NavLinkCompatProps>(
 NavLink.displayName = "NavLink";
 
 export { NavLink };
+*/

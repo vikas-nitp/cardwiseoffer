@@ -1,3 +1,5 @@
+// DEAD CODE — only used by ui/sidebar.tsx which is itself unused; remove in next cleanup pass (2026-09-20)
+/*
 import * as React from "react";
 
 const MOBILE_BREAKPOINT = 768;
@@ -17,3 +19,4 @@ export function useIsMobile() {
 
   return !!isMobile;
 }
+*/

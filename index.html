@@ -22,6 +22,23 @@
     <meta name="twitter:title" content="CardSage – Smart Card Picks for Flights">
     <meta name="twitter:description" content="Compare credit card, debit card and no-card offers across MakeMyTrip, Cleartrip and more. Find which card saves the most on your flight booking.">
     <meta name="twitter:image" content="/og-image.png">
+
+    <!-- Theme init — runs synchronously before React mounts to prevent FOUC.
+         Reads saved preference from localStorage; falls back to OS preference.
+         Sets .light / .dark class on <html> so CSS tokens resolve correctly. -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('cwo-theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (saved === 'light' || (!saved && !prefersDark)) {
+            document.documentElement.classList.add('light');
+          } else if (saved === 'dark' || (!saved && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) { /* storage blocked in private mode — OS preference via CSS @media covers it */ }
+      })();
+    </script>
   </head>
 
   <body>

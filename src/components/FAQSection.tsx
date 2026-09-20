@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -41,6 +42,24 @@ const FAQSection = () => {
       a: "Savings shown are based on publicly listed bank promotions. Final eligibility depends on the platform's and bank's terms and conditions.",
     },
   ];
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "faq-json-ld";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map((faq) => ({
+        "@type": "Question",
+        "name": faq.q,
+        "acceptedAnswer": { "@type": "Answer", "text": faq.a },
+      })),
+    });
+    document.head.appendChild(script);
+    return () => { document.getElementById("faq-json-ld")?.remove(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="w-full max-w-5xl mx-auto animate-fade-up">

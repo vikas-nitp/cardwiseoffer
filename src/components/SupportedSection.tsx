@@ -1,3 +1,5 @@
+// DEAD CODE — not imported anywhere; remove in next cleanup pass (2026-09-20)
+/*
 import { useMeta } from "@/contexts/MetaContext";
 
 const SupportedSection = () => {
@@ -20,3 +22,4 @@ const SupportedSection = () => {
 };
 
 export default SupportedSection;
+*/

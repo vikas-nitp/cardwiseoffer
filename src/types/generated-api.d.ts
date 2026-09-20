@@ -89,6 +89,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/visitors/count": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Visitor Count */
+        get: operations["visitor_count_api_v1_visitors_count_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health/live": {
         parameters: {
             query?: never;
@@ -337,6 +354,12 @@ export interface components {
             /** Eligibility Notes */
             eligibility_notes: string[];
             /**
+             * Evidence Status
+             * @description Curation confidence level: VERIFIED | UNVERIFIED
+             * @example VERIFIED
+             */
+            evidence_status?: string | null;
+            /**
              * Expiry Date
              * Format: date
              */
@@ -360,6 +383,12 @@ export interface components {
             platform_id: string;
             /** Platform Name */
             platform_name: string;
+            /**
+             * Source Url
+             * @description Attribution URL — the source promotional page where this offer was curated from
+             * @example https://www.makemytrip.com/promos/hdfc-offer
+             */
+            source_url?: string | null;
             /** Supported Cards */
             supported_cards?: string[];
             /** Terms Url */
@@ -371,6 +400,18 @@ export interface components {
             updated_at: string;
             /** Usage Limit */
             usage_limit?: string | null;
+            /**
+             * Valid Days
+             * @description JS weekday indices (0=Sun … 6=Sat) on which offer is valid; null = every day
+             * @example [
+             *       1,
+             *       2,
+             *       3,
+             *       4,
+             *       5
+             *     ]
+             */
+            valid_days?: number[] | null;
             /**
              * Valid From
              * Format: date
@@ -441,6 +482,12 @@ export interface components {
             /** Estimated Savings */
             estimated_savings: number | null;
             /**
+             * Evidence Status
+             * @description Curation confidence level: VERIFIED | UNVERIFIED
+             * @example VERIFIED
+             */
+            evidence_status?: string | null;
+            /**
              * Expiry Date
              * Format: date
              */
@@ -468,6 +515,12 @@ export interface components {
             savings_delta: number | null;
             /** Savings Label */
             savings_label: string;
+            /**
+             * Source Url
+             * @description Attribution URL — the source promotional page where this offer was curated from
+             * @example https://www.makemytrip.com/promos/hdfc-offer
+             */
+            source_url?: string | null;
             /** Supported Cards */
             supported_cards?: string[];
             /** Terms Url */
@@ -479,6 +532,18 @@ export interface components {
             updated_at: string;
             /** Usage Limit */
             usage_limit?: string | null;
+            /**
+             * Valid Days
+             * @description JS weekday indices (0=Sun … 6=Sat) on which offer is valid; null = every day
+             * @example [
+             *       1,
+             *       2,
+             *       3,
+             *       4,
+             *       5
+             *     ]
+             */
+            valid_days?: number[] | null;
             /**
              * Valid From
              * Format: date
@@ -694,6 +759,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    visitor_count_api_v1_visitors_count_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };

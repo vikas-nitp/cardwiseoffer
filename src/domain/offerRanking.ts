@@ -70,13 +70,13 @@ export function rankAndLabelOffers(
   ]);
 }
 
-/** @deprecated Use rankAndLabelOffers for search results. */
-export function rankOffers(
-  active: OfferViewModel[],
-  selectedBanks: string[]
-): OfferViewModel[] {
-  return rankAndLabelOffers(active, selectedBanks);
-}
+// DEAD CODE — only called from tests, not from production code; remove in next cleanup pass (2026-09-20)
+// export function rankOffers(
+//   active: OfferViewModel[],
+//   selectedBanks: string[]
+// ): OfferViewModel[] {
+//   return rankAndLabelOffers(active, selectedBanks);
+// }
 
 function pickBest(offers: OfferViewModel[]): OfferViewModel | null {
   if (offers.length === 0) return null;

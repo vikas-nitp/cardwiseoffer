@@ -189,12 +189,36 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
             {expired ? "Expired" : upcoming ? "Not yet active" : "Choose travel details"}
           </Button>
         )}
-        {/* Verify note — legal shield: savings not guaranteed, user should confirm before booking */}
+        {/* Verify disclaimer */}
         {!compact && (
           <p className="text-center text-[10px] text-muted-foreground/50 mt-1.5 min-h-[14px]">
-            {canBook
-              ? `Verify offer on ${offer.platformName} before booking`
-              : ""}
+            {canBook ? `Verify offer on ${offer.platformName} before booking` : ""}
+          </p>
+        )}
+        {/* Source attribution + last-updated — shown in all modes when data is present */}
+        {(offer.sourceUrl || offer.lastUpdatedAt) && (
+          <p className="text-center text-[10px] text-muted-foreground/40 mt-0.5 leading-snug">
+            {offer.sourceUrl && (
+              <a
+                href={offer.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-muted-foreground/70 underline underline-offset-2 transition-colors"
+              >
+                View original offer ↗
+              </a>
+            )}
+            {offer.sourceUrl && offer.lastUpdatedAt && <span className="mx-1">·</span>}
+            {offer.lastUpdatedAt && (
+              <span>
+                Updated{" "}
+                {new Date(offer.lastUpdatedAt).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </span>
+            )}
           </p>
         )}
       </div>

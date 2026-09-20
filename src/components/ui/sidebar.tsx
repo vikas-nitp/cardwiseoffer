@@ -1,3 +1,5 @@
+// DEAD CODE — shadcn scaffold component never imported in app; remove in next cleanup pass (2026-09-20)
+// @ts-nocheck
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";

@@ -19,6 +19,7 @@ export interface LocalRawOffer {
   eligibility_notes?: string;
   priority_score?: number;
   source_type?: string;
+  source_url?: string | null;
 }
 
 export type ApiOffer =
@@ -73,8 +74,9 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     expiryDate: raw.expiry_date,
     eligibilityNotes: raw.eligibility_notes ?? [],
     category: raw.category,
-    // valid_days not yet in the generated API types; cast until backend PR merges
-    validDays: (raw as unknown as { valid_days?: number[] | null }).valid_days ?? null,
+    validDays: raw.valid_days ?? null,
+    evidenceStatus: raw.evidence_status ?? undefined,
+    sourceUrl: raw.source_url ?? null,
     sourceType: "api",
     isActive: true,
     priorityScore: 0,
@@ -109,6 +111,7 @@ export function mapLocalOffer(raw: LocalRawOffer): OfferViewModel {
     expiryDate: raw.expiry_date,
     eligibilityNotes: notes,
     category: raw.category,
+    sourceUrl: raw.source_url ?? null,
     sourceType: "demo_excel",
     isActive: true,
     priorityScore: raw.priority_score ?? 0,
