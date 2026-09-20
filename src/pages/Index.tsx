@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import SplashScreen from "@/components/SplashScreen";
 import Header from "@/components/Header";
 import type { ActiveSection } from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -11,6 +12,7 @@ import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
+import { useAuth } from "@/contexts/AuthContext";
 import { analytics } from "@/services/analytics";
 import { useOfferSearch } from "@/hooks/useOfferSearch";
 import { useAllOffers } from "@/hooks/useAllOffers";
@@ -29,6 +31,8 @@ const Index = () => {
   const { flags: featureFlags } = useFeatureFlags();
   const capabilities = useMemo(() => resolveFeatureCapabilities(featureFlags), [featureFlags]);
   const [activeSection, setActiveSection] = useState<ActiveSection>("home");
+  const [splashDone, setSplashDone] = useState(!capabilities.splashScreen);
+  const { isSignedIn, openSignIn } = useAuth();
 
   useEffect(() => analytics.configure(capabilities.analytics), [capabilities.analytics]);
 
@@ -60,8 +64,9 @@ const Index = () => {
 
   return (
     <div className="h-screen w-full min-w-0 overflow-hidden flex flex-col relative">
+      {!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}
       <div className="pointer-events-none fixed inset-0 overflow-hidden z-0 sovereign-ground" />
-      {showHome && <StarField />}
+      <StarField />
 
       <div className="relative z-10 flex flex-col h-full">
         <Header
@@ -69,6 +74,7 @@ const Index = () => {
           onSectionChange={setActiveSection}
           allOffersEnabled={capabilities.publicAllOffers}
           authEnabled={capabilities.auth}
+          howItWorksEnabled={capabilities.howItWorks}
         />
 
         <main className={`flex-1 min-h-0 flex flex-col items-center px-4 md:px-8 pb-4 scrollbar-hide ${
@@ -116,6 +122,9 @@ const Index = () => {
                   onPaymentFilterChange={handlePaymentFilterChange}
                   onChannelFilterChange={handleChannelFilterChange}
                   onResetFilters={handleResetFilters}
+                  authEnabled={capabilities.auth}
+                  isSignedIn={isSignedIn}
+                  onSignIn={openSignIn}
                 />
               </motion.div>
             )}
@@ -129,18 +138,18 @@ const Index = () => {
               </motion.div>
             )}
 
-            {activeSection === "about" && (
+            {activeSection === "about" && capabilities.about && (
               <motion.div key="about" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8 md:py-12 flex-1 flex flex-col justify-center">
                 <AboutSection />
               </motion.div>
             )}
-            {activeSection === "how-it-works" && (
+            {activeSection === "how-it-works" && capabilities.howItWorks && (
               <motion.div key="how-it-works" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-4 md:py-6 flex flex-col gap-5">
                 <HowItWorksSection />
                 <FAQSection />
               </motion.div>
             )}
-            {activeSection === "contact" && (
+            {activeSection === "contact" && capabilities.contact && (
               <motion.div key="contact" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8 md:py-12 flex-1 flex flex-col justify-center">
                 <ContactSection />
               </motion.div>

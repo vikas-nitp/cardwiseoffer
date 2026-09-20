@@ -4438,7 +4438,7 @@
     "offer_id": "MMT-NOCARD-003",
     "platform_id": "MAKEMYTRIP",
     "platform_name": "MakeMyTrip",
-    "offer_title": "MakeMyTrip referral code",
+    "offer_title": "MakeMyTrip New User Promo",
     "bank_id": null,
     "bank_name": null,
     "card_name": "No card required",
@@ -4452,7 +4452,7 @@
     "discount_value": 400,
     "max_discount": 400,
     "min_transaction": 2000,
-    "coupon_code": "MMTREF",
+    "coupon_code": null,
     "valid_from": "2026-08-01",
     "expiry_date": "2027-12-31",
     "valid_days": [

@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { APP_NAME, SUPPORT_EMAIL } from "@/constants";
+import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <section className="mb-8">
@@ -9,7 +10,10 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
   </section>
 );
 
-const PrivacyPolicy = () => (
+const PrivacyPolicy = () => {
+  const { flags } = useFeatureFlags();
+  if (!flags.privacyPolicyEnabled) return <Navigate to="/" replace />;
+  return (
   <div className="min-h-screen bg-background">
     <div className="max-w-2xl mx-auto px-5 py-10">
       <Link
@@ -24,7 +28,7 @@ const PrivacyPolicy = () => (
         <p className="text-[11px] font-semibold uppercase tracking-widest text-accent mb-2">Legal</p>
         <h1 className="text-2xl font-bold text-foreground tracking-tight">Privacy Policy</h1>
         <p className="text-[13px] text-muted-foreground mt-2">
-          Last updated: September 17, 2026 &nbsp;·&nbsp; Effective date: September 17, 2026
+          Last updated: September 20, 2026 &nbsp;·&nbsp; Effective date: September 17, 2026
         </p>
       </header>
 
@@ -127,12 +131,52 @@ const PrivacyPolicy = () => (
           </p>
         </Section>
 
-        <Section title="Cookies and local storage">
+        <Section title="Browser storage">
           <p>
             We do not use third-party tracking cookies or analytics. We use browser{" "}
-            <code className="text-[12px] bg-muted px-1.5 py-0.5 rounded font-mono">localStorage</code> to
-            store your session state and UI preferences (such as your last selected airport or theme). This
-            data never leaves your device.
+            <code className="text-[12px] bg-muted px-1.5 py-0.5 rounded font-mono">localStorage</code>{" "}
+            and{" "}
+            <code className="text-[12px] bg-muted px-1.5 py-0.5 rounded font-mono">sessionStorage</code>{" "}
+            to store:
+          </p>
+          <ul className="list-disc pl-5 space-y-1.5 mt-2">
+            <li>
+              <strong className="text-foreground/80">Your preferences</strong> — last selected origin airport,
+              destination, travel date, and UI theme. Stored in <code className="text-[12px] bg-muted px-1.5 py-0.5 rounded font-mono">localStorage</code>.
+            </li>
+            <li>
+              <strong className="text-foreground/80">Selected bank cards</strong> — the credit/debit card
+              selections you make during a search session. Stored in{" "}
+              <code className="text-[12px] bg-muted px-1.5 py-0.5 rounded font-mono">sessionStorage</code>; cleared when you close the tab.
+            </li>
+            <li>
+              <strong className="text-foreground/80">Anonymous visitor ID</strong> — a randomly generated
+              identifier used to count unique sessions. Contains no personal information.
+              Stored in <code className="text-[12px] bg-muted px-1.5 py-0.5 rounded font-mono">localStorage</code>.
+            </li>
+          </ul>
+          <p className="mt-3">
+            All browser storage data stays entirely on your device. To clear it: open your browser's
+            Settings → Privacy &amp; Security → Clear browsing data → Cookies and site data, and select
+            <strong className="text-foreground/80"> cardsage.in</strong>.
+          </p>
+        </Section>
+
+        <Section title="Third-party processors">
+          <p>
+            We use a single third-party service to process your data:
+          </p>
+          <ul className="list-disc pl-5 space-y-1.5 mt-2">
+            <li>
+              <strong className="text-foreground/80">SMS / OTP delivery</strong> — your mobile number is
+              transmitted to our SMS authentication provider solely to deliver a one-time verification code.
+              The provider processes your number for this purpose only and does not retain it for marketing
+              or analytics. A Data Processor Agreement is in place with this provider under the DPDP Act 2023.
+            </li>
+          </ul>
+          <p className="mt-3">
+            No other third-party service receives your personal data. Offer search results are generated
+            entirely within our own infrastructure.
           </p>
         </Section>
 
@@ -151,6 +195,41 @@ const PrivacyPolicy = () => (
           </p>
         </Section>
 
+        <Section title="Grievance Officer">
+          <p>
+            In accordance with the Digital Personal Data Protection Act, 2023 (§13), we have designated a
+            Grievance Officer to address data-related complaints:
+          </p>
+          <ul className="list-disc pl-5 space-y-1.5 mt-2">
+            <li>
+              <strong className="text-foreground/80">Role:</strong> Data Protection Officer, CardSage
+            </li>
+            <li>
+              <strong className="text-foreground/80">Email:</strong>{" "}
+              <a href="mailto:grievance@cardsage.in" className="text-accent underline underline-offset-2">
+                grievance@cardsage.in
+              </a>
+            </li>
+            <li>
+              <strong className="text-foreground/80">Response SLA:</strong> Acknowledgement within 7 days;
+              final resolution within 30 days of receipt.
+            </li>
+          </ul>
+          <p className="mt-3">
+            If your grievance is not resolved within 30 days, you may escalate to the{" "}
+            <strong className="text-foreground/80">Data Protection Board of India</strong> at{" "}
+            <a
+              href="https://dpboard.gov.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent underline underline-offset-2"
+            >
+              dpboard.gov.in
+            </a>
+            .
+          </p>
+        </Section>
+
         <Section title="Contact">
           <p>
             For privacy-related questions or to exercise your rights, contact us at{" "}
@@ -163,6 +242,7 @@ const PrivacyPolicy = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default PrivacyPolicy;

@@ -1,3 +1,5 @@
+// DEAD CODE — not imported anywhere; remove in next cleanup pass (2026-09-20)
+/*
 import { DISCLAIMER_TEXT } from "@/constants";
 
 const TrustDisclaimer = () => (
@@ -7,3 +9,4 @@ const TrustDisclaimer = () => (
 );
 
 export default TrustDisclaimer;
+*/

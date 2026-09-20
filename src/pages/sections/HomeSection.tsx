@@ -7,14 +7,16 @@ import { useMeta } from "@/contexts/MetaContext";
 import { useVisitorCount } from "@/hooks/useVisitorCount";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
-const container = {
+const animatedContainer = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+  show: { transition: { staggerChildren: 0.13, delayChildren: 0.28 } },
 };
-const item = {
-  hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.38, ease: "easeOut" as const } },
+const animatedItem = {
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" as const } },
 };
+const staticContainer = { hidden: {}, show: {} };
+const staticItem = { hidden: {}, show: {} };
 
 interface HomeSectionProps {
   searchState: SearchState | null;
@@ -27,6 +29,9 @@ const HomeSection = ({ searchState, formDate, onSearch }: HomeSectionProps) => {
   const { flags } = useFeatureFlags();
   const capabilities = resolveFeatureCapabilities(flags);
   const visitorCount = useVisitorCount(capabilities.visitorCount);
+  const animated = capabilities.homeEntranceAnimation;
+  const container = animated ? animatedContainer : staticContainer;
+  const item = animated ? animatedItem : staticItem;
 
   return (
   <div className="w-full flex flex-col items-center">
@@ -50,9 +55,9 @@ const HomeSection = ({ searchState, formDate, onSearch }: HomeSectionProps) => {
     </motion.section>
 
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={animated ? { opacity: 0, y: 20 } : false}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.42, ease: "easeOut", delay: 0.48 }}
+      transition={{ duration: 0.42, ease: "easeOut", delay: animated ? 0.48 : 0 }}
       className="w-full flex flex-col items-center"
     >
       <SearchCard
@@ -64,9 +69,9 @@ const HomeSection = ({ searchState, formDate, onSearch }: HomeSectionProps) => {
       />
 
       <motion.div
-        initial={{ opacity: 0 }}
+        initial={animated ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.3, delay: 0.72 }}
+        transition={{ duration: 0.3, delay: animated ? 0.72 : 0 }}
         className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-4"
       >
         {meta.total_offers > 0 && (

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { FeatureFlagProvider } from "@/contexts/FeatureFlagContext";
 import { MetaProvider } from "@/contexts/MetaContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import SignInModal from "@/components/SignInModal";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -15,6 +16,7 @@ import TermsOfService from "./pages/TermsOfService";
 const queryClient = new QueryClient();
 
 const App = () => (
+  <ThemeProvider>
   <QueryClientProvider client={queryClient}>
     <FeatureFlagProvider>
       <MetaProvider>
@@ -36,6 +38,7 @@ const App = () => (
       </MetaProvider>
     </FeatureFlagProvider>
   </QueryClientProvider>
+  </ThemeProvider>
 );
 
 export default App;

@@ -55,6 +55,8 @@ function catalogVariant(offer: OfferViewModel): "default" | "neutral" {
   return "default";
 }
 
+const GUEST_PREVIEW_COUNT = 3;
+
 interface AllOffersSectionProps {
   filteredAllOffers: OfferViewModel[];
   allOffersLoading: boolean;
@@ -74,6 +76,9 @@ interface AllOffersSectionProps {
   onPaymentFilterChange: (v: string[]) => void;
   onChannelFilterChange: (v: string[]) => void;
   onResetFilters: () => void;
+  authEnabled?: boolean;
+  isSignedIn?: boolean;
+  onSignIn?: () => void;
 }
 
 const AllOffersSection = ({
@@ -82,7 +87,12 @@ const AllOffersSection = ({
   offersPage, setOffersPage, offersTotalPages, offersTotalCount,
   offersLimit, setOffersLimit,
   onBankFilterChange, onPlatformFilterChange, onPaymentFilterChange, onChannelFilterChange, onResetFilters,
+  authEnabled = false, isSignedIn = false, onSignIn,
 }: AllOffersSectionProps) => {
+  const gated = authEnabled && !isSignedIn;
+  const visibleOffers = gated ? filteredAllOffers.slice(0, GUEST_PREVIEW_COUNT) : filteredAllOffers;
+  const hiddenCount = gated ? Math.max(0, offersTotalCount - GUEST_PREVIEW_COUNT) : 0;
+
   return (
   <div className="w-full max-w-6xl mx-auto mt-4 md:mt-6 flex flex-col gap-4">
     <div className="flex flex-col gap-3">
@@ -135,19 +145,44 @@ const AllOffersSection = ({
         {filteredAllOffers.length === 0 ? (
           <EmptyState onReset={onResetFilters} />
         ) : (
-          <div className={GRID}>
-            {filteredAllOffers.map((offer) => (
-              <OfferCard
-                key={offer.id}
-                offer={offer}
-                variant={catalogVariant(offer)}
-                label={offer.bankDisplay ?? "Platform Offer"}
-                compact
-              />
-            ))}
+          <div className="relative">
+            <div className={GRID}>
+              {visibleOffers.map((offer) => (
+                <OfferCard
+                  key={offer.id}
+                  offer={offer}
+                  variant={catalogVariant(offer)}
+                  label={offer.bankDisplay ?? "Platform Offer"}
+                  compact
+                />
+              ))}
+            </div>
+
+            {gated && hiddenCount > 0 && (
+              <div className="relative mt-4">
+                {/* fade overlay */}
+                <div className="pointer-events-none absolute -top-20 left-0 right-0 h-20 bg-gradient-to-b from-transparent to-background z-10" />
+                {/* sign-in gate */}
+                <div className="relative z-20 flex flex-col items-center gap-3 py-8 px-6 rounded-2xl border border-accent/20 bg-accent/5 text-center">
+                  <p className="text-[13px] font-semibold text-foreground">
+                    {hiddenCount} more offer{hiddenCount !== 1 ? "s" : ""} available
+                  </p>
+                  <p className="text-[12px] text-muted-foreground max-w-xs">
+                    Sign in to unlock the full catalogue — free, no booking required.
+                  </p>
+                  <button
+                    onClick={onSignIn}
+                    className="mt-1 inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-accent text-accent-foreground text-[13px] font-semibold hover:bg-accent/90 transition-colors shimmer-hover"
+                  >
+                    Sign in to see all offers
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
-        {filteredAllOffers.length > 0 && (
+
+        {!gated && filteredAllOffers.length > 0 && (
           <div className="mt-4 flex items-center justify-between gap-4 flex-wrap">
             <PerPageDropdown value={offersLimit} onChange={(n) => { setOffersLimit(n); setOffersPage(1); }} />
             {offersTotalPages > 1 && (

@@ -77,6 +77,7 @@ export default {
           DEFAULT:    hsl("--savings"),
           foreground: hsl("--savings-foreground"),
           soft:       hsl("--savings-soft"),
+          "soft-foreground": hsl("--savings-soft-foreground"),
         },
         highlight: {
           DEFAULT:    hsl("--highlight"),

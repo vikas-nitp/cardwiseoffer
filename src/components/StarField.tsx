@@ -33,7 +33,7 @@ const StarField = () => (
           width: `${size}px`,
           height: `${size}px`,
           borderRadius: "50%",
-          background: "hsl(218 54% 94%)",
+          background: "hsl(var(--star-dim-color))",
           animationDelay: `${delay}s`,
         }}
       />
@@ -49,8 +49,8 @@ const StarField = () => (
           width: `${size}px`,
           height: `${size}px`,
           borderRadius: "50%",
-          background: "hsl(42 80% 85%)",
-          boxShadow: `0 0 ${size * 2}px hsl(42 80% 70% / 0.5)`,
+          background: "hsl(var(--star-bright-color))",
+          boxShadow: `0 0 ${size * 2}px hsl(var(--star-bright-color) / 0.5)`,
           animationDelay: `${(id * 1.3) % 5}s`,
         }}
       />

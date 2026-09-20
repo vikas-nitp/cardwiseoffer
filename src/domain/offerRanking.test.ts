@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { rankOffers, rankAndLabelOffers } from "@/domain/offerRanking";
+import { rankAndLabelOffers } from "@/domain/offerRanking";
 import type { OfferViewModel } from "@/types/offer";
 
 const offer = (
@@ -23,12 +23,12 @@ const offer = (
 
 describe("offerRanking", () => {
   it("no selection: returns best card + best default per platform", () => {
-    const out = rankOffers([offer("a", "HDFC", 1500), offer("b", "ICICI", 1200), offer("d", null, 300, "NO_CARD")], []);
+    const out = rankAndLabelOffers([offer("a", "HDFC", 1500), offer("b", "ICICI", 1200), offer("d", null, 300, "NO_CARD")], []);
     expect(out.map(o => o.id)).toEqual(["a", "d"]);
   });
 
   it("1 selected: shows better alt only when strictly better", () => {
-    const out = rankOffers([
+    const out = rankAndLabelOffers([
       offer("sel", "HDFC", 1000),
       offer("outside_lower", "ICICI", 800),
       offer("d", null, 200, "NO_CARD"),
@@ -37,7 +37,7 @@ describe("offerRanking", () => {
   });
 
   it("1 selected with a better outside offer surfaces it", () => {
-    const out = rankOffers([
+    const out = rankAndLabelOffers([
       offer("sel", "HDFC", 1000),
       offer("alt", "ICICI", 1600),
       offer("d", null, 200, "NO_CARD"),
@@ -46,7 +46,7 @@ describe("offerRanking", () => {
   });
 
   it("does not duplicate offers across categories", () => {
-    const out = rankOffers([offer("a", "HDFC", 500), offer("a", "HDFC", 500)], []);
+    const out = rankAndLabelOffers([offer("a", "HDFC", 500), offer("a", "HDFC", 500)], []);
     expect(out.map(o => o.id)).toEqual(["a"]);
   });
 

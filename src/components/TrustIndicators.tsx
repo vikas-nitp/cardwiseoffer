@@ -1,3 +1,5 @@
+// DEAD CODE — not imported anywhere; remove in next cleanup pass (2026-09-20)
+/*
 import { ShieldCheck, RefreshCw, Scale } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useMeta } from "@/contexts/MetaContext";
@@ -27,3 +29,4 @@ const TrustIndicators = () => {
 };
 
 export default TrustIndicators;
+*/

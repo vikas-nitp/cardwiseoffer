@@ -171,24 +171,56 @@ const OtpStep = () => {
   );
 };
 
-// ── Step 3: Consent ──────────────────────────────────────────────────
+// ── Step 3: Consent (DPDP Rules 2025 Rule 3 — standalone itemized notice) ──
 const ConsentStep = () => {
   const { giveConsent } = useAuth();
   const [terms, setTerms] = useState(false);
   const [privacy, setPrivacy] = useState(false);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <StepDots step={3} />
       <div className="text-center mb-1">
         <div className="w-12 h-12 rounded-2xl bg-accent/15 flex items-center justify-center mx-auto mb-4">
           <FileText className="w-5 h-5 text-accent" />
         </div>
-        <h2 className="text-xl font-bold text-foreground tracking-tight">Almost there</h2>
-        <p className="text-[13px] text-muted-foreground mt-1">Please review and accept our policies</p>
+        <h2 className="text-xl font-bold text-foreground tracking-tight">Data Use Notice</h2>
+        <p className="text-[12px] text-muted-foreground mt-1">
+          Under DPDP Act 2023 §6 — please review before continuing
+        </p>
       </div>
 
-      <div className="rounded-xl border border-border/60 bg-secondary/20 p-4 space-y-4">
+      {/* Standalone itemized data notice — DPDP Rules 2025 Rule 3 */}
+      <div className="rounded-xl border border-border/60 bg-secondary/10 p-4 space-y-3">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
+          Data we collect &amp; why
+        </p>
+        <div className="space-y-2.5">
+          {[
+            { data: "Mobile number", purpose: "Account identification via OTP sign-in" },
+            { data: "Anonymous session ID", purpose: "Count unique visitors (no personal link)" },
+            { data: "Airport &amp; card preferences", purpose: "Save your search defaults (localStorage only)" },
+          ].map(({ data, purpose }) => (
+            <div key={data} className="flex gap-3 text-[12px]">
+              <span className="font-semibold text-foreground/80 shrink-0 w-36">{data}</span>
+              <span className="text-muted-foreground">{purpose}</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-[11px] text-muted-foreground/60 pt-1 border-t border-border/40">
+          Your number is transmitted to our SMS provider for OTP delivery only.
+          No data is shared with booking platforms or advertisers.
+          You can withdraw consent from your{" "}
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-accent underline underline-offset-2">
+            profile settings
+          </a>{" "}
+          at any time.
+        </p>
+      </div>
+
+      {/* Confirmations */}
+      <div className="rounded-xl border border-border/60 bg-secondary/20 p-4 space-y-3.5">
         <div className="flex items-start gap-3">
           <Checkbox
             id="terms"
@@ -200,9 +232,7 @@ const ConsentStep = () => {
             I agree to the{" "}
             <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-accent underline underline-offset-2 hover:opacity-80">
               Terms of Service
-            </a>{" "}
-            - CardSage provides offer comparisons for informational purposes only.
-            Savings estimates are not guaranteed.
+            </a>
           </Label>
         </div>
 
@@ -214,12 +244,22 @@ const ConsentStep = () => {
             className="mt-0.5"
           />
           <Label htmlFor="privacy" className="text-[13px] text-foreground leading-relaxed cursor-pointer">
-            I agree to the{" "}
+            I consent to the data uses listed above and have read the{" "}
             <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-accent underline underline-offset-2 hover:opacity-80">
               Privacy Policy
-            </a>{" "}
-            - we collect only your mobile number to identify your account. We do not share
-            it with booking platforms.
+            </a>
+          </Label>
+        </div>
+
+        <div className="flex items-start gap-3">
+          <Checkbox
+            id="age"
+            checked={ageConfirmed}
+            onCheckedChange={(v) => setAgeConfirmed(Boolean(v))}
+            className="mt-0.5"
+          />
+          <Label htmlFor="age" className="text-[13px] text-foreground leading-relaxed cursor-pointer">
+            I confirm I am <strong className="text-foreground/80">18 years of age or older</strong>
           </Label>
         </div>
       </div>
@@ -227,7 +267,7 @@ const ConsentStep = () => {
       <Button
         onClick={giveConsent}
         className="w-full"
-        disabled={!terms || !privacy}
+        disabled={!terms || !privacy || !ageConfirmed}
       >
         Accept &amp; Continue
       </Button>

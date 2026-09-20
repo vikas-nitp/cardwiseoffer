@@ -44,6 +44,7 @@ export function useOfferSearch() {
       log.info("Search completed", { offers: result.offers.length, mode: isLocalMode() ? "local" : "api" });
     } catch (err) {
       if (ctrl.signal.aborted) return;
+      log.error("Search failed", { error: err instanceof Error ? err.message : String(err) });
       setSearchError(err instanceof Error ? err.message : "Failed to fetch offers.");
       setSearchResults([]);
       setStrip7days([]);
@@ -86,6 +87,7 @@ export function useOfferSearch() {
       setSearchResults(result.offers);
     } catch (err) {
       if (ctrl.signal.aborted) return;
+      log.error("Date change search failed", { error: err instanceof Error ? err.message : String(err) });
       setSearchError(err instanceof Error ? err.message : "Failed to fetch offers.");
     } finally {
       if (controller.current === ctrl) setSearchLoading(false);

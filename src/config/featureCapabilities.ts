@@ -9,5 +9,12 @@ export function resolveFeatureCapabilities(flags: FeatureFlags) {
     bookingAmountComparison: flags.bookingAmountComparisonEnabled,
     visitorCount: flags.visitorCountEnabled,
     auth: flags.authEnabled,
+    howItWorks: flags.howItWorksEnabled,
+    about: flags.aboutEnabled,
+    contact: flags.contactEnabled,
+    privacyPolicy: flags.privacyPolicyEnabled,
+    termsOfService: flags.termsOfServiceEnabled,
+    splashScreen: flags.splashScreenEnabled,
+    homeEntranceAnimation: flags.homeEntranceAnimationEnabled,
   };
 }

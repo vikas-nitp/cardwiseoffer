@@ -18,6 +18,7 @@ export interface OfferViewModel {
   platformName: string;
   offerTitle: string;
   platformUrl: string | null;  // null = no route context; UI must disable CTA
+  sourceUrl?: string | null;   // promotional source page for attribution
 
   // Money
   originalPrice?: number;
@@ -48,5 +49,6 @@ export interface OfferViewModel {
   isActive: boolean;
   priorityScore: number;
   lastUpdatedAt?: string;
+  evidenceStatus?: string;   // "VERIFIED" | "UNVERIFIED" | absent = treat as verified
 }
 
