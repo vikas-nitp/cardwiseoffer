@@ -64,7 +64,7 @@ const Index = () => {
     <div className="h-screen w-full min-w-0 overflow-hidden flex flex-col relative">
       {!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}
       <div className="pointer-events-none fixed inset-0 overflow-hidden z-0 sovereign-ground" />
-      {showHome && <StarField />}
+      <StarField />
 
       <div className="relative z-10 flex flex-col h-full">
         <Header

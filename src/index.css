@@ -91,6 +91,10 @@
 
     --glow:                 216 84% 56%;   /* blue decorative glow           */
 
+    /* ── Star colours (theme-aware for StarField) ───────────────── */
+    --star-dim-color:       218 54% 94%;   /* near-white on dark bg           */
+    --star-bright-color:     42 80% 85%;   /* light gold on dark bg           */
+
     /* ── Misc ────────────────────────────────────────────────────── */
     --surface-elevated:     219 32% 17%;
 
@@ -164,6 +168,8 @@
     --sidebar-accent-foreground: 221 39% 11%;
     --sidebar-border:       217 24% 90%;
     --sidebar-ring:         216 84% 50%;
+    --star-dim-color:       221 39% 22%;   /* dark navy dots on light bg      */
+    --star-bright-color:     41 78% 30%;   /* dark gold dots on light bg      */
   }
 
   /* OS-preference activation — same tokens, no explicit class needed */
@@ -216,6 +222,8 @@
       --sidebar-accent-foreground: 221 39% 11%;
       --sidebar-border:       217 24% 90%;
       --sidebar-ring:         216 84% 50%;
+      --star-dim-color:       221 39% 22%;
+      --star-bright-color:     41 78% 30%;
     }
   }
 }
