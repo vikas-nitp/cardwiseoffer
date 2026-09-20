@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { APP_NAME, SUPPORT_EMAIL, DISCLAIMER_TEXT } from "@/constants";
+import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <section className="mb-8">
@@ -9,7 +10,10 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
   </section>
 );
 
-const TermsOfService = () => (
+const TermsOfService = () => {
+  const { flags } = useFeatureFlags();
+  if (!flags.termsOfServiceEnabled) return <Navigate to="/" replace />;
+  return (
   <div className="min-h-screen bg-background">
     <div className="max-w-2xl mx-auto px-5 py-10">
       <Link
@@ -155,6 +159,7 @@ const TermsOfService = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default TermsOfService;

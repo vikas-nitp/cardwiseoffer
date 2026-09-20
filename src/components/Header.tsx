@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, User, LogOut, ChevronDown, LayoutDashboard } from "lucide-react";
+import { Menu, X, User, LogOut, ChevronDown, LayoutDashboard, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const CardSageMark = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
@@ -23,6 +24,7 @@ interface HeaderProps {
   onSectionChange: (section: ActiveSection) => void;
   allOffersEnabled?: boolean;
   authEnabled?: boolean;
+  howItWorksEnabled?: boolean;
 }
 
 const UserMenu = () => {
@@ -78,13 +80,14 @@ const UserMenu = () => {
   );
 };
 
-const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authEnabled = false }: HeaderProps) => {
+const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authEnabled = false, howItWorksEnabled = true }: HeaderProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isSignedIn, openSignIn } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const navItems: { label: string; section: ActiveSection }[] = [
     ...(allOffersEnabled ? [{ label: "All Offers", section: "all-offers" as ActiveSection }] : []),
-    { label: "How It Works", section: "how-it-works" },
+    ...(howItWorksEnabled ? [{ label: "How It Works", section: "how-it-works" as ActiveSection }] : []),
   ];
   const handleNav = (section: ActiveSection) => { onSectionChange(section); setMobileOpen(false); };
 
@@ -113,6 +116,14 @@ const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authE
               {label}
             </button>
           ))}
+
+          <button
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            className="ml-1 p-2 rounded-lg text-foreground/60 hover:text-foreground hover:bg-white/[0.06] transition-colors"
+          >
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
 
           {authEnabled && (
             isSignedIn ? (

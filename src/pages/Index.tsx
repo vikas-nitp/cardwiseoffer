@@ -69,6 +69,7 @@ const Index = () => {
           onSectionChange={setActiveSection}
           allOffersEnabled={capabilities.publicAllOffers}
           authEnabled={capabilities.auth}
+          howItWorksEnabled={capabilities.howItWorks}
         />
 
         <main className={`flex-1 min-h-0 flex flex-col items-center px-4 md:px-8 pb-4 scrollbar-hide ${
@@ -129,18 +130,18 @@ const Index = () => {
               </motion.div>
             )}
 
-            {activeSection === "about" && (
+            {activeSection === "about" && capabilities.about && (
               <motion.div key="about" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8 md:py-12 flex-1 flex flex-col justify-center">
                 <AboutSection />
               </motion.div>
             )}
-            {activeSection === "how-it-works" && (
+            {activeSection === "how-it-works" && capabilities.howItWorks && (
               <motion.div key="how-it-works" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-4 md:py-6 flex flex-col gap-5">
                 <HowItWorksSection />
                 <FAQSection />
               </motion.div>
             )}
-            {activeSection === "contact" && (
+            {activeSection === "contact" && capabilities.contact && (
               <motion.div key="contact" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8 md:py-12 flex-1 flex flex-col justify-center">
                 <ContactSection />
               </motion.div>
