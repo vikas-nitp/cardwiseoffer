@@ -119,9 +119,25 @@ Retrofitting these when the agent is producing 30 platforms worth of data is exp
 
 ---
 
+## Monetization
+
+> Full revenue strategy: **[cwo_backend/docs/deployment/revenue.md](../../cwo_backend/docs/deployment/revenue.md)**
+
+Priority order:
+1. Fix `offerMapper.ts:55` B1 bug (booking_url null → CTA disabled) — this is a **revenue gate**
+2. VCommission / Admitad publisher accounts → affiliate deep links on CTA
+3. Email capture on guest gate for offer alerts
+4. AdSense + Media.net display ads (Media.net pays 2–3× AdSense for finance)
+5. Card apply CTA via BankBazaar sub-affiliate
+6. Premium ₹99/month subscription (Phase 3, needs DB)
+
+Estimated: ₹45,000/month at launch with 1,000 DAU → ₹3,20,000/month at Month 6.
+
+---
+
 ## What This Is Not (Yet)
 
-- Not a booking engine — deep links only, no affiliate revenue wiring in Phase 1
+- Not a booking engine — affiliate deep links only, CWO never handles payment
 - Not a real-time price tracker — daily cadence is sufficient for offer data
 - Not a bank partnership play — independent, unaffiliated positioning is the trust signal
 

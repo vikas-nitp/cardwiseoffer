@@ -91,6 +91,8 @@ const AllOffersSection = ({
 }: AllOffersSectionProps) => {
   const gated = authEnabled && !isSignedIn;
   const visibleOffers = gated ? filteredAllOffers.slice(0, GUEST_PREVIEW_COUNT) : filteredAllOffers;
+  // Always show the gate for unauthenticated users regardless of filter result count.
+  // hiddenCount drives the label only — the gate renders whenever gated=true.
   const hiddenCount = gated ? Math.max(0, offersTotalCount - GUEST_PREVIEW_COUNT) : 0;
 
   return (
@@ -105,13 +107,15 @@ const AllOffersSection = ({
         )}
         {allOffersLoading && <Loader2 className="w-3.5 h-3.5 text-muted-foreground/50 animate-spin ml-1" />}
       </div>
-      <TopFiltersBar
-        bankFilter={bankFilter} onBankFilterChange={onBankFilterChange}
-        platformFilter={platformFilter} onPlatformFilterChange={onPlatformFilterChange}
-        paymentFilter={paymentFilter} onPaymentFilterChange={onPaymentFilterChange}
-        channelFilter={channelFilter} onChannelFilterChange={onChannelFilterChange}
-        onResetAll={onResetFilters}
-      />
+      {!gated && (
+        <TopFiltersBar
+          bankFilter={bankFilter} onBankFilterChange={onBankFilterChange}
+          platformFilter={platformFilter} onPlatformFilterChange={onPlatformFilterChange}
+          paymentFilter={paymentFilter} onPaymentFilterChange={onPaymentFilterChange}
+          channelFilter={channelFilter} onChannelFilterChange={onChannelFilterChange}
+          onResetAll={onResetFilters}
+        />
+      )}
     </div>
 
     {allOffersLoading && (
@@ -158,14 +162,14 @@ const AllOffersSection = ({
               ))}
             </div>
 
-            {gated && hiddenCount > 0 && (
+            {gated && (
               <div className="relative mt-4">
-                {/* fade overlay */}
                 <div className="pointer-events-none absolute -top-20 left-0 right-0 h-20 bg-gradient-to-b from-transparent to-background z-10" />
-                {/* sign-in gate */}
                 <div className="relative z-20 flex flex-col items-center gap-3 py-8 px-6 rounded-2xl border border-accent/20 bg-accent/5 text-center">
                   <p className="text-[13px] font-semibold text-foreground">
-                    {hiddenCount} more offer{hiddenCount !== 1 ? "s" : ""} available
+                    {hiddenCount > 0
+                      ? `${hiddenCount} more offer${hiddenCount !== 1 ? "s" : ""} available`
+                      : "More offers available"}
                   </p>
                   <p className="text-[12px] text-muted-foreground max-w-xs">
                     Sign in to unlock the full catalogue — free, no booking required.

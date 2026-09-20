@@ -2,13 +2,9 @@ import { Link, Navigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { APP_NAME, SUPPORT_EMAIL, DISCLAIMER_TEXT } from "@/constants";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
+import LegalSection from "@/components/LegalSection";
 
-const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <section className="mb-8">
-    <h2 className="text-base font-semibold text-foreground mb-3">{title}</h2>
-    <div className="text-[13.5px] text-muted-foreground leading-relaxed space-y-2">{children}</div>
-  </section>
-);
+const Section = LegalSection;
 
 const TermsOfService = () => {
   const { flags } = useFeatureFlags();
