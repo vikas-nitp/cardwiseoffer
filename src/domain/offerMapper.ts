@@ -1,5 +1,6 @@
 import type { components } from "@/types/generated-api";
 import type { OfferViewModel } from "@/types/offer";
+import { platformHomeUrl } from "@/domain/platformUrlBuilder";
 
 export interface LocalRawOffer {
   offer_id: string;
@@ -52,7 +53,7 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     platform: raw.platform_id,
     platformName: raw.platform_name,
     offerTitle: raw.offer_title,
-    platformUrl: raw.booking_url ?? null,
+    platformUrl: raw.booking_url ?? platformHomeUrl(raw.platform_id),
     finalPrice:
       "estimated_final_amount" in raw
         ? raw.estimated_final_amount == null ? undefined : Number(raw.estimated_final_amount)
