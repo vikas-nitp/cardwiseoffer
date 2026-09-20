@@ -30,7 +30,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     root.classList.add(theme);
     try {
       localStorage.setItem("cwo-theme", theme);
-    } catch {}
+    } catch { /* localStorage unavailable */ }
   }, [theme]);
 
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));

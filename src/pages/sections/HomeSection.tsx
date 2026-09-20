@@ -9,14 +9,14 @@ import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
 const animatedContainer = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+  show: { transition: { staggerChildren: 0.13, delayChildren: 0.28 } },
 };
 const animatedItem = {
-  hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.38, ease: "easeOut" as const } },
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" as const } },
 };
 const staticContainer = { hidden: {}, show: {} };
-const staticItem = { hidden: { opacity: 1, y: 0 }, show: { opacity: 1, y: 0 } };
+const staticItem = { hidden: {}, show: {} };
 
 interface HomeSectionProps {
   searchState: SearchState | null;

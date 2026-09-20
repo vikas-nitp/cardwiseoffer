@@ -283,7 +283,7 @@ export interface components {
             publicAllOffersEnabled: boolean;
             /**
              * Splashscreenenabled
-             * @default true
+             * @default false
              */
             splashScreenEnabled: boolean;
             /**
