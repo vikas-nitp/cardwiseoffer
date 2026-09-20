@@ -3,6 +3,7 @@ import type { OfferViewModel } from "@/types/offer";
 import { repoFetchAllOffersPage, isLocalMode } from "@/services/dataRepo";
 import { filterCatalogueOffers } from "@/domain/offerFiltering";
 import { analytics } from "@/services/analytics";
+import { log } from "@/lib/logger";
 
 export function useAllOffers(isActive: boolean, publicAllOffersEnabled: boolean) {
   const [allOffers, setAllOffers] = useState<OfferViewModel[]>([]);
@@ -47,6 +48,7 @@ export function useAllOffers(isActive: boolean, publicAllOffersEnabled: boolean)
       setOffersTotalCount(result.pagination.total ?? 0);
     } catch (err) {
       if (ctrl.signal.aborted) return;
+      log.error("Failed to fetch all offers", { error: err instanceof Error ? err.message : String(err) });
       setAllOffersError(err instanceof Error ? err.message : "Failed to fetch offers.");
       setAllOffers([]);
     } finally {
