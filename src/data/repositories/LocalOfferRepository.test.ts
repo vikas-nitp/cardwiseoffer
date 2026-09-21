@@ -59,7 +59,7 @@ const DEL: CityOption = { city: "New Delhi", code: "DEL", airport: "Indira Gandh
 
 // A Wednesday in 2027 — all test offers are valid; expired offer is already past
 const WED_2027 = new Date("2027-03-10"); // Wednesday = dayOfWeek 3
-const MON_2027 = new Date("2027-03-08"); // Monday = dayOfWeek 1
+const MON_2027 = new Date("2027-03-08"); // Monday = Python weekday 0
 
 // ── Strip scenarios ───────────────────────────────────────────────────────────
 describe("Strip — no fare entered", () => {

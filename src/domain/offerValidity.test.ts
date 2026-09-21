@@ -47,7 +47,7 @@ describe("offerValidity", () => {
 });
 
 describe("isOfferActiveOnDay", () => {
-  // 2026-07-13 is a Monday (getDay() === 1)
+  // 2026-07-13 is a Monday. Backend sends Python weekday: Mon=0 … Sun=6.
   const monday = new Date("2026-07-13T00:00:00");
   const tuesday = new Date("2026-07-14T00:00:00");
   const saturday = new Date("2026-07-18T00:00:00");
@@ -63,13 +63,13 @@ describe("isOfferActiveOnDay", () => {
   });
 
   it("matches when day is in valid_days list", () => {
-    expect(isOfferActiveOnDay({ validDays: [1] }, monday)).toBe(true);   // Monday = 1
-    expect(isOfferActiveOnDay({ validDays: [5, 6] }, saturday)).toBe(true); // Saturday = 6
+    expect(isOfferActiveOnDay({ validDays: [0] }, monday)).toBe(true);   // Monday = 0 (Python)
+    expect(isOfferActiveOnDay({ validDays: [4, 5] }, saturday)).toBe(true); // Saturday = 5 (Python)
   });
 
   it("does not match when day is not in valid_days list", () => {
-    expect(isOfferActiveOnDay({ validDays: [1] }, tuesday)).toBe(false);
-    expect(isOfferActiveOnDay({ validDays: [5, 6] }, monday)).toBe(false);
+    expect(isOfferActiveOnDay({ validDays: [0] }, tuesday)).toBe(false);
+    expect(isOfferActiveOnDay({ validDays: [4, 5] }, monday)).toBe(false);
   });
 });
 

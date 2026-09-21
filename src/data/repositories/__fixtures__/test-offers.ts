@@ -228,5 +228,5 @@ export const MON_ONLY_CC_OFFER = {
   discount_value: 12,
   max_discount: 900,
   min_transaction: 4000,
-  valid_days: [1], // 1 = Monday
+  valid_days: [0], // 0 = Monday (Python weekday convention)
 };
