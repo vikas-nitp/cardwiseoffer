@@ -91,7 +91,7 @@ export function platformHomeUrl(platform: string): string | null {
   return HOMES[platform] ?? null;
 }
 
-function isAllowed(url: string): boolean {
+export function isAllowed(url: string): boolean {
   try {
     const u = new URL(url);
     return u.protocol === "https:" && ALLOWED_HOSTS.has(u.host);

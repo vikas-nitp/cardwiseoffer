@@ -23,6 +23,12 @@
     <meta name="twitter:description" content="Compare credit card, debit card and no-card offers across MakeMyTrip, Cleartrip and more. Find which card saves the most on your flight booking.">
     <meta name="twitter:image" content="/og-image.png">
 
+    <!-- Content Security Policy.
+         frame-ancestors must be enforced via the X-Frame-Options response header
+         (set by SecurityHeadersMiddleware in the backend) — browsers ignore
+         frame-ancestors inside a <meta> CSP tag. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 http://localhost:8001 https://*.railway.app; frame-ancestors 'none'">
+
     <!-- Theme init — runs synchronously before React mounts to prevent FOUC.
          Reads saved preference from localStorage; falls back to OS preference.
          Sets .light / .dark class on <html> so CSS tokens resolve correctly. -->
