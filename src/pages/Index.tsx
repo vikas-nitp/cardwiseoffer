@@ -14,6 +14,7 @@ import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
 import { useAuth } from "@/contexts/AuthContext";
 import { analytics } from "@/services/analytics";
+import { useUserCards } from "@/hooks/useUserCards";
 import { useOfferSearch } from "@/hooks/useOfferSearch";
 import { useAllOffers } from "@/hooks/useAllOffers";
 import HomeSection from "@/pages/sections/HomeSection";
@@ -33,6 +34,10 @@ const Index = () => {
   const [activeSection, setActiveSection] = useState<ActiveSection>("home");
   const [splashDone, setSplashDone] = useState(!capabilities.splashScreen);
   const { isSignedIn, openSignIn } = useAuth();
+
+  const { cards: userCards } = useUserCards({
+    enabled: isSignedIn && capabilities.userCards,
+  });
 
   useEffect(() => analytics.configure(capabilities.analytics), [capabilities.analytics]);
 
@@ -75,6 +80,7 @@ const Index = () => {
           allOffersEnabled={capabilities.publicAllOffers}
           authEnabled={capabilities.auth}
           howItWorksEnabled={capabilities.howItWorks}
+          userCardsEnabled={capabilities.userCards}
         />
 
         <main className={`flex-1 min-h-0 flex flex-col items-center px-4 md:px-8 pb-4 scrollbar-hide ${
@@ -125,6 +131,7 @@ const Index = () => {
                   authEnabled={capabilities.auth}
                   isSignedIn={isSignedIn}
                   onSignIn={openSignIn}
+                  userCards={userCards}
                 />
               </motion.div>
             )}

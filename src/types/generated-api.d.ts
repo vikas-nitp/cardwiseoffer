@@ -89,6 +89,76 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/subscriptions/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Subscribe Email */
+        post: operations["subscribe_email_api_v1_subscriptions_email_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user/cards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Cards */
+        get: operations["list_cards_api_v1_user_cards_get"];
+        put?: never;
+        /** Save Card */
+        post: operations["save_card_api_v1_user_cards_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user/cards/{card_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Card */
+        delete: operations["delete_card_api_v1_user_cards__card_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/user/notification-prefs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Notification Prefs */
+        get: operations["get_notification_prefs_api_v1_user_notification_prefs_get"];
+        put?: never;
+        /** Save Notification Prefs */
+        post: operations["save_notification_prefs_api_v1_user_notification_prefs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/visitors/count": {
         parameters: {
             query?: never;
@@ -209,6 +279,13 @@ export interface components {
             /** Platforms */
             platforms: components["schemas"]["FacetOption"][];
         };
+        /** EmailSubscribeRequest */
+        EmailSubscribeRequest: {
+            /** Email */
+            email: string;
+            /** Source */
+            source?: string | null;
+        };
         /** FacetOption */
         FacetOption: {
             /** Count */
@@ -267,6 +344,11 @@ export interface components {
              */
             howItWorksEnabled: boolean;
             /**
+             * Notificationsenabled
+             * @default false
+             */
+            notificationsEnabled: boolean;
+            /**
              * Phase2Userfeaturesenabled
              * @default false
              */
@@ -287,10 +369,20 @@ export interface components {
              */
             splashScreenEnabled: boolean;
             /**
+             * Subscriptionsenabled
+             * @default false
+             */
+            subscriptionsEnabled: boolean;
+            /**
              * Termsofserviceenabled
              * @default true
              */
             termsOfServiceEnabled: boolean;
+            /**
+             * Usercardsenabled
+             * @default false
+             */
+            userCardsEnabled: boolean;
             /**
              * Visitorcountenabled
              * @default false
@@ -301,6 +393,13 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** NotificationPrefsRequest */
+        NotificationPrefsRequest: {
+            /** Notify Expiring */
+            notify_expiring: boolean;
+            /** Notify New */
+            notify_new: boolean;
         };
         /** OfferMetadata */
         OfferMetadata: {
@@ -452,6 +551,18 @@ export interface components {
              * Format: date
              */
             valid_from: string;
+        };
+        /** SaveCardRequest */
+        SaveCardRequest: {
+            /** Bank Id */
+            bank_id: string;
+            /** Card Name */
+            card_name?: string | null;
+            /**
+             * Payment Method
+             * @enum {string}
+             */
+            payment_method: "CREDIT_CARD" | "DEBIT_CARD";
         };
         /** SearchDateBenefit */
         SearchDateBenefit: {
@@ -785,6 +896,176 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SearchResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    subscribe_email_api_v1_subscriptions_email_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailSubscribeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_cards_api_v1_user_cards_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    save_card_api_v1_user_cards_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveCardRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_card_api_v1_user_cards__card_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                card_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_notification_prefs_api_v1_user_notification_prefs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    save_notification_prefs_api_v1_user_notification_prefs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NotificationPrefsRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

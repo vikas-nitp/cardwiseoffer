@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, User, LogOut, ChevronDown, LayoutDashboard, Sun, Moon } from "lucide-react";
+import { Menu, X, User, LogOut, ChevronDown, LayoutDashboard, Sun, Moon, BookMarked } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const CardSageMark = ({ className }: { className?: string }) => (
@@ -25,9 +25,10 @@ interface HeaderProps {
   allOffersEnabled?: boolean;
   authEnabled?: boolean;
   howItWorksEnabled?: boolean;
+  userCardsEnabled?: boolean;
 }
 
-const UserMenu = () => {
+const UserMenu = ({ userCardsEnabled = false }: { userCardsEnabled?: boolean }) => {
   const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -65,6 +66,15 @@ const UserMenu = () => {
               >
                 <LayoutDashboard className="w-3.5 h-3.5" /> My Profile
               </button>
+              {userCardsEnabled && (
+                <Link
+                  to="/profile"
+                  onClick={() => setOpen(false)}
+                  className="w-full flex items-center gap-2 px-3 py-2.5 text-[13px] text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
+                >
+                  <BookMarked className="w-3.5 h-3.5" /> Saved Cards
+                </Link>
+              )}
               <button
                 onClick={() => { signOut(); setOpen(false); }}
                 className="w-full flex items-center gap-2 px-3 py-2.5 text-[13px] text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
@@ -80,7 +90,7 @@ const UserMenu = () => {
   );
 };
 
-const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authEnabled = false, howItWorksEnabled = true }: HeaderProps) => {
+const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authEnabled = false, howItWorksEnabled = true, userCardsEnabled = false }: HeaderProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isSignedIn, openSignIn } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -127,7 +137,7 @@ const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authE
 
           {authEnabled && (
             isSignedIn ? (
-              <UserMenu />
+              <UserMenu userCardsEnabled={userCardsEnabled} />
             ) : (
               <button
                 onClick={openSignIn}
@@ -188,7 +198,7 @@ const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authE
             {authEnabled && isSignedIn && (
               <div className="mt-2 border-t border-border/40 pt-2">
                 <p className="px-4 py-1 text-[11px] text-muted-foreground uppercase tracking-wider font-medium">Account</p>
-                <UserMenu />
+                <UserMenu userCardsEnabled={userCardsEnabled} />
               </div>
             )}
           </nav>

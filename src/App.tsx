@@ -11,6 +11,7 @@ import SignInModal from "@/components/SignInModal";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import ProfilePage from "./pages/ProfilePage";
 import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
