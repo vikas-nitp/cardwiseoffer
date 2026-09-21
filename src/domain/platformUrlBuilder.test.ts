@@ -54,8 +54,9 @@ describe("platformUrlBuilder", () => {
     expect(platformHomeUrl("SPICEJET")).toBe("https://www.spicejet.com/");
     expect(platformHomeUrl("AirAsia")).toBe("https://www.airasia.com/en/in");
     expect(platformHomeUrl("AIRASIA")).toBe("https://www.airasia.com/en/in");
-    expect(platformHomeUrl("Vistara")).toBe("https://www.airvistara.com/");
-    expect(platformHomeUrl("VISTARA")).toBe("https://www.airvistara.com/");
+    // Vistara merged into Air India (Jan 2024); home URL now points to Air India
+    expect(platformHomeUrl("Vistara")).toBe("https://www.airindia.com/");
+    expect(platformHomeUrl("VISTARA")).toBe("https://www.airindia.com/");
   });
 
   it("SpiceJet, AirAsia, Vistara hosts are allow-listed", () => {

@@ -14,7 +14,7 @@ const ALLOWED_HOSTS = new Set([
   "www.goindigo.in",
   "www.spicejet.com",
   "www.airasia.com",
-  "www.airvistara.com",
+  "www.airvistara.com", // kept for backward-compat with old scraped booking_urls; domain now redirects to Air India
 ]);
 
 const HOMES: Record<string, string> = {
@@ -39,8 +39,9 @@ const HOMES: Record<string, string> = {
   SPICEJET: "https://www.spicejet.com/",
   AirAsia: "https://www.airasia.com/en/in",
   AIRASIA: "https://www.airasia.com/en/in",
-  Vistara: "https://www.airvistara.com/",
-  VISTARA: "https://www.airvistara.com/",
+  // Vistara merged into Air India (Jan 2024) — point to Air India
+  Vistara: "https://www.airindia.com/",
+  VISTARA: "https://www.airindia.com/",
 };
 
 export interface FlightSearchContext {

@@ -75,7 +75,7 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     expiryDate: raw.expiry_date,
     eligibilityNotes: raw.eligibility_notes ?? [],
     category: raw.category,
-    validDays: raw.valid_days ?? null,
+    validDays: raw.valid_days ?? null, // backend uses Python weekday (0=Mon); offerValidity.ts converts on use
     evidenceStatus: raw.evidence_status ?? undefined,
     sourceUrl: raw.source_url ?? null,
     sourceType: "api",
@@ -88,6 +88,7 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
 export function mapLocalOffer(raw: LocalRawOffer): OfferViewModel {
   const notes = raw.eligibility_notes ? [raw.eligibility_notes] : [];
   if (raw.channels) notes.push(`Channels: ${raw.channels}`);
+  const dt = raw.discount_type as OfferViewModel["discountType"];
   return {
     id: raw.offer_id,
     label: raw.bank_id ? `${raw.bank_id} Offer` : "Default Offer",
@@ -98,12 +99,12 @@ export function mapLocalOffer(raw: LocalRawOffer): OfferViewModel {
     platform: raw.platform,
     platformName: raw.platform,
     offerTitle: raw.bank_id ? `${raw.bank_id} offer` : `${raw.platform} offer`,
-    platformUrl: null,
-    savings: raw.discount_type === "FLAT" ? raw.discount_value : raw.max_discount ?? 0,
+    platformUrl: raw.source_url ?? null,
+    savings: (dt === "FLAT" || dt === "CASHBACK") ? raw.discount_value : raw.max_discount ?? 0,
     paymentMethod: raw.payment_method as OfferViewModel["paymentMethod"],
     bookingChannel: raw.channels ?? "WEB_AND_APP",
     newUserOnly: false,
-    discountType: raw.discount_type as OfferViewModel["discountType"],
+    discountType: dt,
     discountValue: raw.discount_value,
     maxDiscount: raw.max_discount,
     minTransaction: raw.min_transaction,
@@ -112,6 +113,9 @@ export function mapLocalOffer(raw: LocalRawOffer): OfferViewModel {
     expiryDate: raw.expiry_date,
     eligibilityNotes: notes,
     category: raw.category,
+    validDays: null,
+    evidenceStatus: undefined,
+    lastUpdatedAt: undefined,
     sourceUrl: raw.source_url ?? null,
     sourceType: "demo_excel",
     isActive: true,
