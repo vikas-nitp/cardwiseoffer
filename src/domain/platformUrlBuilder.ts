@@ -12,6 +12,9 @@ const ALLOWED_HOSTS = new Set([
   "www.yatra.com",
   "www.airindia.com",
   "www.goindigo.in",
+  "www.spicejet.com",
+  "www.airasia.com",
+  "www.airvistara.com",
 ]);
 
 const HOMES: Record<string, string> = {
@@ -32,6 +35,12 @@ const HOMES: Record<string, string> = {
   AIR_INDIA: "https://www.airindia.com/",
   IndiGo: "https://www.goindigo.in/",
   INDIGO: "https://www.goindigo.in/",
+  SpiceJet: "https://www.spicejet.com/",
+  SPICEJET: "https://www.spicejet.com/",
+  AirAsia: "https://www.airasia.com/en/in",
+  AIRASIA: "https://www.airasia.com/en/in",
+  Vistara: "https://www.airvistara.com/",
+  VISTARA: "https://www.airvistara.com/",
 };
 
 export interface FlightSearchContext {

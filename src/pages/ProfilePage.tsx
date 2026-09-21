@@ -277,10 +277,7 @@ const ProfilePage = () => {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [removing, setRemoving] = useState<string | null>(null);
 
-  if (!isSignedIn) return <Navigate to="/" replace />;
-  if (!caps.userCards) return <Navigate to="/" replace />;
-
-  const fetchCards = async () => {
+  const fetchCards = useCallback(async () => {
     setLoading(true);
     setFetchError(null);
     try {
@@ -293,9 +290,12 @@ const ProfilePage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  useEffect(() => { void fetchCards(); }, []);
+  useEffect(() => { void fetchCards(); }, [fetchCards]);
+
+  if (!isSignedIn) return <Navigate to="/" replace />;
+  if (!caps.userCards) return <Navigate to="/" replace />;
 
   const handleRemove = async (cardId: string) => {
     setRemoving(cardId);
