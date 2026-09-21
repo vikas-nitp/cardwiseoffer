@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import type { OfferViewModel } from "@/types/offer";
 import { validityLabel, isOfferExpired, isOfferUpcoming } from "@/domain/offerValidity";
 import { savingsLabel } from "@/domain/offerCalculation";
+import { isAllowed } from "@/domain/platformUrlBuilder";
+import { buildAffiliateUrl } from "@/domain/affiliateLinks";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
 import { cn } from "@/lib/utils";
@@ -63,7 +65,10 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
   const upcoming = isOfferUpcoming(offer, searchDate);
   const validity = validityLabel(offer, searchDate);
 
-  const canBook = !!offer.platformUrl && !expired && !upcoming;
+  // Build the outbound URL: append affiliate param if configured, then validate
+  // the final URL against the ALLOWED_HOSTS allowlist before exposing it as an href.
+  const ctaHref = offer.platformUrl ? buildAffiliateUrl(offer.platformUrl, offer.platform) : null;
+  const canBook = !!ctaHref && isAllowed(ctaHref) && !expired && !upcoming;
   const isNoCard = offer.paymentMethod === "NO_CARD" || offer.bank === null;
   const badgeLabel = label ?? offer.label;
   const showCoupon = capabilities.couponCode && offer.couponCode && !/^(PARTIAL|DRAFT|TEST|UNKNOWN|N\/A)$/i.test(offer.couponCode);
@@ -164,8 +169,8 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
             <span className="text-[11px] font-bold text-accent tracking-wide min-w-0 truncate">{offer.couponCode}</span>
           </div>
         )}
-        {canBook && offer.platformUrl ? (
-          <a href={offer.platformUrl} target="_blank" rel="noopener noreferrer" className="block">
+        {canBook && ctaHref ? (
+          <a href={ctaHref} target="_blank" rel="noopener noreferrer" className="block">
             <Button className={cn(
               "gap-2 w-full font-semibold text-[13px] rounded-xl h-10 transition-all duration-200 shadow-sm hover:shadow-md",
               v.cta === "gold"
