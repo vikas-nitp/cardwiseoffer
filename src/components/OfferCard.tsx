@@ -73,6 +73,17 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
   const badgeLabel = label ?? offer.label;
   const showCoupon = capabilities.couponCode && offer.couponCode && !/^(PARTIAL|DRAFT|TEST|UNKNOWN|N\/A)$/i.test(offer.couponCode);
 
+  // Strip leading bank name from card_name to avoid redundancy (e.g. "ICICI Bank Credit Card" → "Credit Card")
+  const displayCardName = (() => {
+    if (!offer.cardName) return offer.bankDisplay ?? null;
+    const bank = (offer.bankDisplay ?? offer.bank ?? "").toLowerCase();
+    const name = offer.cardName.toLowerCase();
+    const stripped = bank && name.startsWith(bank)
+      ? offer.cardName.slice(bank.length).replace(/^\s+/, "")
+      : offer.cardName;
+    return stripped || offer.bankDisplay;
+  })();
+
   const filteredNotes = offer.eligibilityNotes.filter((note) => !REDUNDANT_NOTE_RE.test(note));
   const visibleNotes = filteredNotes.slice(0, 2);
 
@@ -135,9 +146,9 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
             <CreditCard className="w-3 h-3 text-muted-foreground/50 mt-[2px] flex-shrink-0" />
             <div className="flex items-center gap-2 flex-wrap">
               <p className="text-[13px] font-semibold text-foreground tracking-tight leading-relaxed">
-                {offer.cardName ?? offer.bankDisplay}
+                {displayCardName}
               </p>
-              {offer.paymentMethod === "DEBIT" && !/(debit)/i.test(offer.cardName ?? offer.bankDisplay ?? "") && (
+              {offer.paymentMethod === "DEBIT" && !/(debit)/i.test(displayCardName ?? "") && (
                 <span className="inline-flex text-[10px] font-semibold text-foreground bg-muted/50 border border-border/40 px-2 py-0.5 rounded-md">
                   Debit
                 </span>
