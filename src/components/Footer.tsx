@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { APP_NAME, DISCLAIMER_TEXT } from "@/constants";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
+import EmailCaptureBar from "@/components/EmailCaptureBar";
 
 interface FooterProps {
   onSectionChange?: (section: "about" | "contact") => void;
@@ -32,6 +33,7 @@ const Footer = ({ onSectionChange }: FooterProps) => {
           )}
           <span className="text-[11px] text-foreground/35">© {new Date().getFullYear()} {APP_NAME}</span>
         </div>
+        <EmailCaptureBar />
       </div>
     </footer>
   );

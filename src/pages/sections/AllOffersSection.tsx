@@ -7,6 +7,7 @@ import { TopFiltersBar } from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
 import EmptyState from "@/components/EmptyState";
 import type { OfferViewModel } from "@/types/offer";
+import type { CardRecord } from "@/hooks/useUserCards";
 
 const GRID = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4";
 
@@ -79,6 +80,7 @@ interface AllOffersSectionProps {
   authEnabled?: boolean;
   isSignedIn?: boolean;
   onSignIn?: () => void;
+  userCards?: CardRecord[];
 }
 
 const AllOffersSection = ({
@@ -88,11 +90,22 @@ const AllOffersSection = ({
   offersLimit, setOffersLimit,
   onBankFilterChange, onPlatformFilterChange, onPaymentFilterChange, onChannelFilterChange, onResetFilters,
   authEnabled = false, isSignedIn = false, onSignIn,
+  userCards,
 }: AllOffersSectionProps) => {
+  const [myCardsActive, setMyCardsActive] = useState(false);
+
+  const savedBankIds = userCards && userCards.length > 0
+    ? new Set(userCards.map((c) => c.bank_id))
+    : null;
+
+  const displayOffers = myCardsActive && savedBankIds
+    ? filteredAllOffers.filter((o) => o.bank !== null && savedBankIds.has(o.bank))
+    : filteredAllOffers;
+
   const gated = authEnabled && !isSignedIn;
-  const visibleOffers = gated ? filteredAllOffers.slice(0, GUEST_PREVIEW_COUNT) : filteredAllOffers;
   // Always show the gate for unauthenticated users regardless of filter result count.
   // hiddenCount drives the label only — the gate renders whenever gated=true.
+  const visibleOffers = gated ? displayOffers.slice(0, GUEST_PREVIEW_COUNT) : displayOffers;
   const hiddenCount = gated ? Math.max(0, offersTotalCount - GUEST_PREVIEW_COUNT) : 0;
 
   return (
@@ -108,13 +121,30 @@ const AllOffersSection = ({
         {allOffersLoading && <Loader2 className="w-3.5 h-3.5 text-muted-foreground/50 animate-spin ml-1" />}
       </div>
       {!gated && (
-        <TopFiltersBar
-          bankFilter={bankFilter} onBankFilterChange={onBankFilterChange}
-          platformFilter={platformFilter} onPlatformFilterChange={onPlatformFilterChange}
-          paymentFilter={paymentFilter} onPaymentFilterChange={onPaymentFilterChange}
-          channelFilter={channelFilter} onChannelFilterChange={onChannelFilterChange}
-          onResetAll={onResetFilters}
-        />
+        <>
+          <TopFiltersBar
+            bankFilter={bankFilter} onBankFilterChange={onBankFilterChange}
+            platformFilter={platformFilter} onPlatformFilterChange={onPlatformFilterChange}
+            paymentFilter={paymentFilter} onPaymentFilterChange={onPaymentFilterChange}
+            channelFilter={channelFilter} onChannelFilterChange={onChannelFilterChange}
+            onResetAll={onResetFilters}
+          />
+          {savedBankIds && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setMyCardsActive((v) => !v)}
+                className={`inline-flex items-center gap-1.5 h-7 px-3 rounded-full text-[12px] font-medium border transition-colors ${
+                  myCardsActive
+                    ? "bg-accent text-accent-foreground border-accent"
+                    : "bg-background text-muted-foreground border-border/40 hover:border-accent/40 hover:text-foreground"
+                }`}
+              >
+                My Cards
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
 
@@ -146,7 +176,7 @@ const AllOffersSection = ({
     )}
     {!allOffersLoading && !allOffersError && (
       <>
-        {filteredAllOffers.length === 0 ? (
+        {displayOffers.length === 0 ? (
           <EmptyState onReset={onResetFilters} />
         ) : (
           <div className="relative">

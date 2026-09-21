@@ -16,5 +16,8 @@ export function resolveFeatureCapabilities(flags: FeatureFlags) {
     termsOfService: flags.termsOfServiceEnabled,
     splashScreen: flags.splashScreenEnabled,
     homeEntranceAnimation: flags.homeEntranceAnimationEnabled,
+    subscriptions: flags.subscriptionsEnabled,
+    userCards: flags.userCardsEnabled,
+    notifications: flags.notificationsEnabled,
   };
 }
