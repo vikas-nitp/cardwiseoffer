@@ -4,7 +4,7 @@
  */
 
 export type PaymentMethod = "CREDIT" | "DEBIT" | "NO_CARD";
-export type DiscountType = "FLAT" | "PERCENT";
+export type DiscountType = "FLAT" | "PERCENT" | "CASHBACK";
 export type SourceType = "demo_excel" | "api";
 
 export interface OfferViewModel {
@@ -42,7 +42,8 @@ export interface OfferViewModel {
   eligibilityNotes: string[];
   category: string;
 
-  // 0=Sun … 6=Sat (JS getDay() convention). null/undefined = valid every day.
+  // 0=Mon … 6=Sun (Python weekday convention from backend). null/undefined = valid every day.
+  // offerValidity.ts converts to JS getDay() when checking.
   validDays?: number[] | null;
 
   sourceType: SourceType;

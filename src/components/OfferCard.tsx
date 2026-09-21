@@ -53,7 +53,7 @@ function formatValidDays(days: number[]): string | null {
 
 // Notes that repeat information already visible on the card (bank name, card type, channel)
 const REDUNDANT_NOTE_RE =
-  /no card|required|new users?|selected .*cards?|partial evidence|unverified|draft|hidden|inactive|expired|app only|website only|valid on .*(credit|debit|bank).*card|expires\s+\d+|valid\s+(mon|tue|wed|thu|fri|sat|sun)/i;
+  /no card|required|new users?|selected .*cards?|partial evidence|unverified|draft|hidden|inactive|expired|app only|website only|expires\s+\d+|valid\s+(mon|tue|wed|thu|fri|sat|sun)/i;
 
 const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = false, userFareProvided = false, searchDate }: OfferCardProps) => {
   const { flags } = useFeatureFlags();
@@ -73,15 +73,19 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
   const badgeLabel = label ?? offer.label;
   const showCoupon = capabilities.couponCode && offer.couponCode && !/^(PARTIAL|DRAFT|TEST|UNKNOWN|N\/A)$/i.test(offer.couponCode);
 
-  // Strip leading bank name from card_name to avoid redundancy (e.g. "ICICI Bank Credit Card" → "Credit Card")
+  // Strip leading bank name from card_name to avoid redundancy (e.g. "ICICI Bank Credit Card" → "Credit Card").
+  // Guard: don't strip when the remainder starts with "Bank" — it means bankDisplay is only a
+  // prefix of the full bank name in card_name (e.g. "Federal" would strip "Federal Bank Credit Card"
+  // to "Bank Credit Card", which is wrong).
   const displayCardName = (() => {
     if (!offer.cardName) return offer.bankDisplay ?? null;
     const bank = (offer.bankDisplay ?? offer.bank ?? "").toLowerCase();
     const name = offer.cardName.toLowerCase();
-    const stripped = bank && name.startsWith(bank)
-      ? offer.cardName.slice(bank.length).replace(/^\s+/, "")
-      : offer.cardName;
-    return stripped || offer.bankDisplay;
+    if (bank && name.startsWith(bank)) {
+      const rest = offer.cardName.slice(bank.length).replace(/^\s+/, "");
+      if (rest && !/^bank\b/i.test(rest)) return rest;
+    }
+    return offer.cardName;
   })();
 
   const filteredNotes = offer.eligibilityNotes.filter((note) => !REDUNDANT_NOTE_RE.test(note));

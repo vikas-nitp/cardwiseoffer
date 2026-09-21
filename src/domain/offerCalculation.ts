@@ -6,7 +6,7 @@ import type { OfferViewModel } from "@/types/offer";
  * PERCENT: needs a fare. Without fare we cap at maxDiscount and label separately.
  */
 export function estimateSavings(offer: OfferViewModel, fareAmount?: number): number {
-  if (offer.discountType === "FLAT") {
+  if (offer.discountType === "FLAT" || offer.discountType === "CASHBACK") {
     const cap = offer.maxDiscount ?? offer.discountValue;
     return Math.min(offer.discountValue, cap);
   }
@@ -22,6 +22,7 @@ export function estimateSavings(offer: OfferViewModel, fareAmount?: number): num
 
 /** Human label when actual savings can't be computed from a fare. */
 export function savingsLabel(offer: OfferViewModel): string {
+  if (offer.discountType === "CASHBACK") return `₹${estimateSavings(offer).toLocaleString()} cashback`;
   if (offer.discountType === "FLAT") return `₹${estimateSavings(offer).toLocaleString()} off`;
   const cap = offer.maxDiscount ? `, max ₹${offer.maxDiscount.toLocaleString()}` : "";
   return `${offer.discountValue}% off${cap}`;
