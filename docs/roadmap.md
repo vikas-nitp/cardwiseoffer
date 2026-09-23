@@ -254,9 +254,169 @@ Regex covers ~80% of offers at zero API cost. LLM handles the remaining 20%: co-
 
 ---
 
+---
+
+### Phase 3 — Monetization (In Progress)
+
+**Goal:** Convert every offer click into attributable affiliate revenue. Prove the unit economics before scaling.
+
+**Status (Sep 2026):** Affiliate links wired (`affiliateLinks.ts`), email capture live, VAPT done, GitHub Actions scraper set up. Remaining: Vercel + Railway deploy.
+
+**Tasks:**
+- [x] Fix B1 bug — booking_url null → CTA disabled (`offerMapper.ts`)
+- [x] Affiliate deep links — VCommission + Admitad publisher accounts; `buildAffiliateUrl()` with per-platform `aid` / `aff_id` params
+- [x] Email capture bar — `/api/v1/subscriptions/email`, SHA-256 IP hash, JSONL storage
+- [x] VAPT audit — security headers, CORS, input constraints signed off
+- [x] GitHub Actions cron scraper — daily cardsage run, commits `output/combined/`
+- [ ] Deploy frontend → Vercel (set `VITE_API_BASE_URL`, connect custom domain)
+- [ ] Deploy backend → Railway (Dockerfile present; set `CORS_ORIGINS` env var)
+- [ ] AdSense + Media.net display placements (Media.net pays 2–3× for finance traffic)
+- [ ] Card apply CTA via BankBazaar sub-affiliate (`₹500–₹1,500` per approved application)
+- [ ] Click + conversion tracking — PostHog or GA4 events on every `Continue to [platform]` click; UTM passthrough on all outbound URLs
+
+**Revenue gate:** Every undeployed day is lost affiliate revenue. Deployment (#7) unblocks everything downstream.
+
+---
+
+### Phase 4 — AI Offer Finder
+
+**Goal:** Let users describe what they want in plain language. AI interprets; the deterministic backend matches. AI never invents prices, dates or eligibility.
+
+**Principle (non-negotiable):** LLM = query interpreter only. Backend = offer matching engine.
+
+```
+User types natural language
+        ↓
+Frontend — AI search box (alongside existing filters)
+        ↓
+POST /api/v1/ai/search  { "query": "Bangalore to Dubai under ₹15k in November" }
+        ↓
+Backend calls LLM (claude-haiku-4-5-20251001) with structured extraction prompt
+        ↓
+LLM returns JSON: { origin, destination, max_price, month, bank, trip_type, ... }
+        ↓
+Backend runs existing offer-filter logic on parsed params
+        ↓
+Response: matching offers + extraction summary ("Matched: BLR→DXB, ≤₹15,000, November")
+        ↓
+Frontend renders standard offer cards + explainer chip
+```
+
+**Tasks:**
+
+#### 4.1 Backend — AI search endpoint
+- [ ] `POST /api/v1/ai/search` — accepts `{ query: str }`, returns `{ offers: [...], parsed: {...}, explanation: str }`
+- [ ] LLM extraction prompt: parse `origin`, `destination`, `max_price`, `bank`, `month`, `trip_type` (DOMESTIC/INTERNATIONAL), `payment_type`
+  - Use `claude-haiku-4-5-20251001` (fast + cheap); fall back gracefully if API unavailable
+  - Return partial matches when not all params extractable (e.g. no destination → show all international)
+- [ ] Ambiguous query handling — if origin/destination cannot be resolved, return `clarification_needed: true` with the ambiguous field named
+- [ ] Map city names → IATA codes using `data/distribution/frontend/airports.json` (already built)
+- [ ] Feature flag `AI_SEARCH_ENABLED` in `feature_flags.py` (off by default until tested)
+- [ ] Rate limit AI endpoint separately (e.g. 10 req/min/IP) to control LLM spend
+- [ ] Log every AI query + parsed result to `data/ai_queries.jsonl` for quality review
+
+#### 4.2 Frontend — AI search UI
+- [ ] `AiSearchBar` component — text input with placeholder "Try: Bangalore to Dubai under ₹15,000"
+- [ ] Sits above the standard `TopFiltersBar` on the AllOffers page; both usable independently
+- [ ] Shows parsed-params chip strip below the input ("Origin: BLR · Destination: DXB · Max: ₹15,000")
+  - Each chip is dismissible → removes that constraint and re-queries
+- [ ] Loading state (spinner + "Finding offers…") while awaiting response
+- [ ] Graceful fallback if AI endpoint fails → silently fall through to standard filter
+- [ ] "Clear AI search" resets to full catalogue
+- [ ] Hide behind `flags.aiSearchEnabled` feature flag
+
+#### 4.3 Offer matching on AI params
+- [ ] Extend backend search/filter logic to accept parsed AI params (origin, destination, max_price, month)
+  - Origin/destination filter: match against offer's `source_url` domain or explicit route fields (requires data model update if route fields not present)
+  - max_price: filter on `discount_value` + `min_transaction` composite; or surface offers where the discount makes a typical route price fall below threshold
+  - month: match against `valid_from`–`expiry_date` overlap
+- [ ] Explainability: response includes `explanation` string rendered as a contextual banner above results
+
+#### 4.4 Quality gates
+- [ ] Weekly review of `data/ai_queries.jsonl` — track: parse success rate, zero-result rate, click-through vs. standard search
+- [ ] A/B test: show AI search to 50% of visitors; measure offer CTR and affiliate clicks vs. control
+
+#### 4.5 Future AI features (post-validation)
+- Personalized offer feed based on saved home city + preferred destinations
+- "Is this a good deal?" scoring (price vs. historical + seasonal baseline)
+- WhatsApp/email digest: "3 new offers matching your saved routes"
+
+---
+
+### Phase 5 — SEO
+
+**Goal:** Capture high-intent Google search traffic ("hdfc flight offers", "bangalore to dubai cheap flights") with pages backed by real offer inventory — not thin placeholder content.
+
+**Principle:** Every landing page must show actual live offers. A page with zero matching offers should either redirect to the catalogue or display the "No current offers" state with related offers — never a blank shell.
+
+**Tasks:**
+
+#### 5.1 Dynamic landing pages (React Router + pre-render or SSR)
+- [ ] `/offers/[bank]-flight-offers` — e.g. `/offers/hdfc-flight-offers`, `/offers/sbi-flight-offers`
+  - Filter offers by `bank_id`; show count in `<title>` ("12 HDFC Flight Offers — Offers Cardsage")
+  - Regenerate with `build_data_bundle.py` so static export stays fresh daily
+- [ ] `/offers/[origin]-flight-offers` — e.g. `/offers/bangalore-flight-offers`
+  - Requires route-level data (origin IATA on each offer); track for Phase 5.2 data work below
+- [ ] `/offers/[origin]-to-[destination]-flight-deals` — e.g. `/offers/bangalore-to-dubai-flight-deals`
+  - City-pair pages; highest search intent; requires route fields on offers
+- [ ] `/offers/[platform]-flight-offers` — e.g. `/offers/makemytrip-flight-offers`
+  - Filter by `platform_id`; easiest to build immediately (field already exists)
+- [ ] `/offers/international-flight-offers` and `/offers/domestic-flight-offers`
+  - Filter by `category = FLIGHT_INTERNATIONAL` vs. `FLIGHT_DOMESTIC`
+
+#### 5.2 Data model additions to support route-level SEO
+- [ ] Add `origin_iata` and `destination_iata` fields to offer CSV schema + `cardsage_to_snapshot.py`
+  - Cardsage scrapers should extract or infer route from offer text (or leave blank for non-route offers)
+- [ ] Add `trip_scope` field: `DOMESTIC` | `INTERNATIONAL` | `BOTH` — derivable from platform + offer text
+- [ ] Backfill existing 28 demo offers with route/scope fields
+
+#### 5.3 On-page SEO
+- [ ] Dynamic `<title>` and `<meta name="description">` per page using `react-helmet-async`
+  - Formula: `"[N] [Bank/Route/Platform] Flight Offers — Offers Cardsage | Save up to ₹X"`
+- [ ] Canonical URLs — every offer card on any listing page points canonical to its own detail URL
+- [ ] Open Graph tags — `og:title`, `og:description`, `og:image` per landing page (auto-generate OG card from top offer)
+- [ ] JSON-LD structured data — `Offer` schema per offer card; `BreadcrumbList` on landing pages
+  ```json
+  {
+    "@type": "Offer",
+    "name": "15% off on HDFC Credit Cards — MakeMyTrip",
+    "priceCurrency": "INR",
+    "validThrough": "2026-10-31",
+    "url": "https://cardwiseoffer.com/offers/hdfc-flight-offers"
+  }
+  ```
+
+#### 5.4 Technical SEO
+- [ ] `sitemap.xml` — generated by `scripts/build_sitemap.py` after each `build_data_bundle.py` run
+  - Include all active offer landing pages; update `lastmod` from `last_verified_at`
+- [ ] `robots.txt` — allow all crawlers on `/offers/*`; disallow `/api/*`, `/admin/*`
+- [ ] Prerender / static export for landing pages — Vite SSG plugin or React Router loader approach so Googlebot sees full content without JS execution
+- [ ] Core Web Vitals pass — LCP < 2.5s, CLS < 0.1, FID < 100ms; measure with Lighthouse CI in GitHub Actions
+
+#### 5.5 Internal linking
+- [ ] Every offer card links to its bank landing page (e.g. "See all HDFC offers →")
+- [ ] Bank landing pages cross-link to platform pages ("HDFC offers on MakeMyTrip")
+- [ ] Homepage features top-N bank and platform landing pages as quick-access chips
+- [ ] Breadcrumb navigation on all landing pages
+
+#### 5.6 Content strategy (thin-content guard)
+- [ ] Each bank/route/platform page includes a 2–3 sentence editorial intro (auto-generated from offer data, human-reviewed before publish)
+  - Example: "HDFC Bank currently has 8 active flight offers across MakeMyTrip and Cleartrip. The best offer gives ₹1,500 off on bookings above ₹5,000."
+- [ ] Related offers section at the bottom of every landing page ("You might also like")
+- [ ] FAQ block on high-traffic pages (auto-generated from common query patterns in `data/ai_queries.jsonl`)
+
+#### 5.7 Measurement
+- [ ] Google Search Console — verify domain, submit sitemap, track impressions by landing page
+- [ ] GA4 custom dimension `page_type` = `seo_landing` vs. `catalogue` to compare conversion rates
+- [ ] Monthly review: top-10 landing pages by impressions, CTR, and affiliate clicks
+
+---
+
 ## Open Questions
 
 - Which Indian bank offer pages are structured enough to parse reliably?
 - Is there an affiliate network (EasyDiner, CashKaro, etc.) with a card-offer API for flights?
 - What does the legal/ToS posture look like for automated scraping of MMT/Cleartrip?
 - At what traffic level does Lovable hosting become a constraint?
+- Phase 4: Which LLM API pricing model works at scale — Haiku per-query vs. batched? At 10k AI queries/day, cost estimate: ~₹500/day at Haiku pricing.
+- Phase 5: Should route-level pages be pre-rendered at build time (static) or SSR? Static is simpler; SSR needed only if offer updates need to be live within minutes.

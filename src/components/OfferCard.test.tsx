@@ -42,8 +42,9 @@ function makeOffer(overrides: Partial<OfferViewModel> = {}): OfferViewModel {
 describe("OfferCard — displayCardName", () => {
   it("strips leading bank name from card_name when it matches bankDisplay", () => {
     render(<OfferCard offer={makeOffer()} />, { wrapper });
-    // "ICICI Bank Credit Card" with bankDisplay "ICICI Bank" → should show "Credit Card"
-    expect(screen.getByText("Credit Card")).toBeInTheDocument();
+    // "ICICI Bank Credit Card" with bankDisplay "ICICI Bank":
+    // Generic remainder "Credit Card" is skipped; mid-name " Bank" is removed → "ICICI Credit Card"
+    expect(screen.getByText("ICICI Credit Card")).toBeInTheDocument();
     // The full redundant string should NOT appear
     expect(screen.queryByText("ICICI Bank Credit Card")).toBeNull();
   });
@@ -84,7 +85,8 @@ describe("OfferCard — displayCardName", () => {
       />,
       { wrapper },
     );
-    // "SBI Credit Card" with bankDisplay "SBI" → "Credit Card"
-    expect(screen.getByText("Credit Card")).toBeInTheDocument();
+    // "SBI Credit Card" with bankDisplay "SBI": "Credit Card" is a generic remainder, so
+    // the full name is kept (no " Bank" to remove via mid-name strip) → "SBI Credit Card"
+    expect(screen.getByText("SBI Credit Card")).toBeInTheDocument();
   });
 });

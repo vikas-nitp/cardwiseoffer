@@ -334,6 +334,16 @@ export interface components {
              */
             couponCodeEnabled: boolean;
             /**
+             * Flightinternationalenabled
+             * @default false
+             */
+            flightInternationalEnabled: boolean;
+            /**
+             * Cookieconsentenabled
+             * @default false
+             */
+            cookieConsentEnabled: boolean;
+            /**
              * Homeentranceanimationenabled
              * @default true
              */
@@ -475,7 +485,7 @@ export interface components {
              * Category
              * @constant
              */
-            category: "FLIGHT_DOMESTIC";
+            category: "FLIGHT_DOMESTIC" | "FLIGHT_INTERNATIONAL";
             /** Coupon Code */
             coupon_code?: string | null;
             /**
@@ -605,7 +615,7 @@ export interface components {
              * Category
              * @constant
              */
-            category: "FLIGHT_DOMESTIC";
+            category: "FLIGHT_DOMESTIC" | "FLIGHT_INTERNATIONAL";
             /** Comparison Text */
             comparison_text?: string | null;
             /** Coupon Code */
@@ -707,7 +717,7 @@ export interface components {
              * @default FLIGHT_DOMESTIC
              * @constant
              */
-            category: "FLIGHT_DOMESTIC";
+            category: "FLIGHT_DOMESTIC" | "FLIGHT_INTERNATIONAL";
             /**
              * Date
              * Format: date

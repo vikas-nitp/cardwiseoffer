@@ -45,7 +45,7 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     id: raw.offer_id,
     label:
       (displayKind && labelByKind[displayKind]) ??
-      (raw.bank_id ? `${raw.bank_name ?? raw.bank_id} Offer` : "Default Offer (No Card)"),
+      (raw.bank_id ? `${raw.bank_name ?? raw.bank_id} Offer` : `${raw.platform_name} Offer`),
     bank: raw.bank_id ?? null,
     bankDisplay: raw.bank_name ?? raw.bank_id ?? null,
     cardName: raw.payment_method === "NO_CARD" ? null : raw.card_name ?? null,
@@ -71,6 +71,7 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     maxDiscount,
     minTransaction: raw.min_transaction == null ? undefined : Number(raw.min_transaction),
     couponCode: raw.coupon_code ?? null,
+    usageLimit: raw.usage_limit ?? null,
     validFrom: raw.valid_from,
     expiryDate: raw.expiry_date,
     eligibilityNotes: raw.eligibility_notes ?? [],
