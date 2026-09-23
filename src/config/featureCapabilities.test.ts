@@ -6,6 +6,8 @@ const flags = (value: boolean): FeatureFlags => ({
   phase2UserFeaturesEnabled: value,
   publicAllOffersEnabled: value,
   couponCodeEnabled: value,
+  flightInternationalEnabled: value,
+  cookieConsentEnabled: value,
   analyticsEnabled: value,
   bookingAmountComparisonEnabled: value,
   visitorCountEnabled: value,
@@ -24,6 +26,7 @@ const flags = (value: boolean): FeatureFlags => ({
 
 const allFalse = {
   phase2UserFeatures: false, publicAllOffers: false, couponCode: false,
+  cookieConsent: false,
   analytics: false, bookingAmountComparison: false, visitorCount: false, auth: false,
   about: false, contact: false, homeEntranceAnimation: false, howItWorks: false,
   privacyPolicy: false, splashScreen: false, termsOfService: false,
@@ -32,6 +35,7 @@ const allFalse = {
 
 const allTrue = {
   phase2UserFeatures: true, publicAllOffers: true, couponCode: true,
+  cookieConsent: true,
   analytics: true, bookingAmountComparison: true, visitorCount: true, auth: true,
   about: true, contact: true, homeEntranceAnimation: true, howItWorks: true,
   privacyPolicy: true, splashScreen: true, termsOfService: true,

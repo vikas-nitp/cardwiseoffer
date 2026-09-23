@@ -5,6 +5,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { TopFiltersBar } from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
+import OfferDetailModal from "@/components/OfferDetailModal";
 import EmptyState from "@/components/EmptyState";
 import type { OfferViewModel } from "@/types/offer";
 import type { CardRecord } from "@/hooks/useUserCards";
@@ -93,6 +94,7 @@ const AllOffersSection = ({
   userCards,
 }: AllOffersSectionProps) => {
   const [myCardsActive, setMyCardsActive] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<OfferViewModel | null>(null);
 
   const savedBankIds = userCards && userCards.length > 0
     ? new Set(userCards.map((c) => c.bank_id))
@@ -186,8 +188,9 @@ const AllOffersSection = ({
                   key={offer.id}
                   offer={offer}
                   variant={catalogVariant(offer)}
-                  label={offer.bankDisplay ?? "Platform Offer"}
+                  label={offer.bankDisplay ?? offer.label}
                   compact
+                  onExpand={() => setSelectedOffer(offer)}
                 />
               ))}
             </div>
@@ -250,6 +253,10 @@ const AllOffersSection = ({
         )}
       </>
     )}
+  <OfferDetailModal
+    offer={selectedOffer}
+    onClose={() => setSelectedOffer(null)}
+  />
   </div>
   );
 };

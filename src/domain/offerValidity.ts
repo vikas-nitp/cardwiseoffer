@@ -1,6 +1,8 @@
-import { parseISO, isBefore, isAfter, format, isValid } from "date-fns";
+import { parseISO, isBefore, isAfter, format, isValid, differenceInDays } from "date-fns";
 import type { OfferViewModel } from "@/types/offer";
 import { startOfToday } from "@/lib/commonUtils";
+
+const ELIGIBLE_CATEGORIES = new Set(["FLIGHT_DOMESTIC", "FLIGHT_INTERNATIONAL"]);
 
 /** Returns a valid Date or null — never propagates Invalid Date. */
 function _parseDate(s: string | undefined | null): Date | null {
@@ -39,7 +41,7 @@ export function isOfferEligible(
   date = startOfToday()
 ): boolean {
   return offer.isActive &&
-    offer.category === "FLIGHT_DOMESTIC" &&
+    ELIGIBLE_CATEGORIES.has(offer.category) &&
     offer.evidenceStatus !== "UNVERIFIED" &&
     isOfferActive(offer, date) &&
     isOfferActiveOnDay(offer, date);
@@ -51,7 +53,7 @@ export function isOfferCatalogEligible(
   date = startOfToday()
 ): boolean {
   return offer.isActive &&
-    offer.category === "FLIGHT_DOMESTIC" &&
+    ELIGIBLE_CATEGORIES.has(offer.category) &&
     offer.evidenceStatus !== "UNVERIFIED" &&
     isOfferActive(offer, date);
 }
@@ -61,7 +63,13 @@ export function validityLabel(offer: Pick<OfferViewModel, "validFrom" | "expiryD
   const from = _parseDate(offer.validFrom);
   const to = _parseDate(offer.expiryDate);
   if (isOfferUpcoming(offer, now)) {
+    if (from && to && differenceInDays(to, from) <= 45) {
+      return `Starts ${format(from, "dd MMM")} – ${format(to, "dd MMM yyyy")}`;
+    }
     return from ? `Starts on ${format(from, "dd MMM yyyy")}` : "Upcoming";
+  }
+  if (from && to && differenceInDays(to, from) <= 45) {
+    return `${format(from, "dd MMM")} – ${format(to, "dd MMM yyyy")}`;
   }
   return to ? `Valid until ${format(to, "dd MMM yyyy")}` : "Active";
 }

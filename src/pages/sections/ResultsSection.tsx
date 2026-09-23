@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import DateStrip, { type StripDay } from "@/components/DateStrip";
 import OfferCard from "@/components/OfferCard";
+import OfferDetailModal from "@/components/OfferDetailModal";
 import type { SearchState } from "@/hooks/useOfferSearch";
 import type { OfferViewModel } from "@/types/offer";
 import { DATE_STRIP_NO_OFFERS_LABEL } from "@/constants";
@@ -34,7 +35,7 @@ function decorateResults(offers: OfferViewModel[], hasUserFare: boolean) {
       (bankTypeCount.get(`${offer.bank}:${offer.paymentMethod}`) ?? 0) > 1;
 
     const displayLabel = isDefault
-      ? `${offer.platformName} Platform Offer`
+      ? `${offer.platformName} Offer`
       : needsPlatform
       ? `${offer.bankDisplay} ${typeStr} · ${offer.platformName}`
       : isSelected && typeStr
@@ -131,6 +132,7 @@ const ResultsSection = ({
 }: ResultsSectionProps) => {
   const { getBankDisplayName } = useMeta();
   const [payFilter, setPayFilter] = useState<PayFilter>("all");
+  const [selectedOffer, setSelectedOffer] = useState<OfferViewModel | null>(null);
 
   const allDecorated = decorateResults(searchResults, !!searchState.bookingAmount);
   const hasCardResults = searchResults.some((o) => o.paymentMethod !== "NO_CARD");
@@ -257,7 +259,7 @@ const ResultsSection = ({
             ) : (
               <div className={cn(center, "grid gap-4", gridCols(decorated.length))}>
                 {decorated.map((d) => (
-                  <OfferCard key={d.offer.id} offer={d.offer} variant={d.variant} label={d.label} extraLabel={d.extraLabel} userFareProvided={!!searchState.bookingAmount} searchDate={searchState.date} />
+                  <OfferCard key={d.offer.id} offer={d.offer} variant={d.variant} label={d.label} extraLabel={d.extraLabel} userFareProvided={!!searchState.bookingAmount} searchDate={searchState.date} onExpand={() => setSelectedOffer(d.offer)} />
                 ))}
               </div>
             )}
@@ -265,6 +267,12 @@ const ResultsSection = ({
         )}
       </>
     )}
+  <OfferDetailModal
+    offer={selectedOffer}
+    onClose={() => setSelectedOffer(null)}
+    userFareProvided={!!searchState.bookingAmount}
+    searchDate={searchState.date}
+  />
   </div>
   );
 };

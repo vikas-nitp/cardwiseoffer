@@ -226,6 +226,22 @@ const PrivacyPolicy = () => {
           </p>
         </Section>
 
+        <Section title="Affiliate disclosure">
+          <p>
+            {APP_NAME} may earn a commission when you complete a booking through links on this site.
+            This comes at no additional cost to you. We only link to platforms whose offers we index —
+            affiliate relationships do not influence offer rankings or the data we display.
+          </p>
+        </Section>
+
+        <Section title="No affiliation with platforms or banks">
+          <p>
+            {APP_NAME} is an independent comparison tool. We are not affiliated with, endorsed by, or
+            sponsored by MakeMyTrip, Cleartrip, Ixigo, or any bank. Offer details are sourced from
+            publicly available pages and may change — always verify on the official platform before booking.
+          </p>
+        </Section>
+
         <Section title="Contact">
           <p>
             For privacy-related questions or to exercise your rights, contact us at{" "}

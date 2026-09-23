@@ -17,6 +17,7 @@ import type { OfferRepository, OfferSearchResult, StripDayEntry } from "./OfferR
 
 const ALL_OFFERS: OfferViewModel[] = (offersJson as unknown as Array<ApiOffer & { is_active?: boolean }>)
   .filter((raw) => raw.is_active !== false)
+  .filter((raw) => featureFlags.flightInternationalEnabled || raw.category !== "FLIGHT_INTERNATIONAL")
   .map(mapApiOffer)
   .map((offer) => ({
     ...offer,

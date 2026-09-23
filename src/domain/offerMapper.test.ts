@@ -89,9 +89,9 @@ describe("mapApiOffer", () => {
       expect(vm.label).toBe("AXIS Offer");
     });
 
-    it("labels null-bank offers as 'Default Offer (No Card)'", () => {
+    it("labels null-bank offers using platform name", () => {
       const vm = mapApiOffer(apiOffer({ bank_id: null, bank_name: null }));
-      expect(vm.label).toBe("Default Offer (No Card)");
+      expect(vm.label).toBe("MakeMyTrip Offer");
     });
   });
 

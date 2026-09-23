@@ -36,6 +36,7 @@ export interface OfferViewModel {
   minTransaction?: number;
 
   couponCode?: string | null;
+  usageLimit?: string | null;
   validFrom: string;           // ISO yyyy-MM-dd
   expiryDate: string;          // ISO yyyy-MM-dd
 

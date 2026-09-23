@@ -5,6 +5,7 @@ export function resolveFeatureCapabilities(flags: FeatureFlags) {
     phase2UserFeatures: flags.phase2UserFeaturesEnabled,
     publicAllOffers: flags.publicAllOffersEnabled,
     couponCode: flags.couponCodeEnabled,
+    cookieConsent: flags.cookieConsentEnabled,
     analytics: flags.analyticsEnabled,
     bookingAmountComparison: flags.bookingAmountComparisonEnabled,
     visitorCount: flags.visitorCountEnabled,

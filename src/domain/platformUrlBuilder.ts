@@ -10,6 +10,7 @@ const ALLOWED_HOSTS = new Set([
   "www.ixigo.com",
   "www.goibibo.com",
   "www.yatra.com",
+  "tickets.paytm.com",
   "www.airindia.com",
   "www.goindigo.in",
   "www.spicejet.com",
@@ -31,6 +32,8 @@ const HOMES: Record<string, string> = {
   GOIBIBO: "https://www.goibibo.com/",
   Yatra: "https://www.yatra.com/",
   YATRA: "https://www.yatra.com/",
+  Paytm: "https://tickets.paytm.com/flights/",
+  PAYTM: "https://tickets.paytm.com/flights/",
   "Air India": "https://www.airindia.com/",
   AIR_INDIA: "https://www.airindia.com/",
   IndiGo: "https://www.goindigo.in/",
@@ -90,6 +93,10 @@ export function buildFlightSearchUrl(platform: string, ctx: FlightSearchContext)
       url = `https://www.yatra.com/airlines/?origin=${from}&destination=${to}&departure_date=${d}%2F${m}%2F${y}&adults=1&child=0&infant=0&travel_type=oneWay`;
       break;
     }
+    case "Paytm":
+    case "PAYTM":
+      url = `https://tickets.paytm.com/flights/${from}-${to}-${date}-1-0-0-E`;
+      break;
     default:
       return null;
   }

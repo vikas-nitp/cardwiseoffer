@@ -39,7 +39,10 @@ const Index = () => {
     enabled: isSignedIn && capabilities.userCards,
   });
 
-  useEffect(() => analytics.configure(capabilities.analytics), [capabilities.analytics]);
+  useEffect(
+    () => analytics.configure(capabilities.analytics, capabilities.cookieConsent),
+    [capabilities.analytics, capabilities.cookieConsent],
+  );
 
   const {
     searchState, formDate, searchResults, strip7days,

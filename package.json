@@ -18,7 +18,8 @@
     "check:api-types": "npm run generate:api && git diff --exit-code -- src/types/generated-api.d.ts",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check": "vitest run && tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

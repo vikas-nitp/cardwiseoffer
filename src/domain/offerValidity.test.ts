@@ -31,7 +31,7 @@ describe("offerValidity", () => {
   it("produces human validity labels", () => {
     expect(validityLabel(mk("2026-07-01", "2026-12-31"), now)).toMatch(/Valid until/);
     expect(validityLabel(mk("2026-03-01", "2026-03-31"), now)).toBe("Expired");
-    expect(validityLabel(mk("2026-08-01", "2026-08-31"), now)).toMatch(/Starts on/);
+    expect(validityLabel(mk("2026-08-01", "2026-08-31"), now)).toMatch(/Starts/);
   });
 
   it("requires active domestic offers within date range", () => {
