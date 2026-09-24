@@ -56,7 +56,12 @@ const FilterSelect = ({ title, items, selected, onToggle, searchable = false, di
       <div className="relative">
         <button
           onClick={() => setOpen(!open)}
-          className="w-full text-left px-3 py-2.5 rounded-xl bg-muted/30 border border-border/40 text-[13px] font-medium text-foreground flex items-center justify-between gap-2 hover:border-primary/20 transition-all duration-200"
+          className={cn(
+            "w-full text-left px-3 py-2.5 rounded-xl bg-muted/30 border text-[13px] font-medium flex items-center justify-between gap-2 transition-all duration-150",
+            selected.length > 0
+              ? "border-primary/40 text-primary hover:border-primary/60"
+              : "border-border/40 text-foreground hover:border-primary/20"
+          )}
         >
           <span className={cn(selected.length === 0 && "text-muted-foreground")}>{displayText}</span>
           {open

@@ -114,10 +114,6 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to:   { height: "0" },
         },
-        float: {
-          "0%, 100%": { transform: "translateY(0px)" },
-          "50%":      { transform: "translateY(-6px)" },
-        },
         "fade-up": {
           from: { opacity: "0", transform: "translateY(20px)" },
           to:   { opacity: "1", transform: "translateY(0)" },
@@ -134,34 +130,15 @@ export default {
           from: { opacity: "0", transform: "scale(0.95)" },
           to:   { opacity: "1", transform: "scale(1)" },
         },
-        /* Shimmer sweep — used on gold CTA button */
-        shimmer: {
-          "0%":   { backgroundPosition: "200% center" },
-          "100%": { backgroundPosition: "-200% center" },
-        },
-        /* Pulse-glow — gold ring pulse */
-        "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 0 0 hsl(var(--primary) / 0.25)" },
-          "50%":       { boxShadow: "0 0 20px 4px hsl(var(--primary) / 0.15)" },
-        },
-        /* Subtle border shimmer for the SearchCard gold top stripe */
-        "gold-pulse": {
-          "0%, 100%": { opacity: "1" },
-          "50%":       { opacity: "0.65" },
-        },
       },
 
       animation: {
         "accordion-down":  "accordion-down 0.2s ease-out",
         "accordion-up":    "accordion-up 0.2s ease-out",
-        float:             "float 3s ease-in-out infinite",
         "fade-up":         "fade-up 0.5s ease-out forwards",
         "fade-in":         "fade-in 0.4s ease-out forwards",
         "slide-in-right":  "slide-in-right 0.4s ease-out forwards",
         "scale-in":        "scale-in 0.3s ease-out forwards",
-        shimmer:           "shimmer 2.4s linear infinite",
-        "pulse-glow":      "pulse-glow 2.4s ease-in-out infinite",
-        "gold-pulse":      "gold-pulse 2.8s ease-in-out infinite",
       },
     },
   },

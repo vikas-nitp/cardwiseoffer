@@ -24,14 +24,14 @@ interface OfferCardProps {
 }
 
 const VARIANTS: Record<Variant, { chip: string; savings: string; topBorder: string; cta: string; icon: React.ElementType }> = {
-  // Best Offer: gold top stripe, gold savings number (CardSage recommendation), gold filled CTA
-  primary:   { chip: "bg-accent/10 text-accent border-accent/25",          savings: "text-accent",      topBorder: "border-t-accent",    cta: "gold",  icon: Star },
-  // Better Alternative: amber/highlight stripe, green savings, amber outline CTA
-  highlight: { chip: "bg-highlight/10 text-highlight border-highlight/25", savings: "text-savings",     topBorder: "border-t-highlight", cta: "amber", icon: TrendingUp },
+  // Best Offer: blue top stripe, blue chip (trust/action), green savings number
+  primary:   { chip: "bg-primary/10 text-primary border-primary/25",       savings: "text-savings",     topBorder: "border-t-primary",   cta: "filled",  icon: Star },
+  // Better Alternative: amber/highlight stripe, green savings, blue soft CTA
+  highlight: { chip: "bg-highlight/10 text-highlight border-highlight/25", savings: "text-savings",     topBorder: "border-t-highlight", cta: "soft", icon: TrendingUp },
   // General card offer: muted chip, muted-green savings, dim top stripe, muted CTA
-  default:   { chip: "bg-muted/50 text-muted-foreground border-border/50", savings: "text-savings/75",  topBorder: "border-t-accent/35", cta: "muted", icon: Gift },
+  default:   { chip: "bg-muted/50 text-muted-foreground border-border/50", savings: "text-savings",     topBorder: "border-t-accent/35", cta: "muted", icon: Gift },
   // Platform Offer (no specific card): muted chip, dimmer savings, plain border, muted CTA
-  neutral:   { chip: "bg-muted/60 text-muted-foreground border-border/40", savings: "text-savings/55",  topBorder: "border-t-border",    cta: "muted", icon: CreditCard },
+  neutral:   { chip: "bg-muted/60 text-muted-foreground border-border/40", savings: "text-savings/80",  topBorder: "border-t-border",    cta: "muted", icon: CreditCard },
 };
 
 const ChannelIcon = ({ channel }: { channel: string }) =>
@@ -128,7 +128,6 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
       )}
     >
       {/* Shimmer overlay — self-contained with its own overflow:hidden so the card itself stays unclipped */}
-      <div aria-hidden="true" className="card-shimmer-overlay" />
       {/* Header: label badge + channel tag */}
       <div className="px-4 pt-4 pb-0 flex items-center justify-between gap-2">
         <span className={cn(
@@ -213,13 +212,13 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
         {canBook && ctaHref ? (
           <Button asChild className={cn(
             "gap-2 w-full font-semibold text-[13px] rounded-xl h-10 transition-all duration-200 shadow-sm hover:shadow-md",
-            v.cta === "gold"
-              ? "bg-accent text-accent-foreground hover:brightness-110"
-              : v.cta === "amber"
-              ? "bg-transparent border border-accent/50 text-accent hover:bg-accent/10"
+            v.cta === "filled"
+              ? "bg-primary text-primary-foreground hover:brightness-110"
+              : v.cta === "soft"
+              ? "bg-primary/90 text-primary-foreground hover:brightness-105"
               : v.cta === "muted"
-              ? "bg-transparent border border-border text-muted-foreground hover:bg-accent/10 hover:border-accent/50 hover:text-accent"
-              : "bg-transparent border border-accent/40 text-accent hover:bg-accent/10"
+              ? "bg-transparent border border-border text-muted-foreground hover:bg-primary/10 hover:border-primary/40 hover:text-primary"
+              : "bg-transparent border border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary/80"
           )}>
             <a href={ctaHref} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
               Continue to {offer.platformName}
@@ -238,7 +237,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
         )}
         {/* Verify disclaimer */}
         {!compact && (
-          <p className="text-center text-[10px] text-muted-foreground/60 mt-1.5 min-h-[14px]">
+          <p className="text-center text-[10px] text-muted-foreground/80 mt-1.5 min-h-[14px]">
             {canBook ? `Verify offer on ${offer.platformName} before booking` : ""}
           </p>
         )}

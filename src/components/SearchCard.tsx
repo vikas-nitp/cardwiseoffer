@@ -257,7 +257,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
   return (
     <motion.div
       {...motionProps}
-      className="w-full max-w-5xl mx-auto glass-search-card rounded-2xl gold-ring p-6 md:p-8 relative z-30"
+      className="w-full max-w-5xl mx-auto glass-search-card rounded-2xl card-shadow p-6 md:p-8 relative z-30"
     >
       <div className={`grid grid-cols-1 gap-4 items-end ${capabilities.bookingAmountComparison ? "md:grid-cols-5" : "md:grid-cols-4"}`}>
         {/* From */}

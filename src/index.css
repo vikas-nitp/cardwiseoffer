@@ -51,7 +51,7 @@
 
     /* Muted ------------------------------------------------------- */
     --muted:                224 30% 13%;   /* between ground and card        */
-    --muted-foreground:     224 18% 65%;   /* bumped from 58% → 65% for AA readability */
+    --muted-foreground:     214 20% 69%;   /* #94A3B8 — WCAG AA on dark surface */
 
     /* Feedback ---------------------------------------------------- */
     --destructive:            0 72% 56%;
@@ -271,102 +271,13 @@
 
 @layer utilities {
 
-  /* ── Sovereign depth gradient with animated orbs ─────────────── */
-  .sovereign-ground {
-    background: hsl(var(--background));
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Static depth layer — always visible base gradient */
-  .sovereign-ground::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 70% 55% at 12% 5%,   hsl(225 85% 38% / 0.45) 0%, transparent 58%),
-      radial-gradient(ellipse 55% 45% at 88% 92%,  hsl( 42 80% 28% / 0.35) 0%, transparent 58%),
-      radial-gradient(ellipse 45% 35% at 62% 58%,  hsl(200 72% 26% / 0.18) 0%, transparent 62%),
-      radial-gradient(ellipse 28% 22% at 82% 12%,  hsl( 38 65% 22% / 0.14) 0%, transparent 52%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Animated floating orb layer */
-  .sovereign-ground::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 38% 30% at 22% 55%,  hsl(216 84% 50% / 0.12) 0%, transparent 65%),
-      radial-gradient(ellipse 28% 22% at 72% 22%,  hsl( 42 80% 55% / 0.10) 0%, transparent 60%),
-      radial-gradient(ellipse 22% 18% at 50% 80%,  hsl(200 72% 40% / 0.09) 0%, transparent 55%);
-    pointer-events: none;
-    z-index: 0;
-    animation: orb-drift 18s ease-in-out infinite alternate;
-    /* honour reduced-motion — defined below alongside star guards */
-  }
-
-  /* Glass panel mixin — used on premium surfaces */
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(20px) saturate(1.5);
-    -webkit-backdrop-filter: blur(20px) saturate(1.5);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  /* Shimmer sweep on glass surfaces on hover */
-  .glass-shimmer {
-    position: relative;
-    overflow: hidden;
-  }
-  .glass-shimmer::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      115deg,
-      transparent           25%,
-      hsl(0 0% 100% / 0.06) 50%,
-      transparent           75%
-    );
-    transform: translateX(-120%);
-    transition: transform 0.7s ease;
-    pointer-events: none;
-  }
-  .glass-shimmer:hover::after {
-    transform: translateX(120%);
-  }
-
-  /*
-   * Card shimmer overlay — use this INSTEAD of glass-shimmer on OfferCard.
-   * The overlay clips the sweep internally so the card itself doesn't need
-   * overflow:hidden, preventing content from being cut off on tall cards.
-   * Trigger: parent must have card-hover-glow (the :hover selector rides on it).
-   */
+  /* card-shimmer-overlay — kept as structural placeholder; shimmer disabled per design review */
   .card-shimmer-overlay {
     position: absolute;
     inset: 0;
-    overflow: hidden;
     border-radius: inherit;
     pointer-events: none;
     z-index: 0;
-  }
-  .card-shimmer-overlay::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      115deg,
-      transparent           25%,
-      hsl(0 0% 100% / 0.06) 50%,
-      transparent           75%
-    );
-    transform: translateX(-120%);
-    transition: transform 0.7s ease;
-  }
-  .card-hover-glow:hover .card-shimmer-overlay::after {
-    transform: translateX(120%);
   }
 
   /* Warm gold top-corner glow — applied to prominent card surfaces */
@@ -395,22 +306,11 @@
       0 16px 48px hsl(225 37% 2% / 0.45);
   }
 
-  /* Glass SearchCard — frosted with gold crown ────────────────────── */
+  /* Search card — solid surface with crisp border and top accent line */
   .glass-search-card {
-    background: rgba(255, 255, 255, 0.055);
-    backdrop-filter: blur(32px) saturate(1.6);
-    -webkit-backdrop-filter: blur(32px) saturate(1.6);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-top: 3px solid hsl(var(--accent) / 0.80);
-  }
-
-  /* Gold glow ring — glass glow for SearchCard ────────────────────── */
-  .gold-ring {
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.10),
-      0 0 0 1px hsl(var(--accent) / 0.30),
-      0 0 48px -6px hsl(var(--accent) / 0.50),
-      0 20px 60px rgba(0, 0, 0, 0.55);
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-top: 3px solid hsl(var(--primary) / 0.70);
   }
 
   /* ── Scrollbar hide ───────────────────────────────────────────── */
@@ -420,40 +320,10 @@
   /* ── Tabular figures ─────────────────────────────────────────── */
   .tabular-nums { font-variant-numeric: tabular-nums; }
 
-  /* ── Gold shimmer button overlay (applied via before: classes) ── */
-  .shimmer-hover {
-    position: relative;
-    overflow: hidden;
-  }
-  .shimmer-hover::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      105deg,
-      transparent           30%,
-      hsl(0 0% 100% / 0.18) 50%,
-      transparent           70%
-    );
-    transform: translateX(-100%);
-    transition: transform 0.6s ease;
-  }
-  .shimmer-hover:hover::before {
-    transform: translateX(100%);
-  }
 
   /* ── Subtle inner separator line ─────────────────────────────── */
   .divider-gold {
     border-top: 1px solid hsl(var(--accent) / 0.18);
-  }
-
-  /* ── Animated orb keyframes ───────────────────────────────────── */
-  @keyframes orb-drift {
-    0%   { transform: translate(0,    0   ) scale(1);    opacity: 1; }
-    25%  { transform: translate(3%,  -4%  ) scale(1.04); opacity: 0.85; }
-    50%  { transform: translate(-2%,  5%  ) scale(0.97); opacity: 0.95; }
-    75%  { transform: translate(4%,   2%  ) scale(1.02); opacity: 0.90; }
-    100% { transform: translate(-3%,  -2% ) scale(1.05); opacity: 1; }
   }
 
   /* ── Star twinkle keyframes ───────────────────────────────────── */
@@ -482,7 +352,6 @@
   @media (prefers-reduced-motion: reduce) {
     .star-a, .star-b, .star-c { animation: none; opacity: 0.25; }
     .star-d { animation: none; opacity: 0.55; }
-    .sovereign-ground::after { animation: none; }
   }
 
   /* ── Light-mode: hide stars + soften sovereign-ground blobs ────── */
@@ -495,35 +364,6 @@
     :root:not(.dark) .star-d { display: none; }
   }
 
-  /* Replace dark-navy depth blobs with soft pastel tints on light bg */
-  .light .sovereign-ground::before {
-    background:
-      radial-gradient(ellipse 70% 55% at 12% 5%,   hsl(216 60% 72% / 0.10) 0%, transparent 58%),
-      radial-gradient(ellipse 55% 45% at 88% 92%,  hsl( 43 65% 68% / 0.08) 0%, transparent 58%),
-      radial-gradient(ellipse 45% 35% at 62% 58%,  hsl(200 45% 75% / 0.05) 0%, transparent 62%),
-      radial-gradient(ellipse 28% 22% at 82% 12%,  hsl( 38 45% 72% / 0.04) 0%, transparent 52%);
-  }
-  .light .sovereign-ground::after {
-    background:
-      radial-gradient(ellipse 38% 30% at 22% 55%,  hsl(216 55% 70% / 0.05) 0%, transparent 65%),
-      radial-gradient(ellipse 28% 22% at 72% 22%,  hsl( 43 55% 68% / 0.04) 0%, transparent 60%),
-      radial-gradient(ellipse 22% 18% at 50% 80%,  hsl(200 45% 72% / 0.03) 0%, transparent 55%);
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not(.dark) .sovereign-ground::before {
-      background:
-        radial-gradient(ellipse 70% 55% at 12% 5%,   hsl(216 60% 72% / 0.10) 0%, transparent 58%),
-        radial-gradient(ellipse 55% 45% at 88% 92%,  hsl( 43 65% 68% / 0.08) 0%, transparent 58%),
-        radial-gradient(ellipse 45% 35% at 62% 58%,  hsl(200 45% 75% / 0.05) 0%, transparent 62%),
-        radial-gradient(ellipse 28% 22% at 82% 12%,  hsl( 38 45% 72% / 0.04) 0%, transparent 52%);
-    }
-    :root:not(.dark) .sovereign-ground::after {
-      background:
-        radial-gradient(ellipse 38% 30% at 22% 55%,  hsl(216 55% 70% / 0.05) 0%, transparent 65%),
-        radial-gradient(ellipse 28% 22% at 72% 22%,  hsl( 43 55% 68% / 0.04) 0%, transparent 60%),
-        radial-gradient(ellipse 22% 18% at 50% 80%,  hsl(200 45% 72% / 0.03) 0%, transparent 55%);
-    }
-  }
 
   /* ── Pulse glow — accent dot or badge pulsing ─────────────────── */
   @keyframes pulse-gold {
@@ -532,15 +372,15 @@
   }
   .pulse-gold { animation: pulse-gold 2.4s ease-in-out infinite; }
 
-  /* ── Subtle card hover lift with glow ────────────────────────── */
+  /* ── Card hover — subtle lift + shadow, no glow ─────────────────── */
   .card-hover-glow {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .card-hover-glow:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 4px 24px hsl(var(--accent) / 0.10),
-      0 12px 40px hsl(225 37% 2% / 0.45);
+      0 4px 16px hsl(225 37% 2% / 0.50),
+      0 1px 3px  hsl(225 37% 2% / 0.35);
   }
 
   /* ── Scrollbar narrow, themed ─────────────────────────────────── */
