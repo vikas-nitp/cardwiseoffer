@@ -54,7 +54,7 @@ const PhoneStep = () => {
 
       <div className="space-y-1.5">
         <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Mobile Number</Label>
-        <div className="flex items-center gap-0 rounded-xl overflow-hidden border border-border focus-within:border-accent transition-colors bg-secondary/30">
+        <div className="flex items-center gap-0 rounded-xl overflow-hidden border border-border focus-within:border-primary transition-colors bg-secondary/30">
           <span className="px-3 py-3 text-sm font-semibold text-muted-foreground border-r border-border bg-muted/20 select-none">
             🇮🇳 +91
           </span>
@@ -143,7 +143,7 @@ const OtpStep = () => {
               <InputOTPSlot
                 key={i}
                 index={i}
-                className="w-10 h-12 text-base rounded-xl border-border bg-secondary/30 focus:border-accent"
+                className="w-10 h-12 text-base rounded-xl border-border bg-secondary/30 focus:border-primary"
               />
             ))}
           </InputOTPGroup>

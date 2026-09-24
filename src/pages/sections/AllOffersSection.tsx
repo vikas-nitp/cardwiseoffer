@@ -198,7 +198,7 @@ const AllOffersSection = ({
             {gated && (
               <div className="relative mt-4">
                 <div className="pointer-events-none absolute -top-20 left-0 right-0 h-20 bg-gradient-to-b from-transparent to-background z-10" />
-                <div className="relative z-20 flex flex-col items-center gap-3 py-8 px-6 rounded-2xl border border-accent/20 bg-accent/5 text-center">
+                <div className="relative z-20 flex flex-col items-center gap-3 py-8 px-6 rounded-2xl border border-primary/20 bg-primary/5 text-center">
                   <p className="text-[13px] font-semibold text-foreground">
                     {hiddenCount > 0
                       ? `${hiddenCount} more offer${hiddenCount !== 1 ? "s" : ""} available`

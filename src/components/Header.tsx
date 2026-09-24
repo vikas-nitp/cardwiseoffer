@@ -141,7 +141,7 @@ const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authE
             ) : (
               <button
                 onClick={openSignIn}
-                className="ml-2 flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-semibold border border-border/50 text-foreground/70 hover:text-foreground hover:border-accent/40 hover:bg-accent/5 transition-colors"
+                className="ml-2 flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-semibold border border-border/50 text-foreground/70 hover:text-foreground hover:border-primary/40 hover:bg-primary/5 transition-colors"
               >
                 <User className="w-3.5 h-3.5" /> Sign in
               </button>

@@ -83,7 +83,7 @@ const FareDropdown = ({ value, onChange }: { value: string; onChange: (v: string
                 className={cn(
                   "px-2 py-2 rounded-lg text-[13px] font-semibold transition-colors text-center",
                   value === String(fare)
-                    ? "bg-accent/20 text-accent border border-accent/30"
+                    ? "bg-primary/15 text-primary border border-primary/30"
                     : "bg-muted/40 text-foreground hover:bg-muted/70"
                 )}
               >
