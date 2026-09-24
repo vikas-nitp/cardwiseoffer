@@ -150,7 +150,11 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
 
       {/* Savings — the hero number */}
       <div className="px-4 pt-4 pb-2">
-        <p className={cn("text-2xl font-black tracking-tight leading-none tabular-nums", v.savings)}>
+        <p className={cn(
+          "font-black tracking-tight leading-none tabular-nums font-mono",
+          variant === "primary" || variant === "highlight" ? "text-3xl" : "text-2xl",
+          v.savings
+        )}>
           {userFareProvided && offer.amountEligible !== false && offer.savings > 0
             ? `Save ₹${offer.savings.toLocaleString()}`
             : savingsLabel(offer)}
@@ -213,9 +217,9 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
           <Button asChild className={cn(
             "gap-2 w-full font-semibold text-[13px] rounded-xl h-10 transition-all duration-200 shadow-sm hover:shadow-md",
             v.cta === "filled"
-              ? "bg-primary text-primary-foreground hover:brightness-110"
+              ? "btn-primary-gradient text-primary-foreground [box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.15)] hover:[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.20)]"
               : v.cta === "soft"
-              ? "bg-primary/90 text-primary-foreground hover:brightness-105"
+              ? "btn-primary-gradient text-primary-foreground opacity-90 hover:opacity-100"
               : v.cta === "muted"
               ? "bg-transparent border border-border text-muted-foreground hover:bg-primary/10 hover:border-primary/40 hover:text-primary"
               : "bg-transparent border border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary/80"

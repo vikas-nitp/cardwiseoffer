@@ -283,34 +283,57 @@
   /* Warm gold top-corner glow — applied to prominent card surfaces */
   .card-warm {
     background:
-      radial-gradient(ellipse 70% 45% at 90% 0%, hsl(42 75% 55% / 0.05) 0%, transparent 70%),
+      radial-gradient(ellipse 70% 45% at 90% 0%, hsl(42 75% 55% / 0.09) 0%, transparent 65%),
       hsl(var(--card));
   }
 
   /* ── Elevation shadows — directional on dark surface ──────────── */
+  /* inset 0 1px 0: subtle top-edge highlight — makes surfaces feel physically elevated */
   .card-shadow {
     box-shadow:
+      inset 0 1px 0 hsl(214 40% 100% / 0.07),
       0 1px 1px hsl(225 37% 2% / 0.40),
-      0 2px 4px hsl(225 37% 2% / 0.30);
+      0 2px 6px hsl(225 37% 2% / 0.30);
   }
 
   .card-shadow-lg {
     box-shadow:
+      inset 0 1px 0 hsl(214 40% 100% / 0.08),
       0 1px 3px  hsl(225 37% 2% / 0.50),
       0 6px 20px hsl(225 37% 2% / 0.40);
   }
 
   .card-shadow-xl {
     box-shadow:
+      inset 0 1px 0 hsl(214 40% 100% / 0.09),
       0 2px 6px  hsl(225 37% 2% / 0.55),
       0 16px 48px hsl(225 37% 2% / 0.45);
   }
 
-  /* Search card — solid surface with crisp border and top accent line */
+  /* Search card — elevated instrument panel; sits above regular cards */
   .glass-search-card {
     background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    border-top: 3px solid hsl(var(--primary) / 0.70);
+    border: 1px solid hsl(var(--border) / 0.9);
+    border-top: 3px solid hsl(var(--primary) / 0.90);
+    box-shadow:
+      inset 0 1px 0 hsl(214 40% 100% / 0.06),
+      0 2px 8px  hsl(225 37% 2% / 0.40),
+      0 16px 48px hsl(225 37% 2% / 0.28);
+  }
+
+  /* Page background — radial "spotlight" pulls focus to content area */
+  .page-ground {
+    background:
+      radial-gradient(ellipse 130% 55% at 50% -5%, hsl(var(--primary) / 0.10) 0%, transparent 65%),
+      hsl(var(--background));
+  }
+
+  /* Primary gradient button — depth over flat fill */
+  .btn-primary-gradient {
+    background: linear-gradient(160deg, hsl(216 84% 52%), hsl(216 66% 42%));
+  }
+  .btn-primary-gradient:hover {
+    background: linear-gradient(160deg, hsl(216 84% 57%), hsl(216 66% 47%));
   }
 
   /* ── Scrollbar hide ───────────────────────────────────────────── */
@@ -372,15 +395,16 @@
   }
   .pulse-gold { animation: pulse-gold 2.4s ease-in-out infinite; }
 
-  /* ── Card hover — subtle lift + shadow, no glow ─────────────────── */
+  /* ── Card hover — lift + luminance shift ───────────────────────── */
   .card-hover-glow {
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .card-hover-glow:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 4px 16px hsl(225 37% 2% / 0.50),
-      0 1px 3px  hsl(225 37% 2% / 0.35);
+      inset 0 1px 0 hsl(214 40% 100% / 0.11),
+      0 8px 28px hsl(225 37% 2% / 0.55),
+      0 2px 6px  hsl(225 37% 2% / 0.40);
   }
 
   /* ── Scrollbar narrow, themed ─────────────────────────────────── */
