@@ -42,8 +42,8 @@
     --primary:              216 70% 48%;   /* #2A8FD4 electric blue — interaction only */
     --primary-foreground:     0  0% 100%;
 
-    --accent:                43 77% 52%;   /* #E4A827 sovereign gold — brand primary */
-    --accent-foreground:    225 37%  5%;   /* near-black on gold              */
+    --accent:               216 70% 48%;   /* blue — unified with primary */
+    --accent-foreground:      0  0% 100%;   /* white on blue                   */
 
     /* Secondary surface (bordered dark chip) ---------------------- */
     --secondary:            219 32% 17%;   /* #162039 raised surface, warmer  */
@@ -86,14 +86,14 @@
     --savings-soft:         142 40% 11%;   /* dark green chip bg             */
     --savings-soft-foreground: 142 62% 72%;
 
-    --highlight:             42 80% 55%;   /* amber — matches accent          */
+    --highlight:             42 80% 55%;   /* amber — semantic warning tone   */
     --highlight-foreground: 225 37%  5%;   /* near-black on amber            */
 
     --glow:                 216 84% 56%;   /* blue decorative glow           */
 
     /* ── Star colours (theme-aware for StarField) ───────────────── */
     --star-dim-color:       218 54% 94%;   /* near-white on dark bg           */
-    --star-bright-color:     42 80% 85%;   /* light gold on dark bg           */
+    --star-bright-color:    216 80% 85%;   /* light blue on dark bg           */
 
     /* ── Misc ────────────────────────────────────────────────────── */
     --surface-elevated:     219 32% 17%;
@@ -129,7 +129,7 @@
     --popover-foreground:   221 39% 11%;
     --primary:              216 84% 50%;
     --primary-foreground:     0  0% 100%;
-    --accent:                41 78% 38%;   /* darker gold on white bg */
+    --accent:               216 84% 50%;   /* blue — unified with primary */
     --accent-foreground:      0  0% 100%;
     --secondary:            214 70% 95%;
     --secondary-foreground: 214 65% 17%;
@@ -156,7 +156,7 @@
     --savings-foreground:     0  0% 100%;
     --savings-soft:         142 55% 92%;
     --savings-soft-foreground: 142 62% 32%;
-    --highlight:             38 85% 52%;
+    --highlight:             38 90% 30%;   /* dark amber — legible on white cards */
     --highlight-foreground:   0  0% 100%;
     --glow:                 214 84% 56%;
     --surface-elevated:       0  0% 100%;
@@ -169,7 +169,7 @@
     --sidebar-border:       217 24% 90%;
     --sidebar-ring:         216 84% 50%;
     --star-dim-color:       221 39% 22%;   /* dark navy dots on light bg      */
-    --star-bright-color:     41 78% 30%;   /* dark gold dots on light bg      */
+    --star-bright-color:    216 70% 35%;   /* dark blue dots on light bg      */
   }
 
   /* OS-preference activation — same tokens, no explicit class needed */
@@ -183,7 +183,7 @@
       --popover-foreground:   221 39% 11%;
       --primary:              216 84% 50%;
       --primary-foreground:     0  0% 100%;
-      --accent:                41 78% 38%;
+      --accent:               216 84% 50%;
       --accent-foreground:      0  0% 100%;
       --secondary:            214 70% 95%;
       --secondary-foreground: 214 65% 17%;
@@ -210,7 +210,7 @@
       --savings-foreground:     0  0% 100%;
       --savings-soft:         142 55% 92%;
       --savings-soft-foreground: 142 62% 32%;
-      --highlight:             38 85% 52%;
+      --highlight:             38 90% 30%;   /* dark amber — legible on white cards */
       --highlight-foreground:   0  0% 100%;
       --glow:                 214 84% 56%;
       --surface-elevated:       0  0% 100%;
@@ -280,52 +280,132 @@
     z-index: 0;
   }
 
-  /* Warm gold top-corner glow — applied to prominent card surfaces */
+  /* Offer card surface — solid elevated panel with a blue corner accent.
+     No backdrop-filter: at 60+ cards per page the per-card blur causes GPU
+     compositing lag and blank flashes during scroll. Glass is reserved for
+     the search card and header (single fixed elements). */
   .card-warm {
     background:
-      radial-gradient(ellipse 70% 45% at 90% 0%, hsl(42 75% 55% / 0.09) 0%, transparent 65%),
+      radial-gradient(ellipse 70% 45% at 90% 0%, hsl(var(--primary) / 0.12) 0%, transparent 65%),
       hsl(var(--card));
+  }
+  .light .card-warm {
+    background:
+      radial-gradient(ellipse 70% 45% at 90% 0%, hsl(var(--primary) / 0.05) 0%, transparent 65%),
+      hsl(0 0% 100%);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) .card-warm {
+      background:
+        radial-gradient(ellipse 70% 45% at 90% 0%, hsl(var(--primary) / 0.05) 0%, transparent 65%),
+        hsl(0 0% 100%);
+    }
   }
 
   /* ── Elevation shadows — directional on dark surface ──────────── */
   /* inset 0 1px 0: subtle top-edge highlight — makes surfaces feel physically elevated */
+  /* Shadow hue matches page ground (navy-blue) so panels look embedded, not pasted */
   .card-shadow {
     box-shadow:
-      inset 0 1px 0 hsl(214 40% 100% / 0.07),
-      0 1px 1px hsl(225 37% 2% / 0.40),
-      0 2px 6px hsl(225 37% 2% / 0.30);
+      inset 0 1px 0 hsl(214 40% 100% / 0.13),
+      0 2px 6px  hsl(220 50% 5% / 0.36),
+      0 8px 24px hsl(220 50% 5% / 0.26);
   }
 
   .card-shadow-lg {
     box-shadow:
       inset 0 1px 0 hsl(214 40% 100% / 0.08),
-      0 1px 3px  hsl(225 37% 2% / 0.50),
-      0 6px 20px hsl(225 37% 2% / 0.40);
+      0 1px 3px  hsl(220 50% 5% / 0.55),
+      0 6px 20px hsl(220 50% 5% / 0.44);
   }
 
   .card-shadow-xl {
     box-shadow:
       inset 0 1px 0 hsl(214 40% 100% / 0.09),
-      0 2px 6px  hsl(225 37% 2% / 0.55),
-      0 16px 48px hsl(225 37% 2% / 0.45);
+      0 2px 6px  hsl(220 50% 5% / 0.60),
+      0 16px 48px hsl(220 50% 5% / 0.50);
   }
 
-  /* Search card — elevated instrument panel; sits above regular cards */
+  /* Search card — strongest glass panel; anchors the hero section */
   .glass-search-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border) / 0.9);
-    border-top: 3px solid hsl(var(--primary) / 0.90);
+    background: hsl(var(--card) / 0.50);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid hsl(214 40% 100% / 0.13);
+    border-top: 3px solid hsl(var(--primary) / 0.88);
     box-shadow:
-      inset 0 1px 0 hsl(214 40% 100% / 0.06),
-      0 2px 8px  hsl(225 37% 2% / 0.40),
-      0 16px 48px hsl(225 37% 2% / 0.28);
+      inset 0 1px 0 hsl(214 40% 100% / 0.12),
+      0 4px 16px  hsl(225 37% 2% / 0.30),
+      0 24px 64px hsl(225 37% 2% / 0.22);
+  }
+  .light .glass-search-card {
+    background: hsl(0 0% 100% / 0.84);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    border: 1px solid hsl(216 40% 65% / 0.22);
+    border-top: 3px solid hsl(var(--primary) / 0.78);
+    box-shadow:
+      0 4px 28px hsl(216 60% 50% / 0.12),
+      0 2px 6px  hsl(0 0% 0% / 0.04);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) .glass-search-card {
+      background: hsl(0 0% 100% / 0.84);
+      backdrop-filter: blur(22px) saturate(150%);
+      -webkit-backdrop-filter: blur(22px) saturate(150%);
+      border: 1px solid hsl(216 40% 65% / 0.22);
+      border-top: 3px solid hsl(var(--primary) / 0.78);
+      box-shadow:
+        0 4px 28px hsl(216 60% 50% / 0.12),
+        0 2px 6px  hsl(0 0% 0% / 0.04);
+    }
   }
 
-  /* Page background — radial "spotlight" pulls focus to content area */
+  /* Page background — two ambient blobs give glass cards something to blur through */
   .page-ground {
     background:
-      radial-gradient(ellipse 130% 55% at 50% -5%, hsl(var(--primary) / 0.10) 0%, transparent 65%),
+      radial-gradient(ellipse 80% 60% at 18% -8%,  hsl(var(--primary) / 0.30) 0%, transparent 58%),
+      radial-gradient(ellipse 65% 55% at 85% 110%, hsl(250 70% 40% / 0.20) 0%, transparent 55%),
       hsl(var(--background));
+  }
+  .light .page-ground {
+    background:
+      radial-gradient(ellipse 70% 55% at 15% -10%, hsl(var(--primary) / 0.14) 0%, transparent 55%),
+      radial-gradient(ellipse 55% 45% at 88% 115%, hsl(250 50% 55% / 0.09) 0%, transparent 50%),
+      hsl(var(--background));
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) .page-ground {
+      background:
+        radial-gradient(ellipse 70% 55% at 15% -10%, hsl(var(--primary) / 0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 45% at 88% 115%, hsl(250 50% 55% / 0.09) 0%, transparent 50%),
+        hsl(var(--background));
+    }
+  }
+
+  /* Header glass — frosted nav bar; matches the page glass language */
+  .glass-header {
+    background: hsl(var(--background) / 0.60);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom: 1px solid hsl(214 40% 100% / 0.10);
+    box-shadow: 0 1px 0 hsl(214 40% 100% / 0.06), 0 4px 20px hsl(220 50% 5% / 0.20);
+  }
+  .light .glass-header {
+    background: hsl(0 0% 100% / 0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid hsl(216 40% 65% / 0.20);
+    box-shadow: 0 1px 0 hsl(216 40% 65% / 0.10), 0 2px 12px hsl(216 60% 50% / 0.06);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) .glass-header {
+      background: hsl(0 0% 100% / 0.72);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      border-bottom: 1px solid hsl(216 40% 65% / 0.20);
+      box-shadow: 0 1px 0 hsl(216 40% 65% / 0.10), 0 2px 12px hsl(216 60% 50% / 0.06);
+    }
   }
 
   /* Primary gradient button — depth over flat fill */
@@ -389,11 +469,11 @@
 
 
   /* ── Pulse glow — accent dot or badge pulsing ─────────────────── */
-  @keyframes pulse-gold {
+  @keyframes pulse-accent {
     0%, 100% { box-shadow: 0 0 0 0 hsl(var(--accent) / 0.40); }
     50%       { box-shadow: 0 0 0 6px hsl(var(--accent) / 0); }
   }
-  .pulse-gold { animation: pulse-gold 2.4s ease-in-out infinite; }
+  .pulse-gold { animation: pulse-accent 2.4s ease-in-out infinite; }
 
   /* ── Card hover — lift + luminance shift ───────────────────────── */
   .card-hover-glow {

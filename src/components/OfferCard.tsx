@@ -29,7 +29,7 @@ const VARIANTS: Record<Variant, { chip: string; savings: string; topBorder: stri
   // Better Alternative: amber/highlight stripe, green savings, blue soft CTA
   highlight: { chip: "bg-highlight/10 text-highlight border-highlight/25", savings: "text-savings",     topBorder: "border-t-highlight", cta: "soft", icon: TrendingUp },
   // General card offer: muted chip, muted-green savings, dim top stripe, muted CTA
-  default:   { chip: "bg-muted/50 text-muted-foreground border-border/50", savings: "text-savings",     topBorder: "border-t-accent/35", cta: "muted", icon: Gift },
+  default:   { chip: "bg-muted/50 text-muted-foreground border-border/50", savings: "text-savings",     topBorder: "border-t-border",    cta: "muted", icon: Gift },
   // Platform Offer (no specific card): muted chip, dimmer savings, plain border, muted CTA
   neutral:   { chip: "bg-muted/60 text-muted-foreground border-border/40", savings: "text-savings/80",  topBorder: "border-t-border",    cta: "muted", icon: CreditCard },
 };
@@ -151,8 +151,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
       {/* Savings — the hero number */}
       <div className="px-4 pt-4 pb-2">
         <p className={cn(
-          "font-black tracking-tight leading-none tabular-nums font-mono",
-          variant === "primary" || variant === "highlight" ? "text-3xl" : "text-2xl",
+          "font-black tracking-tight leading-none tabular-nums font-mono text-2xl",
           v.savings
         )}>
           {userFareProvided && offer.amountEligible !== false && offer.savings > 0
@@ -214,16 +213,16 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
           </div>
         )}
         {canBook && ctaHref ? (
-          <Button asChild className={cn(
-            "gap-2 w-full font-semibold text-[13px] rounded-xl h-10 transition-all duration-200 shadow-sm hover:shadow-md",
-            v.cta === "filled"
-              ? "btn-primary-gradient text-primary-foreground [box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.15)] hover:[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.20)]"
-              : v.cta === "soft"
-              ? "btn-primary-gradient text-primary-foreground opacity-90 hover:opacity-100"
-              : v.cta === "muted"
-              ? "bg-transparent border border-border text-muted-foreground hover:bg-primary/10 hover:border-primary/40 hover:text-primary"
-              : "bg-transparent border border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary/80"
-          )}>
+          <Button
+            asChild
+            variant={v.cta === "muted" ? "outline" : "default"}
+            className={cn(
+              "gap-2 w-full font-semibold text-[13px] rounded-xl h-10 transition-all duration-200",
+              v.cta === "filled" && "[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.15)] hover:[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.20)] shadow-sm hover:shadow-md",
+              v.cta === "soft" && "opacity-90 hover:opacity-100 shadow-sm",
+              v.cta === "muted" && "hover:border-primary/40 hover:bg-primary/5 hover:text-primary",
+            )}
+          >
             <a href={ctaHref} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
               Continue to {offer.platformName}
               <ExternalLink className="w-3.5 h-3.5" />

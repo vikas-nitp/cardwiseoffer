@@ -62,8 +62,8 @@ const buttonVariants = cva(
         /* Border only */
         outline: [
           "rounded-[14px]",
-          "border border-border text-foreground",
-          "hover:bg-muted hover:border-primary/30",
+          "border border-foreground/[0.18] text-foreground",
+          "hover:bg-muted hover:border-primary/40 hover:text-primary",
           "active:scale-[0.98]",
         ],
 

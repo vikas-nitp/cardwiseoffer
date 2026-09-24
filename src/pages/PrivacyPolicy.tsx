@@ -1,6 +1,6 @@
 import { Link, Navigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { APP_NAME, SUPPORT_EMAIL } from "@/constants";
+import { APP_NAME, APP_DOMAIN, SUPPORT_EMAIL, GRIEVANCE_EMAIL } from "@/constants";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import LegalSection from "@/components/LegalSection";
 
@@ -154,7 +154,7 @@ const PrivacyPolicy = () => {
           <p className="mt-3">
             All browser storage data stays entirely on your device. To clear it: open your browser's
             Settings → Privacy &amp; Security → Clear browsing data → Cookies and site data, and select
-            <strong className="text-foreground/80"> cardsage.in</strong>.
+            <strong className="text-foreground/80"> {APP_DOMAIN}</strong>.
           </p>
         </Section>
 
@@ -198,12 +198,12 @@ const PrivacyPolicy = () => {
           </p>
           <ul className="list-disc pl-5 space-y-1.5 mt-2">
             <li>
-              <strong className="text-foreground/80">Role:</strong> Data Protection Officer, CardSage
+              <strong className="text-foreground/80">Role:</strong> Data Protection Officer, {APP_NAME}
             </li>
             <li>
               <strong className="text-foreground/80">Email:</strong>{" "}
-              <a href="mailto:grievance@cardsage.in" className="text-accent underline underline-offset-2">
-                grievance@cardsage.in
+              <a href={`mailto:${GRIEVANCE_EMAIL}`} className="text-primary underline underline-offset-2">
+                {GRIEVANCE_EMAIL}
               </a>
             </li>
             <li>

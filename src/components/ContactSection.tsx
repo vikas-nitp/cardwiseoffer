@@ -3,7 +3,7 @@ import { SUPPORT_EMAIL, APP_NAME } from "@/constants";
 
 const ContactSection = () => (
   <section className="w-full max-w-3xl mx-auto animate-fade-up">
-    <div className="bg-card rounded-2xl border border-border border-t-2 border-t-accent/40 card-shadow p-8 md:p-10">
+    <div className="bg-card rounded-2xl border border-border border-t-2 border-t-primary/50 card-shadow p-8 md:p-10">
       <h2 className="text-xl font-bold text-foreground mb-6 tracking-tight">Get in touch</h2>
 
       <div className="space-y-3">

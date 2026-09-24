@@ -200,12 +200,14 @@
       "EmailSubscribeRequest": {
         "properties": {
           "email": {
+            "maxLength": 320,
             "title": "Email",
             "type": "string"
           },
           "source": {
             "anyOf": [
               {
+                "maxLength": 200,
                 "type": "string"
               },
               {
@@ -286,9 +288,19 @@
             "title": "Contactenabled",
             "type": "boolean"
           },
+          "cookieConsentEnabled": {
+            "default": false,
+            "title": "Cookieconsentenabled",
+            "type": "boolean"
+          },
           "couponCodeEnabled": {
             "default": false,
             "title": "Couponcodeenabled",
+            "type": "boolean"
+          },
+          "flightInternationalEnabled": {
+            "default": false,
+            "title": "Flightinternationalenabled",
             "type": "boolean"
           },
           "homeEntranceAnimationEnabled": {
@@ -438,7 +450,10 @@
           },
           "categories": {
             "items": {
-              "const": "FLIGHT_DOMESTIC",
+              "enum": [
+                "FLIGHT_DOMESTIC",
+                "FLIGHT_INTERNATIONAL"
+              ],
               "type": "string"
             },
             "title": "Categories",
@@ -629,7 +644,10 @@
             "title": "Card Specificity"
           },
           "category": {
-            "const": "FLIGHT_DOMESTIC",
+            "enum": [
+              "FLIGHT_DOMESTIC",
+              "FLIGHT_INTERNATIONAL"
+            ],
             "title": "Category",
             "type": "string"
           },
@@ -647,7 +665,8 @@
           "discount_type": {
             "enum": [
               "PERCENT",
-              "FLAT"
+              "FLAT",
+              "CASHBACK"
             ],
             "title": "Discount Type",
             "type": "string"
@@ -840,12 +859,15 @@
       "SaveCardRequest": {
         "properties": {
           "bank_id": {
+            "maxLength": 50,
+            "minLength": 1,
             "title": "Bank Id",
             "type": "string"
           },
           "card_name": {
             "anyOf": [
               {
+                "maxLength": 120,
                 "type": "string"
               },
               {
@@ -856,8 +878,8 @@
           },
           "payment_method": {
             "enum": [
-              "CREDIT_CARD",
-              "DEBIT_CARD"
+              "CREDIT",
+              "DEBIT"
             ],
             "title": "Payment Method",
             "type": "string"
@@ -1003,7 +1025,10 @@
             "title": "Card Specificity"
           },
           "category": {
-            "const": "FLIGHT_DOMESTIC",
+            "enum": [
+              "FLIGHT_DOMESTIC",
+              "FLIGHT_INTERNATIONAL"
+            ],
             "title": "Category",
             "type": "string"
           },
@@ -1032,7 +1057,8 @@
           "discount_type": {
             "enum": [
               "PERCENT",
-              "FLAT"
+              "FLAT",
+              "CASHBACK"
             ],
             "title": "Discount Type",
             "type": "string"
@@ -1300,8 +1326,11 @@
             "title": "Booking Amount"
           },
           "category": {
-            "const": "FLIGHT_DOMESTIC",
             "default": "FLIGHT_DOMESTIC",
+            "enum": [
+              "FLIGHT_DOMESTIC",
+              "FLIGHT_INTERNATIONAL"
+            ],
             "title": "Category",
             "type": "string"
           },

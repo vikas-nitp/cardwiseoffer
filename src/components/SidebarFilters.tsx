@@ -189,7 +189,7 @@ const SidebarFilters = ({
   const hasActiveFilters = bankFilter.length > 0 || platformFilter.length > 0 || paymentFilter.length > 0;
 
   return (
-    <div className="bg-card rounded-2xl card-shadow p-5 sticky top-24 animate-fade-in border border-border/40">
+    <div className="bg-card/60 backdrop-blur-lg rounded-2xl card-shadow p-5 sticky top-24 animate-fade-in border border-border/40">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-[13px] font-bold text-foreground">Filters</h3>
         {hasActiveFilters && onResetAll && (

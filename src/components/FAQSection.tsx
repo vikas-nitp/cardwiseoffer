@@ -63,7 +63,7 @@ const FAQSection = () => {
 
   return (
     <section className="w-full max-w-5xl mx-auto animate-fade-up">
-      <div className="bg-card rounded-2xl border border-border border-t-2 border-t-accent/60 card-shadow p-5 md:p-6">
+      <div className="bg-card rounded-2xl border border-border border-t-2 border-t-primary/50 card-shadow p-5 md:p-6">
         <h2 className="text-lg md:text-xl font-bold text-foreground mb-3 tracking-tight">
           Frequently Asked Questions
         </h2>

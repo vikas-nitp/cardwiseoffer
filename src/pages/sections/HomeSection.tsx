@@ -47,7 +47,7 @@ const HomeSection = ({ searchState, formDate, onSearch }: HomeSectionProps) => {
       </motion.div>
       <motion.h1 variants={item} className="font-display leading-[1.0]">
         <span className="block text-[28px] md:text-[42px] text-foreground leading-[1.15]">Which card saves the most</span>
-        <span className="block text-[42px] md:text-[60px] text-accent mt-1 leading-[1.0]">on your flight?</span>
+        <span className="block text-[42px] md:text-[60px] mt-1 leading-[1.0] bg-gradient-to-r from-accent via-[hsl(200_90%_58%)] to-[hsl(185_85%_55%)] bg-clip-text text-transparent">on your flight?</span>
       </motion.h1>
       <motion.p variants={item} className="mt-4 text-[13px] md:text-[14px] text-foreground/70 leading-snug">
         {APP_HERO_SUBTITLE}

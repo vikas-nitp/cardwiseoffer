@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { isLocalMode } from "@/services/dataRepo";
+import { APP_NAME } from "@/constants";
 
 const RESEND_SECONDS = 30;
 
@@ -296,7 +297,7 @@ const SignInModal = () => {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && closeSignIn()}>
       <DialogContent className="sm:max-w-[380px] rounded-2xl border-border/50 bg-card p-6">
-        <DialogTitle className="sr-only">Sign in to CardSage</DialogTitle>
+        <DialogTitle className="sr-only">Sign in to {APP_NAME}</DialogTitle>
         {authStep === "phone" && <PhoneStep />}
         {authStep === "otp" && <OtpStep />}
         {authStep === "consent" && <ConsentStep />}
