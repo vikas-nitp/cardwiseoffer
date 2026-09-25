@@ -1,13 +1,7 @@
-import { useState, useMemo, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import SplashScreen from "@/components/SplashScreen";
+import { useState, useMemo, useEffect, lazy, Suspense } from "react";
 import Header from "@/components/Header";
 import type { ActiveSection } from "@/components/Header";
 import Footer from "@/components/Footer";
-import AboutSection from "@/components/AboutSection";
-import HowItWorksSection from "@/components/HowItWorksSection";
-import ContactSection from "@/components/ContactSection";
-import FAQSection from "@/components/FAQSection";
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
@@ -19,14 +13,14 @@ import { useOfferSearch } from "@/hooks/useOfferSearch";
 import { useAllOffers } from "@/hooks/useAllOffers";
 import HomeSection from "@/pages/sections/HomeSection";
 import ResultsSection from "@/pages/sections/ResultsSection";
-import AllOffersSection from "@/pages/sections/AllOffersSection";
 import StarField from "@/components/StarField";
 
-const pageVariants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.22, ease: "easeOut" as const } },
-  exit: { opacity: 0, transition: { duration: 0.15, ease: "easeIn" as const } },
-};
+const SplashScreen = lazy(() => import("@/components/SplashScreen"));
+const AllOffersSection = lazy(() => import("@/pages/sections/AllOffersSection"));
+const AboutSection = lazy(() => import("@/components/AboutSection"));
+const HowItWorksSection = lazy(() => import("@/components/HowItWorksSection"));
+const FAQSection = lazy(() => import("@/components/FAQSection"));
+const ContactSection = lazy(() => import("@/components/ContactSection"));
 
 const Index = () => {
   const { flags: featureFlags } = useFeatureFlags();
@@ -72,7 +66,11 @@ const Index = () => {
 
   return (
     <div className="h-screen w-full min-w-0 overflow-hidden flex flex-col relative">
-      {!splashDone && <SplashScreen onDone={() => setSplashDone(true)} />}
+      {!splashDone && (
+        <Suspense fallback={null}>
+          <SplashScreen onDone={() => setSplashDone(true)} />
+        </Suspense>
+      )}
       <div className="pointer-events-none fixed inset-0 z-0 page-ground" />
       <StarField />
 
@@ -89,29 +87,29 @@ const Index = () => {
         <main className={`flex-1 min-h-0 flex flex-col items-center px-4 md:px-8 pb-4 scrollbar-hide ${
           (showHome || activeSection === "about" || activeSection === "contact") ? "overflow-hidden" : "overflow-y-auto"
         }`}>
-          <AnimatePresence mode="wait">
-            {showHome && (
-              <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full flex flex-col items-center">
-                <HomeSection searchState={searchState} formDate={formDate} onSearch={handleSearchAndNavigate} />
-              </motion.div>
-            )}
+          {showHome && (
+            <div className="page-fade-in w-full flex flex-col items-center">
+              <HomeSection searchState={searchState} formDate={formDate} onSearch={handleSearchAndNavigate} />
+            </div>
+          )}
 
-            {showResults && searchState && (
-              <motion.div key="results" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full">
-                <ResultsSection
-                  searchState={searchState}
-                  searchLoading={searchLoading}
-                  searchError={searchError}
-                  searchResults={searchResults}
-                  strip7days={strip7days}
-                  onDateChange={handleDateChange}
-                  onEditSearch={() => setActiveSection("home")}
-                />
-              </motion.div>
-            )}
+          {showResults && searchState && (
+            <div className="page-fade-in w-full">
+              <ResultsSection
+                searchState={searchState}
+                searchLoading={searchLoading}
+                searchError={searchError}
+                searchResults={searchResults}
+                strip7days={strip7days}
+                onDateChange={handleDateChange}
+                onEditSearch={() => setActiveSection("home")}
+              />
+            </div>
+          )}
 
-            {showAllOffers && capabilities.publicAllOffers && (
-              <motion.div key="all-offers" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full">
+          {showAllOffers && capabilities.publicAllOffers && (
+            <Suspense fallback={null}>
+              <div className="page-fade-in w-full">
                 <AllOffersSection
                   filteredAllOffers={filteredAllOffers}
                   allOffersLoading={allOffersLoading}
@@ -136,35 +134,43 @@ const Index = () => {
                   onSignIn={openSignIn}
                   userCards={userCards}
                 />
-              </motion.div>
-            )}
+              </div>
+            </Suspense>
+          )}
 
-            {showAllOffers && !capabilities.publicAllOffers && (
-              <motion.div key="all-offers-disabled" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto mt-4 md:mt-6">
-                <Alert>
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>All Offers catalog is currently unavailable. Please check back later.</AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
+          {showAllOffers && !capabilities.publicAllOffers && (
+            <div className="page-fade-in w-full max-w-6xl mx-auto mt-4 md:mt-6">
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>All Offers catalog is currently unavailable. Please check back later.</AlertDescription>
+              </Alert>
+            </div>
+          )}
 
-            {activeSection === "about" && capabilities.about && (
-              <motion.div key="about" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8 md:py-12 flex-1 flex flex-col justify-center">
+          {activeSection === "about" && capabilities.about && (
+            <Suspense fallback={null}>
+              <div className="page-fade-in w-full max-w-6xl mx-auto py-8 md:py-12 flex-1 flex flex-col justify-center">
                 <AboutSection />
-              </motion.div>
-            )}
-            {activeSection === "how-it-works" && capabilities.howItWorks && (
-              <motion.div key="how-it-works" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-4 md:py-6 flex flex-col gap-5">
+              </div>
+            </Suspense>
+          )}
+
+          {activeSection === "how-it-works" && capabilities.howItWorks && (
+            <Suspense fallback={null}>
+              <div className="page-fade-in w-full max-w-6xl mx-auto py-4 md:py-6 flex flex-col gap-5">
                 <HowItWorksSection />
                 <FAQSection />
-              </motion.div>
-            )}
-            {activeSection === "contact" && capabilities.contact && (
-              <motion.div key="contact" variants={pageVariants} initial="initial" animate="animate" exit="exit" className="w-full max-w-6xl mx-auto py-8 md:py-12 flex-1 flex flex-col justify-center">
+              </div>
+            </Suspense>
+          )}
+
+          {activeSection === "contact" && capabilities.contact && (
+            <Suspense fallback={null}>
+              <div className="page-fade-in w-full max-w-6xl mx-auto py-8 md:py-12 flex-1 flex flex-col justify-center">
                 <ContactSection />
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div>
+            </Suspense>
+          )}
         </main>
 
         <Footer onSectionChange={setActiveSection} />
