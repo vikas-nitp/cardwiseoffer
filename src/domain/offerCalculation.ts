@@ -51,7 +51,9 @@ export function savingsLabel(offer: OfferViewModel): string {
     let label = `₹${amt.toLocaleString()} off`;
     if (offer.minTransaction && offer.minTransaction > 0) {
       const pct = Math.round((amt / offer.minTransaction) * 100 * 10) / 10;
-      if (pct >= 1 && pct <= 100) label += ` (~${pct}%)`;
+      // Only show % when it's plausible: ≥50% would mean discount ≥ half the min fare, which
+      // happens with tiered offers where max-tier discount is paired with floor min_transaction.
+      if (pct >= 1 && pct < 50) label += ` (~${pct}%)`;
     }
     return label;
   }

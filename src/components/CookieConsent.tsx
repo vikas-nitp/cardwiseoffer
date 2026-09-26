@@ -83,7 +83,7 @@ const CookieConsent = () => {
           <Button
             size="sm"
             onClick={handleAccept}
-            className="rounded-xl text-[12px] h-8 px-4 font-semibold bg-accent text-accent-foreground hover:bg-accent/90"
+            className="rounded-xl text-[12px] h-8 px-4 font-semibold bg-primary text-primary-foreground hover:brightness-110"
           >
             Accept
           </Button>

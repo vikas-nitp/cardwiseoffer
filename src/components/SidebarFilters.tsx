@@ -56,7 +56,12 @@ const FilterSelect = ({ title, items, selected, onToggle, searchable = false, di
       <div className="relative">
         <button
           onClick={() => setOpen(!open)}
-          className="w-full text-left px-3 py-2.5 rounded-xl bg-muted/30 border border-border/40 text-[13px] font-medium text-foreground flex items-center justify-between gap-2 hover:border-primary/20 transition-all duration-200"
+          className={cn(
+            "w-full text-left px-3 py-2.5 rounded-xl bg-muted/30 border text-[13px] font-medium flex items-center justify-between gap-2 transition-all duration-150",
+            selected.length > 0
+              ? "border-primary/40 text-primary hover:border-primary/60"
+              : "border-border/40 text-foreground hover:border-primary/20"
+          )}
         >
           <span className={cn(selected.length === 0 && "text-muted-foreground")}>{displayText}</span>
           {open
@@ -184,7 +189,7 @@ const SidebarFilters = ({
   const hasActiveFilters = bankFilter.length > 0 || platformFilter.length > 0 || paymentFilter.length > 0;
 
   return (
-    <div className="bg-card rounded-2xl card-shadow p-5 sticky top-24 animate-fade-in border border-border/40">
+    <div className="bg-card/60 backdrop-blur-lg rounded-2xl card-shadow p-5 sticky top-24 animate-fade-in border border-border/40">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-[13px] font-bold text-foreground">Filters</h3>
         {hasActiveFilters && onResetAll && (

@@ -153,8 +153,8 @@ const AddCardForm = ({ onAdded }: AddCardFormProps) => {
               onClick={() => setPaymentMethod(pm)}
               className={`flex-1 h-9 rounded-lg text-[13px] font-medium border transition-colors ${
                 paymentMethod === pm
-                  ? "bg-accent text-accent-foreground border-accent"
-                  : "bg-background text-muted-foreground border-border/40 hover:text-foreground hover:border-accent/30"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background text-muted-foreground border-border/40 hover:text-foreground hover:border-primary/30"
               }`}
             >
               {pm === "CREDIT_CARD" ? "Credit" : "Debit"}
@@ -173,7 +173,7 @@ const AddCardForm = ({ onAdded }: AddCardFormProps) => {
         type="button"
         onClick={handleAdd}
         disabled={submitting}
-        className="h-9 rounded-xl bg-accent text-accent-foreground text-[13px] font-semibold hover:bg-accent/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+        className="h-9 rounded-xl bg-primary text-primary-foreground text-[13px] font-semibold hover:brightness-110 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
         {submitting ? "Adding..." : "Add card"}
@@ -249,7 +249,7 @@ const NotificationPrefsSection = ({ enabled }: NotificationPrefsSectionProps) =>
               onClick={() => toggle(key)}
               disabled={saving}
               className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none disabled:opacity-50 ${
-                prefs[key] ? "bg-accent" : "bg-muted"
+                prefs[key] ? "bg-primary" : "bg-muted"
               }`}
             >
               <span

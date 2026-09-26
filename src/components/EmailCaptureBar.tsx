@@ -60,7 +60,7 @@ const EmailCaptureBar = () => {
         <button
           type="submit"
           disabled={status === "submitting" || !email.trim()}
-          className="h-8 px-3 rounded-lg bg-accent text-accent-foreground text-[12px] font-semibold hover:bg-accent/90 transition-colors disabled:opacity-50"
+          className="h-8 px-3 rounded-lg bg-primary text-primary-foreground text-[12px] font-semibold hover:brightness-110 transition-all disabled:opacity-50"
         >
           {status === "submitting" ? "..." : "Notify me"}
         </button>

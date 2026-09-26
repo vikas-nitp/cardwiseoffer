@@ -83,7 +83,7 @@ const FareDropdown = ({ value, onChange }: { value: string; onChange: (v: string
                 className={cn(
                   "px-2 py-2 rounded-lg text-[13px] font-semibold transition-colors text-center",
                   value === String(fare)
-                    ? "bg-accent/20 text-accent border border-accent/30"
+                    ? "bg-primary/15 text-primary border border-primary/30"
                     : "bg-muted/40 text-foreground hover:bg-muted/70"
                 )}
               >
@@ -257,7 +257,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
   return (
     <motion.div
       {...motionProps}
-      className="w-full max-w-5xl mx-auto glass-search-card rounded-2xl gold-ring p-6 md:p-8 relative z-30"
+      className="w-full max-w-5xl mx-auto glass-search-card rounded-2xl card-shadow p-6 md:p-8 relative z-30"
     >
       <div className={`grid grid-cols-1 gap-4 items-end ${capabilities.bookingAmountComparison ? "md:grid-cols-5" : "md:grid-cols-4"}`}>
         {/* From */}

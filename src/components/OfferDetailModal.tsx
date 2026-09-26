@@ -183,7 +183,7 @@ const OfferDetailModal = ({ offer, onClose, userFareProvided = false, searchDate
             </div>
           )}
           {canBook && ctaHref ? (
-            <Button asChild className="gap-2 w-full font-semibold text-[13px] rounded-xl h-10 transition-all duration-200 shadow-sm hover:shadow-md bg-accent text-accent-foreground hover:brightness-110">
+            <Button asChild className="gap-2 w-full font-semibold text-[13px] rounded-xl h-10 transition-all duration-200 shadow-sm hover:shadow-md bg-primary text-primary-foreground hover:brightness-110">
               <a href={ctaHref} target="_blank" rel="noopener noreferrer">
                 Continue to {offer.platformName}
                 <ExternalLink className="w-3.5 h-3.5" />

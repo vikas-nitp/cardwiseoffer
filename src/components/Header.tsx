@@ -3,13 +3,12 @@ import { Link } from "react-router-dom";
 import { Menu, X, User, LogOut, ChevronDown, LayoutDashboard, Sun, Moon, BookMarked } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
-const CardSageMark = ({ className }: { className?: string }) => (
+const AppMark = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-hidden="true">
-    <rect x="0.75" y="0.75" width="20.5" height="14.5" rx="2.75" fill="currentColor" fillOpacity="0.18" stroke="currentColor" strokeWidth="1.5"/>
-    <rect x="0.75" y="3.75" width="20.5" height="2.75" fill="currentColor" fillOpacity="0.5"/>
-    <rect x="2.75" y="8" width="5.5" height="4" rx="0.75" stroke="currentColor" strokeWidth="1.2" fill="currentColor" fillOpacity="0.28"/>
-    <line x1="11" y1="9" x2="17.5" y2="9" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeOpacity="0.55"/>
-    <line x1="11" y1="11.5" x2="15" y2="11.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeOpacity="0.35"/>
+    <rect x="0.75" y="0.75" width="20.5" height="14.5" rx="2.75" fill="currentColor" fillOpacity="0.2" stroke="currentColor" strokeWidth="1.5"/>
+    <rect x="0.75" y="3.75" width="20.5" height="2.25" fill="currentColor" fillOpacity="0.55"/>
+    <rect x="2.5" y="8.5" width="4.5" height="3" rx="0.65" fill="currentColor" fillOpacity="0.38"/>
+    <polygon points="14,5.5 10.5,10 12.5,10 9.5,14 16.5,9 13.5,9" fill="currentColor" fillOpacity="0.9"/>
   </svg>
 );
 import { cn } from "@/lib/utils";
@@ -39,10 +38,10 @@ const UserMenu = ({ userCardsEnabled = false }: { userCardsEnabled?: boolean }) 
       <div className="relative ml-2">
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent/10 border border-accent/20 text-[13px] font-semibold text-accent hover:bg-accent/15 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-[13px] font-semibold text-primary hover:bg-primary/15 transition-colors"
         >
-          <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-            <User className="w-3 h-3 text-accent" />
+          <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+            <User className="w-3 h-3 text-primary" />
           </div>
           <span className="hidden sm:inline">{user.maskedPhone}</span>
           <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")} />
@@ -103,10 +102,10 @@ const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authE
 
   return (
     <>
-      <header className="w-full py-4 px-4 md:px-8 flex items-center justify-between relative z-20 border-b border-white/[0.08] bg-background/[0.15] backdrop-blur-xl">
+      <header className="w-full py-4 px-4 md:px-8 flex items-center justify-between relative z-20 glass-header">
         <Link to="/" className="flex items-center gap-2.5 group" onClick={() => handleNav("home")}>
-          <div className="w-9 h-9 rounded-xl bg-accent flex items-center justify-center shadow-sm">
-            <CardSageMark className="w-[20px] h-[14px] text-accent-foreground" />
+          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-sm">
+            <AppMark className="w-[20px] h-[14px] text-primary-foreground" />
           </div>
           <span className="hidden sm:inline text-lg font-bold text-foreground tracking-tight">{APP_NAME}</span>
         </Link>
@@ -119,7 +118,7 @@ const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authE
               className={cn(
                 "px-3.5 py-2 rounded-lg text-[13px] font-medium transition-colors",
                 activeSection === section
-                  ? "bg-accent/12 text-accent font-semibold"
+                  ? "bg-primary/12 text-primary font-semibold"
                   : "text-foreground/60 hover:text-foreground hover:bg-white/[0.06]"
               )}
             >
@@ -141,7 +140,7 @@ const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authE
             ) : (
               <button
                 onClick={openSignIn}
-                className="ml-2 flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-semibold border border-border/50 text-foreground/70 hover:text-foreground hover:border-accent/40 hover:bg-accent/5 transition-colors"
+                className="ml-2 flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-semibold border border-border/50 text-foreground/70 hover:text-foreground hover:border-primary/40 hover:bg-primary/5 transition-colors"
               >
                 <User className="w-3.5 h-3.5" /> Sign in
               </button>
@@ -180,7 +179,7 @@ const Header = ({ activeSection, onSectionChange, allOffersEnabled = true, authE
                 className={cn(
                   "w-full text-left px-4 py-3 rounded-xl text-sm font-medium",
                   activeSection === section
-                    ? "bg-accent/8 text-accent font-semibold"
+                    ? "bg-primary/8 text-primary font-semibold"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >

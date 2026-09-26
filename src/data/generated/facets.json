@@ -1,12 +1,13 @@
 {
-  "data_version": "2026-09-23-19a305f645d7",
-  "active_on": "2026-09-23",
+  "data_version": "2026-09-24-f04bf096f6e4",
+  "active_on": "2026-09-24",
   "platforms": {
     "CLEARTRIP": {
-      "offer_count": 9,
+      "offer_count": 10,
       "banks": [
         "AXIS",
-        "ICICI"
+        "ICICI",
+        "SBI"
       ],
       "payment_methods": [
         "CREDIT",
@@ -16,20 +17,15 @@
         "WEB_AND_APP"
       ]
     },
-    "MAKEMYTRIP": {
-      "offer_count": 15,
+    "EASEMYTRIP": {
+      "offer_count": 17,
       "banks": [
+        "AUBANK",
         "BOB",
-        "CANARA",
-        "FEDERAL",
+        "DBS",
         "HDFC",
-        "HSBC",
         "ICICI",
-        "IDFC",
-        "INDUSIND",
-        "KOTAK",
-        "ONECARD",
-        "PNB"
+        "INDUSIND"
       ],
       "payment_methods": [
         "CREDIT",
@@ -38,13 +34,113 @@
       "booking_channels": [
         "WEB_AND_APP"
       ]
+    },
+    "IXIGO": {
+      "offer_count": 15,
+      "banks": [
+        "AUBANK",
+        "AXIS",
+        "BOB",
+        "HDFC",
+        "IDFC",
+        "JK",
+        "RBL"
+      ],
+      "payment_methods": [
+        "CREDIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "MAKEMYTRIP": {
+      "offer_count": 31,
+      "banks": [
+        "BOB",
+        "CANARA",
+        "DBS",
+        "FEDERAL",
+        "HDFC",
+        "HSBC",
+        "ICICI",
+        "IDFC",
+        "INDUSIND",
+        "KOTAK",
+        "ONECARD",
+        "PNB",
+        "SBI"
+      ],
+      "payment_methods": [
+        "CREDIT",
+        "DEBIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "PAYTM": {
+      "offer_count": 6,
+      "banks": [
+        "AUBANK",
+        "AXIS",
+        "HDFC",
+        "HSBC",
+        "ICICI",
+        "RBL"
+      ],
+      "payment_methods": [
+        "CREDIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "YATRA": {
+      "offer_count": 15,
+      "banks": [
+        "AUBANK",
+        "AXIS",
+        "FEDERAL",
+        "HDFC",
+        "HSBC",
+        "ICICI",
+        "IDFC",
+        "INDUSIND",
+        "KOTAK",
+        "SBI",
+        "YES"
+      ],
+      "payment_methods": [
+        "CREDIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
     }
   },
   "banks": {
-    "AXIS": {
-      "offer_count": 1,
+    "AUBANK": {
+      "offer_count": 9,
       "platforms": [
-        "CLEARTRIP"
+        "EASEMYTRIP",
+        "IXIGO",
+        "PAYTM",
+        "YATRA"
+      ],
+      "payment_methods": [
+        "CREDIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "AXIS": {
+      "offer_count": 4,
+      "platforms": [
+        "CLEARTRIP",
+        "IXIGO",
+        "PAYTM",
+        "YATRA"
       ],
       "payment_methods": [
         "CREDIT"
@@ -54,7 +150,22 @@
       ]
     },
     "BOB": {
-      "offer_count": 1,
+      "offer_count": 7,
+      "platforms": [
+        "EASEMYTRIP",
+        "IXIGO",
+        "MAKEMYTRIP"
+      ],
+      "payment_methods": [
+        "CREDIT",
+        "DEBIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "CANARA": {
+      "offer_count": 2,
       "platforms": [
         "MAKEMYTRIP"
       ],
@@ -65,9 +176,10 @@
         "WEB_AND_APP"
       ]
     },
-    "CANARA": {
-      "offer_count": 1,
+    "DBS": {
+      "offer_count": 6,
       "platforms": [
+        "EASEMYTRIP",
         "MAKEMYTRIP"
       ],
       "payment_methods": [
@@ -78,9 +190,10 @@
       ]
     },
     "FEDERAL": {
-      "offer_count": 1,
+      "offer_count": 2,
       "platforms": [
-        "MAKEMYTRIP"
+        "MAKEMYTRIP",
+        "YATRA"
       ],
       "payment_methods": [
         "CREDIT"
@@ -90,58 +203,13 @@
       ]
     },
     "HDFC": {
-      "offer_count": 1,
+      "offer_count": 7,
       "platforms": [
-        "MAKEMYTRIP"
-      ],
-      "payment_methods": [
-        "CREDIT"
-      ],
-      "booking_channels": [
-        "WEB_AND_APP"
-      ]
-    },
-    "HSBC": {
-      "offer_count": 3,
-      "platforms": [
-        "MAKEMYTRIP"
-      ],
-      "payment_methods": [
-        "CREDIT"
-      ],
-      "booking_channels": [
-        "WEB_AND_APP"
-      ]
-    },
-    "ICICI": {
-      "offer_count": 2,
-      "platforms": [
-        "CLEARTRIP",
-        "MAKEMYTRIP"
-      ],
-      "payment_methods": [
-        "CREDIT"
-      ],
-      "booking_channels": [
-        "WEB_AND_APP"
-      ]
-    },
-    "IDFC": {
-      "offer_count": 1,
-      "platforms": [
-        "MAKEMYTRIP"
-      ],
-      "payment_methods": [
-        "CREDIT"
-      ],
-      "booking_channels": [
-        "WEB_AND_APP"
-      ]
-    },
-    "INDUSIND": {
-      "offer_count": 2,
-      "platforms": [
-        "MAKEMYTRIP"
+        "EASEMYTRIP",
+        "IXIGO",
+        "MAKEMYTRIP",
+        "PAYTM",
+        "YATRA"
       ],
       "payment_methods": [
         "CREDIT",
@@ -151,10 +219,82 @@
         "WEB_AND_APP"
       ]
     },
-    "KOTAK": {
+    "HSBC": {
+      "offer_count": 7,
+      "platforms": [
+        "MAKEMYTRIP",
+        "PAYTM",
+        "YATRA"
+      ],
+      "payment_methods": [
+        "CREDIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "ICICI": {
+      "offer_count": 11,
+      "platforms": [
+        "CLEARTRIP",
+        "EASEMYTRIP",
+        "MAKEMYTRIP",
+        "PAYTM",
+        "YATRA"
+      ],
+      "payment_methods": [
+        "CREDIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "IDFC": {
+      "offer_count": 5,
+      "platforms": [
+        "IXIGO",
+        "MAKEMYTRIP",
+        "YATRA"
+      ],
+      "payment_methods": [
+        "CREDIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "INDUSIND": {
+      "offer_count": 9,
+      "platforms": [
+        "EASEMYTRIP",
+        "MAKEMYTRIP",
+        "YATRA"
+      ],
+      "payment_methods": [
+        "CREDIT",
+        "DEBIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "JK": {
       "offer_count": 2,
       "platforms": [
-        "MAKEMYTRIP"
+        "IXIGO"
+      ],
+      "payment_methods": [
+        "CREDIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "KOTAK": {
+      "offer_count": 5,
+      "platforms": [
+        "MAKEMYTRIP",
+        "YATRA"
       ],
       "payment_methods": [
         "CREDIT"
@@ -176,9 +316,48 @@
       ]
     },
     "PNB": {
-      "offer_count": 1,
+      "offer_count": 2,
       "platforms": [
         "MAKEMYTRIP"
+      ],
+      "payment_methods": [
+        "CREDIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "RBL": {
+      "offer_count": 3,
+      "platforms": [
+        "IXIGO",
+        "PAYTM"
+      ],
+      "payment_methods": [
+        "CREDIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "SBI": {
+      "offer_count": 4,
+      "platforms": [
+        "CLEARTRIP",
+        "MAKEMYTRIP",
+        "YATRA"
+      ],
+      "payment_methods": [
+        "CREDIT"
+      ],
+      "booking_channels": [
+        "WEB_AND_APP"
+      ]
+    },
+    "YES": {
+      "offer_count": 1,
+      "platforms": [
+        "YATRA"
       ],
       "payment_methods": [
         "CREDIT"

@@ -1,6 +1,10 @@
 {
-  "data_version": "2026-09-23-19a305f645d7",
+  "data_version": "2026-09-24-f04bf096f6e4",
   "banks": [
+    {
+      "id": "AUBANK",
+      "name": "AU Small Finance Bank"
+    },
     {
       "id": "AXIS",
       "name": "Axis Bank"
@@ -12,6 +16,10 @@
     {
       "id": "CANARA",
       "name": "Canara Bank"
+    },
+    {
+      "id": "DBS",
+      "name": "DBS Bank"
     },
     {
       "id": "FEDERAL",
@@ -38,6 +46,10 @@
       "name": "IndusInd Bank"
     },
     {
+      "id": "JK",
+      "name": "J&K Bank"
+    },
+    {
       "id": "KOTAK",
       "name": "Kotak Mahindra Bank"
     },
@@ -48,6 +60,18 @@
     {
       "id": "PNB",
       "name": "Punjab National Bank"
+    },
+    {
+      "id": "RBL",
+      "name": "RBL Bank"
+    },
+    {
+      "id": "SBI",
+      "name": "SBI"
+    },
+    {
+      "id": "YES",
+      "name": "YES Bank"
     }
   ],
   "platforms": [
@@ -56,8 +80,24 @@
       "name": "Cleartrip"
     },
     {
+      "id": "EASEMYTRIP",
+      "name": "EaseMyTrip"
+    },
+    {
+      "id": "IXIGO",
+      "name": "Ixigo"
+    },
+    {
       "id": "MAKEMYTRIP",
       "name": "MakeMyTrip"
+    },
+    {
+      "id": "PAYTM",
+      "name": "Paytm"
+    },
+    {
+      "id": "YATRA",
+      "name": "Yatra"
     }
   ],
   "payment_methods": [
@@ -768,6 +808,6 @@
     }
   ],
   "availability_start": "2025-09-22",
-  "availability_end": "2027-03-31",
-  "dataset_last_updated_at": "2026-09-23"
+  "availability_end": "2030-12-31",
+  "dataset_last_updated_at": "2026-09-24"
 }
