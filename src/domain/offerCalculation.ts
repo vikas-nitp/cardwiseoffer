@@ -51,7 +51,7 @@ export function savingsLabel(offer: OfferViewModel): string {
     let label = `₹${amt.toLocaleString()} off`;
     if (offer.minTransaction && offer.minTransaction > 0) {
       const pct = Math.round((amt / offer.minTransaction) * 100 * 10) / 10;
-      if (pct >= 1 && pct <= 100) label += ` (~${pct}%)`;
+      if (pct >= 1 && pct < 50) label += ` (~${pct}%)`;
     }
     return label;
   }

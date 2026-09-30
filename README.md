@@ -1,6 +1,6 @@
 # CardWiseOffer Frontend
 
-Indian domestic-flight card-offer aggregator — compare credit/debit card savings across MakeMyTrip, Cleartrip, ixigo, Yatra, SpiceJet, AirAsia, and Vistara.
+Indian domestic-flight card-offer aggregator — compare credit/debit card savings across the booking platforms present in the current offer data (see `src/data/generated/metadata.json`).
 
 Lovable contributors must follow [LOVABLE.md](LOVABLE.md).
 
@@ -41,7 +41,7 @@ Controlled by `VITE_DATA_SOURCE` in `.env.local`:
 
 | Mode | Env var | Description |
 |------|---------|-------------|
-| **Local** (default) | unset or `local` | Reads from `src/data/generated/offers.json` — no backend needed |
+| **Local** (default) | unset or `local` | Reads from `src/data/generated/offers.json` (synced from the backend, gitignored) — no backend needed |
 | **API** | `api` | Calls the FastAPI backend at `VITE_API_BASE_URL` |
 
 ```env
@@ -56,45 +56,38 @@ Production builds **require** `VITE_DATA_SOURCE=api` — the app throws at start
 
 ## Data sync
 
-Run these to pull fresh offer data from the backend pipeline into the bundled local data.
+The backend (`cwo_backend`) is the source of truth for offer data **and** the API contract. cardsage delivers the
+offer CSV to the backend, the backend builds the bundle, and this repo copies it in. `src/data/generated/` is
+gitignored, so run a sync after a fresh clone or before `npm test`/`npm run typecheck`.
 
 ```bash
-# Full sync + validation (recommended after any cardsage run)
-npm run data:build
+# In cwo_backend: build the bundle from data/source/offers.csv
+python scripts/build_data_bundle.py
 
-# Sync only (copy from cwo_backend/data/generated/ → src/data/generated/)
-npm run data:sync-backend
+# In this repo: copy data + contracts/ from the backend, then validate
+npm run data:build                      # = data:sync-backend + data:check
 
-# Validate the synced bundle (schema + integrity checks)
-npm run data:check
+# Regenerate TypeScript types from contracts/openapi.json
+npm run generate:api
 
-# Audit offer expiry in bundled data
-node scripts/check-offer-expiry.mjs
-
-# Mark expired offers as inactive in bundled data
-node scripts/check-offer-expiry.mjs --mark
+# Audit / mark expired offers in the bundled data
+node scripts/check-offer-expiry.mjs [--mark]
 ```
 
-`data:sync-backend` copies from the sibling `cwo_backend/` directory. Run `python3 scripts/build_data_bundle.py` in the backend first if you want the latest pipeline data.
+The backend is found at `../cwo_backend`; set `CWO_BACKEND_DIR` to use another checkout. CI checks out the backend,
+runs the same steps and fails if `contracts/` or `src/types/generated-api.d.ts` drift from the backend.
 
 ---
 
 ## Full pipeline (local mode, end to end)
 
 ```bash
-# 1. Run cardsage scraper (from WORKSPACE root)
-python3 -m cardsage run --source all
-
-# 2. Convert to backend CSV (from WORKSPACE root)
-python3 cwo_backend/scripts/cardsage_to_snapshot.py
-
-# 3. Build backend distribution bundle (from cwo_backend/)
-python3 scripts/build_data_bundle.py
-
-# 4. Sync into frontend (from cardwiseoffer/)
-npm run data:sync-backend
-
-# 5. Start dev server
+# 1. cardsage produces offers.csv and commits it to cwo_backend/data/source/offers.csv
+# 2. Build the backend bundle (from cwo_backend/)
+python scripts/build_data_bundle.py
+# 3. Sync into the frontend (from this repo)
+npm run data:build
+# 4. Start the dev server
 npm run dev
 ```
 
@@ -142,7 +135,7 @@ src/
 
 ## Key design decisions
 
-- **Auth is memory-only.** `AuthContext` holds sign-in state in React memory only — nothing written to `localStorage` or `sessionStorage`.
+- **Auth is memory-only.** `AuthContext` holds sign-in state in React memory only. The one thing persisted is an anonymous random id (`cwo_uid` in `localStorage`) sent as `X-Session-Id` so saved cards and notification prefs stay per browser; it carries no identity.
 - **Strip vs. tiles.** The 7-day date strip shows market-best savings across all active offers. Tiles filter by the user's selected banks. This gives a market-wide indicator without leaking bank-specific detail.
 - **Strip no-fare mode** shows "Save up to ₹X" using `maxDiscount` (PERCENT) or `discountValue` (FLAT) — the hard cap, never a simulated fare.
 - **CC/DC filter in Results.** A "All / Credit / Debit" segmented control appears when card-based offers are present. `NO_CARD` platform offers always bypass the filter.

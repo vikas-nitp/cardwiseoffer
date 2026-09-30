@@ -14,6 +14,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Generated data and the API contract come from the backend repo (source of truth).
+      # Needs a read-only token for the private backend repo stored as BACKEND_REPO_TOKEN.
+      - name: Check out backend
+        uses: actions/checkout@v4
+        with:
+          repository: vikas-nitp/cwo_backend
+          token: ${{ secrets.BACKEND_REPO_TOKEN }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          path: backend
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build backend data bundle
+        run: |
+          pip install -r backend/requirements.txt
+          python backend/scripts/build_data_bundle.py
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -21,6 +40,16 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Sync backend data + contract
+        run: npm run data:build
+        env:
+          CWO_BACKEND_DIR: ${{ github.workspace }}/backend
+
+      - name: Contract and generated API types are in sync with backend
+        run: |
+          npm run check:api-types
+          git diff --exit-code -- contracts
 
       - name: Lint
         run: npm run lint
