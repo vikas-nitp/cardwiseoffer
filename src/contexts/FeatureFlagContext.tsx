@@ -5,13 +5,10 @@ import { getDataMode } from "@/config/dataMode";
 import { repoFetchFeatureFlags } from "@/services/dataRepo";
 
 type FeatureFlagsResponse = components["schemas"]["FeatureFlagsResponse"];
-export type ProductFeatureFlags = Omit<FeatureFlagsResponse, "config_version"> & {
-  visitorCountEnabled: boolean;
-  authEnabled: boolean;
-};
+export type ProductFeatureFlags = Omit<FeatureFlagsResponse, "config_version">;
 export type FeatureFlags = ProductFeatureFlags;
 
-const LOCAL_FLAGS: ProductFeatureFlags = { ...generatedFlags, visitorCountEnabled: false, authEnabled: false };
+const LOCAL_FLAGS: ProductFeatureFlags = { ...generatedFlags };
 
 interface FeatureFlagContextValue {
   flags: ProductFeatureFlags;
@@ -58,7 +55,7 @@ export const FeatureFlagProvider = ({ children }: { children: ReactNode }) => {
     <FeatureFlagContext.Provider value={{ flags, loading, error, refetch }}>
       {error && !errorDismissed && (
         <div role="alert" className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between gap-4 bg-destructive/10 border-b border-destructive/20 px-4 py-2 text-[13px]">
-          <span className="text-destructive font-medium">Live configuration unavailable — using defaults.</span>
+          <span className="text-destructive font-medium">Live configuration unavailable - using defaults.</span>
           <button
             onClick={() => setErrorDismissed(true)}
             className="text-muted-foreground hover:text-foreground transition-colors shrink-0"

@@ -49,7 +49,7 @@ const FareDropdown = ({ value, onChange }: { value: string; onChange: (v: string
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full bg-secondary/50 border-0 h-auto text-sm pl-4 pr-3 py-2.5 min-h-[56px] rounded-xl text-left flex items-center justify-between hover:bg-secondary/70 transition-colors"
+        className="w-full bg-input border border-border h-auto text-sm pl-4 pr-3 py-2.5 min-h-[56px] rounded-xl text-left flex items-center justify-between hover:border-primary/30 transition-colors"
       >
         {displayValue
           ? <span className="font-bold text-foreground">{displayValue}</span>
@@ -83,7 +83,7 @@ const FareDropdown = ({ value, onChange }: { value: string; onChange: (v: string
                 className={cn(
                   "px-2 py-2 rounded-lg text-[13px] font-semibold transition-colors text-center",
                   value === String(fare)
-                    ? "bg-accent/20 text-accent border border-accent/30"
+                    ? "bg-primary/15 text-primary border border-primary/30"
                     : "bg-muted/40 text-foreground hover:bg-muted/70"
                 )}
               >
@@ -217,10 +217,14 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
     onSearch(fromAirport, toAirport, departDate, banks, effectiveAmount);
   };
 
-  const minDate = useMemo(
-    () => (meta.availability_start ? parseISO(meta.availability_start) : startOfDay(new Date())),
-    [meta.availability_start],
-  );
+  const minDate = useMemo(() => {
+    const today = startOfDay(new Date());
+    if (meta.availability_start) {
+      const dataStart = parseISO(meta.availability_start);
+      return dataStart > today ? dataStart : today;
+    }
+    return today;
+  }, [meta.availability_start]);
   const maxDate = useMemo(
     () => (meta.availability_end ? parseISO(meta.availability_end) : addMonths(new Date(), 6)),
     [meta.availability_end],
@@ -253,7 +257,7 @@ const SearchCard = ({ onSearch, initialFrom, initialTo, initialDate, initialBank
   return (
     <motion.div
       {...motionProps}
-      className="w-full max-w-5xl mx-auto glass-search-card rounded-2xl gold-ring p-6 md:p-8 relative z-30"
+      className="w-full max-w-5xl mx-auto glass-search-card rounded-2xl card-shadow p-6 md:p-8 relative z-30"
     >
       <div className={`grid grid-cols-1 gap-4 items-end ${capabilities.bookingAmountComparison ? "md:grid-cols-5" : "md:grid-cols-4"}`}>
         {/* From */}

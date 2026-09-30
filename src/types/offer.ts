@@ -4,7 +4,7 @@
  */
 
 export type PaymentMethod = "CREDIT" | "DEBIT" | "NO_CARD";
-export type DiscountType = "FLAT" | "PERCENT";
+export type DiscountType = "FLAT" | "PERCENT" | "CASHBACK";
 export type SourceType = "demo_excel" | "api";
 
 export interface OfferViewModel {
@@ -13,10 +13,12 @@ export interface OfferViewModel {
   bank: string | null;         // canonical bank id, e.g. "HDFC"; null = default/no-card
   bankDisplay: string | null;  // resolved display name
   cardName: string | null;
+  cardSpecificity: "ALL" | "SPECIFIC" | null;  // null = not yet enriched by ingestion
   platform: string;
   platformName: string;
   offerTitle: string;
   platformUrl: string | null;  // null = no route context; UI must disable CTA
+  sourceUrl?: string | null;   // promotional source page for attribution
 
   // Money
   originalPrice?: number;
@@ -34,18 +36,21 @@ export interface OfferViewModel {
   minTransaction?: number;
 
   couponCode?: string | null;
+  usageLimit?: string | null;
   validFrom: string;           // ISO yyyy-MM-dd
   expiryDate: string;          // ISO yyyy-MM-dd
 
   eligibilityNotes: string[];
   category: string;
 
-  // 0=Sun … 6=Sat (JS getDay() convention). null/undefined = valid every day.
+  // 0=Mon … 6=Sun (Python weekday convention from backend). null/undefined = valid every day.
+  // offerValidity.ts converts to JS getDay() when checking.
   validDays?: number[] | null;
 
   sourceType: SourceType;
   isActive: boolean;
   priorityScore: number;
   lastUpdatedAt?: string;
+  evidenceStatus?: string;   // "VERIFIED" | "UNVERIFIED" | absent = treat as verified
 }
 

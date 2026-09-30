@@ -6,7 +6,7 @@ import { addDays, format, parseISO } from "date-fns";
 import type { CityOption } from "@/components/CityAutocomplete";
 import type { OfferViewModel } from "@/types/offer";
 import { mapApiOffer, type ApiOffer } from "@/domain/offerMapper";
-import { isOfferEligible } from "@/domain/offerValidity";
+import { isOfferEligible, isOfferCatalogEligible } from "@/domain/offerValidity";
 import { rankAndLabelOffers } from "@/domain/offerRanking";
 import { DATE_STRIP_NO_OFFERS_LABEL } from "@/constants";
 import { buildFlightSearchUrl, platformHomeUrl } from "@/domain/platformUrlBuilder";
@@ -17,6 +17,7 @@ import type { OfferRepository, OfferSearchResult, StripDayEntry } from "./OfferR
 
 const ALL_OFFERS: OfferViewModel[] = (offersJson as unknown as Array<ApiOffer & { is_active?: boolean }>)
   .filter((raw) => raw.is_active !== false)
+  .filter((raw) => featureFlags.flightInternationalEnabled || raw.category !== "FLIGHT_INTERNATIONAL")
   .map(mapApiOffer)
   .map((offer) => ({
     ...offer,
@@ -91,9 +92,9 @@ export function searchLocalOffers(
       }
       return { date: isoDate, displayText, dayFare };
     } else {
-      // No fare: show maximum possible savings from each offer's own cap/value.
-      // PERCENT → maxDiscount (the hard cap); FLAT → discountValue.
-      // minTransaction is ignored — we don't know the user's fare so we show the upper bound.
+      // No fare entered: show the best possible savings cap across active offers.
+      // PERCENT offers → maxDiscount (the hard cap); FLAT → discountValue.
+      // minTransaction ignored — user hasn't given a fare so we show the upper bound.
       if (activeThatDay.length === 0) {
         displayText = DATE_STRIP_NO_OFFERS_LABEL;
       } else {
@@ -110,7 +111,7 @@ export function searchLocalOffers(
 }
 
 export function getLocalOffers(): OfferViewModel[] {
-  const active = ALL_OFFERS.filter((o) => isOfferEligible(o));
+  const active = ALL_OFFERS.filter((o) => isOfferCatalogEligible(o));
   const sorted = [...active].sort((a, b) => b.savings - a.savings || b.priorityScore - a.priorityScore);
   return attachCatalogUrls(sorted);
 }

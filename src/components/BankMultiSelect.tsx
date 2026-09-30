@@ -63,13 +63,13 @@ const BankMultiSelect = ({ selected, onChange, maxSelect = MAX_BANK_FILTERS, sho
     <div className="space-y-1.5 relative z-30" ref={wrapperRef}>
       <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-[0.10em] flex items-center gap-1.5">
         <CreditCard className="w-3.5 h-3.5" />
-        Card <span className="font-normal normal-case tracking-normal text-[10px] opacity-60">(optional)</span>
+        Bank <span className="font-normal normal-case tracking-normal text-[10px] opacity-60">(optional)</span>
       </label>
       <button
         type="button"
         onClick={() => setOpen(!open)}
         className={cn(
-          "w-full bg-secondary/50 border border-transparent h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left relative flex items-center hover:bg-secondary/70 transition-colors",
+          "w-full bg-input border border-border h-auto text-sm pl-10 pr-3 py-2.5 min-h-[56px] rounded-xl text-left relative flex items-center hover:border-primary/30 transition-colors",
           hasError && "ring-2 ring-destructive border-destructive/50"
         )}
       >

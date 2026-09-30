@@ -1,10 +1,10 @@
+// DEAD CODE — not imported anywhere; remove in next cleanup pass (2026-09-20)
+/*
 import { Info } from "lucide-react";
 
-/**
- * Product-standard disclaimer shown at the top of every page.
- * Replaces earlier "Demo mode" wording so we don't advertise unfinished-product framing
- * to end users while still being explicit about verification responsibility.
- */
+// Product-standard disclaimer shown at the top of every page.
+// Replaces earlier "Demo mode" wording so we don't advertise unfinished-product framing
+// to end users while still being explicit about verification responsibility.
 const DemoModeBanner = () => (
   <div
     role="note"
@@ -22,3 +22,4 @@ const DemoModeBanner = () => (
 );
 
 export default DemoModeBanner;
+*/

@@ -1,15 +1,16 @@
 import { AlertCircle, Loader2, ChevronDown } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useRef, useEffect } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { TopFiltersBar } from "@/components/SidebarFilters";
 import OfferCard from "@/components/OfferCard";
+import OfferDetailModal from "@/components/OfferDetailModal";
 import EmptyState from "@/components/EmptyState";
 import type { OfferViewModel } from "@/types/offer";
-import { useMeta } from "@/contexts/MetaContext";
-import { format, parseISO } from "date-fns";
+import type { CardRecord } from "@/hooks/useUserCards";
 
-const GRID = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4";
+const GRID = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4";
 
 const PerPageDropdown = ({ value, onChange }: { value: number; onChange: (n: number) => void }) => {
   const [open, setOpen] = useState(false);
@@ -37,9 +38,9 @@ const PerPageDropdown = ({ value, onChange }: { value: number; onChange: (n: num
               <button
                 key={n}
                 onClick={() => { onChange(n); setOpen(false); }}
-                className={`w-full text-left px-3 py-1.5 text-[12px] font-medium transition-colors flex items-center gap-1.5 ${n === value ? "text-accent" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"}`}
+                className={`w-full text-left px-3 py-1.5 text-[12px] font-medium transition-colors flex items-center gap-1.5 ${n === value ? "text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"}`}
               >
-                {n === value && <span className="w-1 h-1 rounded-full bg-accent inline-block" />}
+                {n === value && <span className="w-1 h-1 rounded-full bg-primary inline-block" />}
                 {n === value ? null : <span className="w-1 h-1 inline-block" />}
                 {n}
               </button>
@@ -51,12 +52,12 @@ const PerPageDropdown = ({ value, onChange }: { value: number; onChange: (n: num
   );
 };
 
-function catalogVariant(offer: OfferViewModel): "highlight" | "default" | "neutral" {
-  const s = offer.savings;
-  if (s >= 1400) return "highlight";
-  if (s >= 700) return "default";
-  return "neutral";
+function catalogVariant(offer: OfferViewModel): "default" | "neutral" {
+  if (offer.bank === null || offer.paymentMethod === "NO_CARD") return "neutral";
+  return "default";
 }
+
+const GUEST_PREVIEW_COUNT = 3;
 
 interface AllOffersSectionProps {
   filteredAllOffers: OfferViewModel[];
@@ -77,6 +78,10 @@ interface AllOffersSectionProps {
   onPaymentFilterChange: (v: string[]) => void;
   onChannelFilterChange: (v: string[]) => void;
   onResetFilters: () => void;
+  authEnabled?: boolean;
+  isSignedIn?: boolean;
+  onSignIn?: () => void;
+  userCards?: CardRecord[];
 }
 
 const AllOffersSection = ({
@@ -85,11 +90,25 @@ const AllOffersSection = ({
   offersPage, setOffersPage, offersTotalPages, offersTotalCount,
   offersLimit, setOffersLimit,
   onBankFilterChange, onPlatformFilterChange, onPaymentFilterChange, onChannelFilterChange, onResetFilters,
+  authEnabled = false, isSignedIn = false, onSignIn,
+  userCards,
 }: AllOffersSectionProps) => {
-  const { meta } = useMeta();
-  const lastUpdated = meta.dataset_last_updated_at
-    ? format(parseISO(meta.dataset_last_updated_at), "MMM yyyy")
+  const [myCardsActive, setMyCardsActive] = useState(false);
+  const [selectedOffer, setSelectedOffer] = useState<OfferViewModel | null>(null);
+
+  const savedBankIds = userCards && userCards.length > 0
+    ? new Set(userCards.map((c) => c.bank_id))
     : null;
+
+  const displayOffers = myCardsActive && savedBankIds
+    ? filteredAllOffers.filter((o) => o.bank !== null && savedBankIds.has(o.bank))
+    : filteredAllOffers;
+
+  const gated = authEnabled && !isSignedIn;
+  // Always show the gate for unauthenticated users regardless of filter result count.
+  // hiddenCount drives the label only — the gate renders whenever gated=true.
+  const visibleOffers = gated ? displayOffers.slice(0, GUEST_PREVIEW_COUNT) : displayOffers;
+  const hiddenCount = gated ? Math.max(0, offersTotalCount - GUEST_PREVIEW_COUNT) : 0;
 
   return (
   <div className="w-full max-w-6xl mx-auto mt-4 md:mt-6 flex flex-col gap-4">
@@ -102,23 +121,53 @@ const AllOffersSection = ({
           </span>
         )}
         {allOffersLoading && <Loader2 className="w-3.5 h-3.5 text-muted-foreground/50 animate-spin ml-1" />}
-        {lastUpdated && (
-          <span className="text-[11px] text-muted-foreground/50 ml-auto">Updated {lastUpdated}</span>
-        )}
       </div>
-      <TopFiltersBar
-        bankFilter={bankFilter} onBankFilterChange={onBankFilterChange}
-        platformFilter={platformFilter} onPlatformFilterChange={onPlatformFilterChange}
-        paymentFilter={paymentFilter} onPaymentFilterChange={onPaymentFilterChange}
-        channelFilter={channelFilter} onChannelFilterChange={onChannelFilterChange}
-        onResetAll={onResetFilters}
-      />
+      {!gated && (
+        <>
+          <TopFiltersBar
+            bankFilter={bankFilter} onBankFilterChange={onBankFilterChange}
+            platformFilter={platformFilter} onPlatformFilterChange={onPlatformFilterChange}
+            paymentFilter={paymentFilter} onPaymentFilterChange={onPaymentFilterChange}
+            channelFilter={channelFilter} onChannelFilterChange={onChannelFilterChange}
+            onResetAll={onResetFilters}
+          />
+          {savedBankIds && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setMyCardsActive((v) => !v)}
+                className={`inline-flex items-center gap-1.5 h-7 px-3 rounded-full text-[12px] font-medium border transition-colors ${
+                  myCardsActive
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background text-muted-foreground border-border/40 hover:border-primary/40 hover:text-foreground"
+                }`}
+              >
+                My Cards
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
 
     {allOffersLoading && (
-      <div className="flex flex-col items-center justify-center py-20 gap-3">
-        <Loader2 className="w-6 h-6 text-primary animate-spin" />
-        <p className="text-[13px] text-muted-foreground">Loading all offers...</p>
+      <div className={GRID}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="rounded-2xl border border-border/40 overflow-hidden bg-card">
+            <div className="h-1 w-full bg-muted/60" />
+            <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+              <Skeleton className="h-5 w-24 rounded-full" />
+              <Skeleton className="h-5 w-5 rounded-lg" />
+            </div>
+            <div className="px-4 pt-4 pb-2"><Skeleton className="h-7 w-28 mb-2" /></div>
+            <div className="mx-4 border-t border-border/30" />
+            <div className="px-4 py-3 space-y-2">
+              <Skeleton className="h-3 w-28" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+            <div className="px-4 pb-4 pt-0"><Skeleton className="h-10 w-full rounded-xl" /></div>
+          </div>
+        ))}
       </div>
     )}
     {allOffersError && (
@@ -129,22 +178,48 @@ const AllOffersSection = ({
     )}
     {!allOffersLoading && !allOffersError && (
       <>
-        {filteredAllOffers.length === 0 ? (
+        {displayOffers.length === 0 ? (
           <EmptyState onReset={onResetFilters} />
         ) : (
-          <div className={GRID}>
-            {filteredAllOffers.map((offer) => (
-              <OfferCard
-                key={offer.id}
-                offer={offer}
-                variant={catalogVariant(offer)}
-                label={offer.bankDisplay ?? "Default"}
-                compact
-              />
-            ))}
+          <div className="relative">
+            <div className={GRID}>
+              {visibleOffers.map((offer) => (
+                <OfferCard
+                  key={offer.id}
+                  offer={offer}
+                  variant={catalogVariant(offer)}
+                  label={offer.bankDisplay ?? offer.label}
+                  compact
+                  onExpand={() => setSelectedOffer(offer)}
+                />
+              ))}
+            </div>
+
+            {gated && (
+              <div className="relative mt-4">
+                <div className="pointer-events-none absolute -top-20 left-0 right-0 h-20 bg-gradient-to-b from-transparent to-background z-10" />
+                <div className="relative z-20 flex flex-col items-center gap-3 py-8 px-6 rounded-2xl border border-primary/20 bg-primary/5 text-center">
+                  <p className="text-[13px] font-semibold text-foreground">
+                    {hiddenCount > 0
+                      ? `${hiddenCount} more offer${hiddenCount !== 1 ? "s" : ""} available`
+                      : "More offers available"}
+                  </p>
+                  <p className="text-[12px] text-muted-foreground max-w-xs">
+                    Sign in to unlock the full catalogue — free, no booking required.
+                  </p>
+                  <button
+                    onClick={onSignIn}
+                    className="mt-1 inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-primary text-primary-foreground text-[13px] font-semibold hover:brightness-110 transition-all"
+                  >
+                    Sign in to see all offers
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
-        {filteredAllOffers.length > 0 && (
+
+        {!gated && filteredAllOffers.length > 0 && (
           <div className="mt-4 flex items-center justify-between gap-4 flex-wrap">
             <PerPageDropdown value={offersLimit} onChange={(n) => { setOffersLimit(n); setOffersPage(1); }} />
             {offersTotalPages > 1 && (
@@ -160,7 +235,7 @@ const AllOffersSection = ({
                   <button
                     key={p}
                     onClick={() => setOffersPage(p)}
-                    className={`h-8 min-w-[32px] px-2 rounded-lg text-[13px] font-medium transition-colors ${p === offersPage ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted/40"}`}
+                    className={`h-8 min-w-[32px] px-2 rounded-lg text-[13px] font-medium transition-colors ${p === offersPage ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted/40"}`}
                   >
                     {p}
                   </button>
@@ -178,6 +253,10 @@ const AllOffersSection = ({
         )}
       </>
     )}
+  <OfferDetailModal
+    offer={selectedOffer}
+    onClose={() => setSelectedOffer(null)}
+  />
   </div>
   );
 };

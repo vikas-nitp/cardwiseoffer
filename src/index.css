@@ -16,7 +16,8 @@
  * Spatial grid: 8pt base (p-1=4px … p-8=32px). Radius base: 14px → --radius.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Bricolage: weight-only subset (no opsz axis) + text subsetting for hero h1 only — removes ~92% of variable font payload */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@800&text=WhichcardsavesthemostonyourflightQ%3F&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -30,10 +31,10 @@
     --background:           220 45% 12%;   /* #111A2C deep navy, clearly blue */
     --foreground:           218 54% 94%;   /* #E8EEF8 cool near-white        */
 
-    --card:                 221 38% 14%;   /* #0F1E30 elevated surface       */
+    --card:                 218 24% 15%;   /* warm-neutral elevated surface  */
     --card-foreground:      218 54% 94%;
 
-    --popover:              221 40% 16%;   /* slightly above card            */
+    --popover:              219 28% 17%;   /* slightly above card            */
     --popover-foreground:   218 54% 94%;
 
     /* Brand ------------------------------------------------------- */
@@ -41,16 +42,16 @@
     --primary:              216 70% 48%;   /* #2A8FD4 electric blue — interaction only */
     --primary-foreground:     0  0% 100%;
 
-    --accent:                43 77% 52%;   /* #E4A827 sovereign gold — brand primary */
-    --accent-foreground:    225 37%  5%;   /* near-black on gold              */
+    --accent:               216 70% 48%;   /* blue — unified with primary */
+    --accent-foreground:      0  0% 100%;   /* white on blue                   */
 
     /* Secondary surface (bordered dark chip) ---------------------- */
-    --secondary:            221 42% 17%;   /* #172040 raised surface         */
+    --secondary:            219 32% 17%;   /* #162039 raised surface, warmer  */
     --secondary-foreground: 218 54% 94%;
 
     /* Muted ------------------------------------------------------- */
     --muted:                224 30% 13%;   /* between ground and card        */
-    --muted-foreground:     224 18% 65%;   /* bumped from 58% → 65% for AA readability */
+    --muted-foreground:     214 20% 69%;   /* #94A3B8 — WCAG AA on dark surface */
 
     /* Feedback ---------------------------------------------------- */
     --destructive:            0 72% 56%;
@@ -85,13 +86,17 @@
     --savings-soft:         142 40% 11%;   /* dark green chip bg             */
     --savings-soft-foreground: 142 62% 72%;
 
-    --highlight:             42 80% 55%;   /* amber — matches accent          */
+    --highlight:             42 80% 55%;   /* amber — semantic warning tone   */
     --highlight-foreground: 225 37%  5%;   /* near-black on amber            */
 
     --glow:                 216 84% 56%;   /* blue decorative glow           */
 
+    /* ── Star colours (theme-aware for StarField) ───────────────── */
+    --star-dim-color:       218 54% 94%;   /* near-white on dark bg           */
+    --star-bright-color:    216 80% 85%;   /* light blue on dark bg           */
+
     /* ── Misc ────────────────────────────────────────────────────── */
-    --surface-elevated:     221 42% 17%;
+    --surface-elevated:     219 32% 17%;
 
     /* Sidebar */
     --sidebar-background:   222 28%  8%;
@@ -102,9 +107,19 @@
     --sidebar-accent-foreground: 218 54% 94%;
     --sidebar-border:       224 30% 22%;
     --sidebar-ring:         216 84% 50%;
+
+    /* ── Type scale (6 stops) ────────────────────────────────────── */
+    --text-micro:   0.625rem;    /* 10px — overlines, captions          */
+    --text-caption: 0.6875rem;   /* 11px — field labels, badges         */
+    --text-body-sm: 0.75rem;     /* 12px — secondary text, pagination   */
+    --text-body:    0.8125rem;   /* 13px — primary body, card text      */
+    --text-body-lg: 0.9375rem;   /* 15px — prominent body, nav          */
+    --text-display: 1.5rem;      /* 24px — savings hero number          */
   }
 
-  /* ── Light mode variant (future toggle) ─────────────────────────── */
+  /* ── Light mode — activated by OS preference OR explicit .light class ── */
+  /* Plain CSS cannot share one block across a class and a media query,    */
+  /* so the tokens are defined twice. Keep both in sync when editing.      */
   .light {
     --background:           216 33% 97%;
     --foreground:           221 39% 11%;
@@ -112,9 +127,9 @@
     --card-foreground:      221 39% 11%;
     --popover:                0  0% 100%;
     --popover-foreground:   221 39% 11%;
-    --primary:              216 84% 50%;   /* airline blue for light bg      */
+    --primary:              216 84% 50%;
     --primary-foreground:     0  0% 100%;
-    --accent:                41 78% 38%;   /* darker gold for light bg       */
+    --accent:               216 84% 50%;   /* blue — unified with primary */
     --accent-foreground:      0  0% 100%;
     --secondary:            214 70% 95%;
     --secondary-foreground: 214 65% 17%;
@@ -137,10 +152,11 @@
     --danger-foreground:    354 61% 32%;
     --danger-soft:            0 70% 96%;
     --danger-soft-foreground: 354 61% 33%;
-    --savings:              142 68% 38%;   /* green kept in light mode — distinct from warning */
+    --savings:              142 68% 38%;
     --savings-foreground:     0  0% 100%;
     --savings-soft:         142 55% 92%;
-    --highlight:             38 85% 52%;
+    --savings-soft-foreground: 142 62% 32%;
+    --highlight:             38 90% 30%;   /* dark amber — legible on white cards */
     --highlight-foreground:   0  0% 100%;
     --glow:                 214 84% 56%;
     --surface-elevated:       0  0% 100%;
@@ -152,6 +168,63 @@
     --sidebar-accent-foreground: 221 39% 11%;
     --sidebar-border:       217 24% 90%;
     --sidebar-ring:         216 84% 50%;
+    --star-dim-color:       221 39% 22%;   /* dark navy dots on light bg      */
+    --star-bright-color:    216 70% 35%;   /* dark blue dots on light bg      */
+  }
+
+  /* OS-preference activation — same tokens, no explicit class needed */
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) {
+      --background:           216 33% 97%;
+      --foreground:           221 39% 11%;
+      --card:                   0  0% 100%;
+      --card-foreground:      221 39% 11%;
+      --popover:                0  0% 100%;
+      --popover-foreground:   221 39% 11%;
+      --primary:              216 84% 50%;
+      --primary-foreground:     0  0% 100%;
+      --accent:               216 84% 50%;
+      --accent-foreground:      0  0% 100%;
+      --secondary:            214 70% 95%;
+      --secondary-foreground: 214 65% 17%;
+      --muted:                216 20% 94%;
+      --muted-foreground:     221 13% 46%;
+      --destructive:            0 64% 55%;
+      --destructive-foreground: 0  0% 100%;
+      --border:               217 24% 85%;
+      --input:                217 24% 85%;
+      --ring:                 216 84% 50%;
+      --success:              155 77% 43%;
+      --success-foreground:   152 69% 19%;
+      --success-soft:         155 65% 94%;
+      --success-soft-foreground: 152 69% 25%;
+      --warning:               38 92% 50%;
+      --warning-foreground:    45 94% 21%;
+      --warning-soft:          38 88% 94%;
+      --warning-soft-foreground: 45 94% 22%;
+      --danger:                 0 64% 55%;
+      --danger-foreground:    354 61% 32%;
+      --danger-soft:            0 70% 96%;
+      --danger-soft-foreground: 354 61% 33%;
+      --savings:              142 68% 38%;
+      --savings-foreground:     0  0% 100%;
+      --savings-soft:         142 55% 92%;
+      --savings-soft-foreground: 142 62% 32%;
+      --highlight:             38 90% 30%;   /* dark amber — legible on white cards */
+      --highlight-foreground:   0  0% 100%;
+      --glow:                 214 84% 56%;
+      --surface-elevated:       0  0% 100%;
+      --sidebar-background:     0  0% 98%;
+      --sidebar-foreground:   221 13% 30%;
+      --sidebar-primary:      216 84% 50%;
+      --sidebar-primary-foreground:  0  0% 100%;
+      --sidebar-accent:       216 20% 94%;
+      --sidebar-accent-foreground: 221 39% 11%;
+      --sidebar-border:       217 24% 90%;
+      --sidebar-ring:         216 84% 50%;
+      --star-dim-color:       221 39% 22%;
+      --star-bright-color:     41 78% 30%;
+    }
   }
 }
 
@@ -174,6 +247,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-optical-sizing: auto;
+    transition: background-color 0.25s ease, color 0.2s ease;
   }
 
   h1, h2, h3, h4 {
@@ -197,138 +271,149 @@
 
 @layer utilities {
 
-  /* ── Sovereign depth gradient with animated orbs ─────────────── */
-  .sovereign-ground {
-    background: hsl(var(--background));
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Static depth layer — always visible base gradient */
-  .sovereign-ground::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 70% 55% at 12% 5%,   hsl(225 85% 38% / 0.45) 0%, transparent 58%),
-      radial-gradient(ellipse 55% 45% at 88% 92%,  hsl( 42 80% 28% / 0.35) 0%, transparent 58%),
-      radial-gradient(ellipse 45% 35% at 62% 58%,  hsl(200 72% 26% / 0.18) 0%, transparent 62%),
-      radial-gradient(ellipse 28% 22% at 82% 12%,  hsl( 38 65% 22% / 0.14) 0%, transparent 52%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Animated floating orb layer */
-  .sovereign-ground::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 38% 30% at 22% 55%,  hsl(216 84% 50% / 0.12) 0%, transparent 65%),
-      radial-gradient(ellipse 28% 22% at 72% 22%,  hsl( 42 80% 55% / 0.10) 0%, transparent 60%),
-      radial-gradient(ellipse 22% 18% at 50% 80%,  hsl(200 72% 40% / 0.09) 0%, transparent 55%);
-    pointer-events: none;
-    z-index: 0;
-    animation: orb-drift 18s ease-in-out infinite alternate;
-  }
-
-  /* Glass panel mixin — used on premium surfaces */
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(20px) saturate(1.5);
-    -webkit-backdrop-filter: blur(20px) saturate(1.5);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  /* Shimmer sweep on glass surfaces on hover */
-  .glass-shimmer {
-    position: relative;
-    overflow: hidden;
-  }
-  .glass-shimmer::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      115deg,
-      transparent           25%,
-      hsl(0 0% 100% / 0.06) 50%,
-      transparent           75%
-    );
-    transform: translateX(-120%);
-    transition: transform 0.7s ease;
-    pointer-events: none;
-  }
-  .glass-shimmer:hover::after {
-    transform: translateX(120%);
-  }
-
-  /*
-   * Card shimmer overlay — use this INSTEAD of glass-shimmer on OfferCard.
-   * The overlay clips the sweep internally so the card itself doesn't need
-   * overflow:hidden, preventing content from being cut off on tall cards.
-   * Trigger: parent must have card-hover-glow (the :hover selector rides on it).
-   */
+  /* card-shimmer-overlay — kept as structural placeholder; shimmer disabled per design review */
   .card-shimmer-overlay {
     position: absolute;
     inset: 0;
-    overflow: hidden;
     border-radius: inherit;
     pointer-events: none;
     z-index: 0;
   }
-  .card-shimmer-overlay::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      115deg,
-      transparent           25%,
-      hsl(0 0% 100% / 0.06) 50%,
-      transparent           75%
-    );
-    transform: translateX(-120%);
-    transition: transform 0.7s ease;
+
+  /* Offer card surface — solid elevated panel with a blue corner accent.
+     No backdrop-filter: at 60+ cards per page the per-card blur causes GPU
+     compositing lag and blank flashes during scroll. Glass is reserved for
+     the search card and header (single fixed elements). */
+  .card-warm {
+    background:
+      radial-gradient(ellipse 70% 45% at 90% 0%, hsl(var(--primary) / 0.12) 0%, transparent 65%),
+      hsl(var(--card));
   }
-  .card-hover-glow:hover .card-shimmer-overlay::after {
-    transform: translateX(120%);
+  .light .card-warm {
+    background:
+      radial-gradient(ellipse 70% 45% at 90% 0%, hsl(var(--primary) / 0.05) 0%, transparent 65%),
+      hsl(0 0% 100%);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) .card-warm {
+      background:
+        radial-gradient(ellipse 70% 45% at 90% 0%, hsl(var(--primary) / 0.05) 0%, transparent 65%),
+        hsl(0 0% 100%);
+    }
   }
 
   /* ── Elevation shadows — directional on dark surface ──────────── */
+  /* inset 0 1px 0: subtle top-edge highlight — makes surfaces feel physically elevated */
+  /* Shadow hue matches page ground (navy-blue) so panels look embedded, not pasted */
   .card-shadow {
     box-shadow:
-      0 1px 1px hsl(225 37% 2% / 0.40),
-      0 2px 4px hsl(225 37% 2% / 0.30);
+      inset 0 1px 0 hsl(214 40% 100% / 0.13),
+      0 2px 6px  hsl(220 50% 5% / 0.36),
+      0 8px 24px hsl(220 50% 5% / 0.26);
   }
 
   .card-shadow-lg {
     box-shadow:
-      0 1px 3px  hsl(225 37% 2% / 0.50),
-      0 6px 20px hsl(225 37% 2% / 0.40);
+      inset 0 1px 0 hsl(214 40% 100% / 0.08),
+      0 1px 3px  hsl(220 50% 5% / 0.55),
+      0 6px 20px hsl(220 50% 5% / 0.44);
   }
 
   .card-shadow-xl {
     box-shadow:
-      0 2px 6px  hsl(225 37% 2% / 0.55),
-      0 16px 48px hsl(225 37% 2% / 0.45);
+      inset 0 1px 0 hsl(214 40% 100% / 0.09),
+      0 2px 6px  hsl(220 50% 5% / 0.60),
+      0 16px 48px hsl(220 50% 5% / 0.50);
   }
 
-  /* Glass SearchCard — frosted with gold crown ────────────────────── */
+  /* Search card — strongest glass panel; anchors the hero section */
   .glass-search-card {
-    background: rgba(255, 255, 255, 0.055);
-    backdrop-filter: blur(32px) saturate(1.6);
-    -webkit-backdrop-filter: blur(32px) saturate(1.6);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-top: 3px solid hsl(var(--accent) / 0.80);
+    background: hsl(var(--card) / 0.50);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid hsl(214 40% 100% / 0.13);
+    border-top: 3px solid hsl(var(--primary) / 0.88);
+    box-shadow:
+      inset 0 1px 0 hsl(214 40% 100% / 0.12),
+      0 4px 16px  hsl(225 37% 2% / 0.30),
+      0 24px 64px hsl(225 37% 2% / 0.22);
+  }
+  .light .glass-search-card {
+    background: hsl(0 0% 100% / 0.84);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    border: 1px solid hsl(216 40% 65% / 0.22);
+    border-top: 3px solid hsl(var(--primary) / 0.78);
+    box-shadow:
+      0 4px 28px hsl(216 60% 50% / 0.12),
+      0 2px 6px  hsl(0 0% 0% / 0.04);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) .glass-search-card {
+      background: hsl(0 0% 100% / 0.84);
+      backdrop-filter: blur(22px) saturate(150%);
+      -webkit-backdrop-filter: blur(22px) saturate(150%);
+      border: 1px solid hsl(216 40% 65% / 0.22);
+      border-top: 3px solid hsl(var(--primary) / 0.78);
+      box-shadow:
+        0 4px 28px hsl(216 60% 50% / 0.12),
+        0 2px 6px  hsl(0 0% 0% / 0.04);
+    }
   }
 
-  /* Gold glow ring — glass glow for SearchCard ────────────────────── */
-  .gold-ring {
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.10),
-      0 0 0 1px hsl(var(--accent) / 0.30),
-      0 0 48px -6px hsl(var(--accent) / 0.50),
-      0 20px 60px rgba(0, 0, 0, 0.55);
+  /* Page background — two ambient blobs give glass cards something to blur through */
+  .page-ground {
+    background:
+      radial-gradient(ellipse 80% 60% at 18% -8%,  hsl(var(--primary) / 0.30) 0%, transparent 58%),
+      radial-gradient(ellipse 65% 55% at 85% 110%, hsl(250 70% 40% / 0.20) 0%, transparent 55%),
+      hsl(var(--background));
+  }
+  .light .page-ground {
+    background:
+      radial-gradient(ellipse 70% 55% at 15% -10%, hsl(var(--primary) / 0.14) 0%, transparent 55%),
+      radial-gradient(ellipse 55% 45% at 88% 115%, hsl(250 50% 55% / 0.09) 0%, transparent 50%),
+      hsl(var(--background));
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) .page-ground {
+      background:
+        radial-gradient(ellipse 70% 55% at 15% -10%, hsl(var(--primary) / 0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 45% at 88% 115%, hsl(250 50% 55% / 0.09) 0%, transparent 50%),
+        hsl(var(--background));
+    }
+  }
+
+  /* Header glass — frosted nav bar; matches the page glass language */
+  .glass-header {
+    background: hsl(var(--background) / 0.60);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom: 1px solid hsl(214 40% 100% / 0.10);
+    box-shadow: 0 1px 0 hsl(214 40% 100% / 0.06), 0 4px 20px hsl(220 50% 5% / 0.20);
+  }
+  .light .glass-header {
+    background: hsl(0 0% 100% / 0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid hsl(216 40% 65% / 0.20);
+    box-shadow: 0 1px 0 hsl(216 40% 65% / 0.10), 0 2px 12px hsl(216 60% 50% / 0.06);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) .glass-header {
+      background: hsl(0 0% 100% / 0.72);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      border-bottom: 1px solid hsl(216 40% 65% / 0.20);
+      box-shadow: 0 1px 0 hsl(216 40% 65% / 0.10), 0 2px 12px hsl(216 60% 50% / 0.06);
+    }
+  }
+
+  /* Primary gradient button — depth over flat fill */
+  .btn-primary-gradient {
+    background: linear-gradient(160deg, hsl(216 84% 52%), hsl(216 66% 42%));
+  }
+  .btn-primary-gradient:hover {
+    background: linear-gradient(160deg, hsl(216 84% 57%), hsl(216 66% 47%));
   }
 
   /* ── Scrollbar hide ───────────────────────────────────────────── */
@@ -338,58 +423,77 @@
   /* ── Tabular figures ─────────────────────────────────────────── */
   .tabular-nums { font-variant-numeric: tabular-nums; }
 
-  /* ── Gold shimmer button overlay (applied via before: classes) ── */
-  .shimmer-hover {
-    position: relative;
-    overflow: hidden;
-  }
-  .shimmer-hover::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      105deg,
-      transparent           30%,
-      hsl(0 0% 100% / 0.18) 50%,
-      transparent           70%
-    );
-    transform: translateX(-100%);
-    transition: transform 0.6s ease;
-  }
-  .shimmer-hover:hover::before {
-    transform: translateX(100%);
-  }
 
   /* ── Subtle inner separator line ─────────────────────────────── */
   .divider-gold {
     border-top: 1px solid hsl(var(--accent) / 0.18);
   }
 
-  /* ── Animated orb keyframes ───────────────────────────────────── */
-  @keyframes orb-drift {
-    0%   { transform: translate(0,    0   ) scale(1);    opacity: 1; }
-    25%  { transform: translate(3%,  -4%  ) scale(1.04); opacity: 0.85; }
-    50%  { transform: translate(-2%,  5%  ) scale(0.97); opacity: 0.95; }
-    75%  { transform: translate(4%,   2%  ) scale(1.02); opacity: 0.90; }
-    100% { transform: translate(-3%,  -2% ) scale(1.05); opacity: 1; }
+  /* ── Star twinkle keyframes ───────────────────────────────────── */
+  @keyframes twinkle-a {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50%      { opacity: 0.10; transform: scale(0.55); }
+  }
+  @keyframes twinkle-b {
+    0%, 100% { opacity: 0.32; transform: scale(1); }
+    60%      { opacity: 0.06; transform: scale(0.45); }
+  }
+  @keyframes twinkle-c {
+    0%, 100% { opacity: 0.68; transform: scale(1); }
+    40%      { opacity: 0.15; transform: scale(0.65); }
+  }
+  @keyframes twinkle-d {
+    0%, 100% { opacity: 0.80; transform: scale(1); }
+    50%      { opacity: 0.38; transform: scale(0.85); }
+  }
+  /* Wider speed spread: 3.5s / 6.8s / 9.5s / 5.5s — each class twinkles at its own cadence */
+  .star-a { animation: twinkle-a 3.5s ease-in-out infinite; }
+  .star-b { animation: twinkle-b 6.8s ease-in-out infinite; }
+  .star-c { animation: twinkle-c 9.5s ease-in-out infinite; }
+  .star-d { animation: twinkle-d 5.5s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .star-a, .star-b, .star-c { animation: none; opacity: 0.25; }
+    .star-d { animation: none; opacity: 0.55; }
   }
 
+  /* ── Light-mode: hide stars + soften sovereign-ground blobs ────── */
+  /* Stars are a night-sky concept — invisible on a light background  */
+  .light .star-a, .light .star-b, .light .star-c, .light .star-d { display: none; }
+  @media (prefers-color-scheme: light) {
+    :root:not(.dark) .star-a,
+    :root:not(.dark) .star-b,
+    :root:not(.dark) .star-c,
+    :root:not(.dark) .star-d { display: none; }
+  }
+
+
   /* ── Pulse glow — accent dot or badge pulsing ─────────────────── */
-  @keyframes pulse-gold {
+  @keyframes pulse-accent {
     0%, 100% { box-shadow: 0 0 0 0 hsl(var(--accent) / 0.40); }
     50%       { box-shadow: 0 0 0 6px hsl(var(--accent) / 0); }
   }
-  .pulse-gold { animation: pulse-gold 2.4s ease-in-out infinite; }
+  .pulse-gold { animation: pulse-accent 2.4s ease-in-out infinite; }
 
-  /* ── Subtle card hover lift with glow ────────────────────────── */
+  /* ── Card hover — lift + luminance shift ───────────────────────── */
   .card-hover-glow {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .card-hover-glow:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 4px 24px hsl(var(--accent) / 0.10),
-      0 12px 40px hsl(225 37% 2% / 0.45);
+      inset 0 1px 0 hsl(214 40% 100% / 0.11),
+      0 8px 28px hsl(225 37% 2% / 0.55),
+      0 2px 6px  hsl(225 37% 2% / 0.40);
+  }
+
+  /* ── Page section fade-in (replaces Framer Motion page transitions) ─ */
+  @keyframes page-fade-in {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .page-fade-in {
+    animation: page-fade-in 0.22s ease-out both;
   }
 
   /* ── Scrollbar narrow, themed ─────────────────────────────────── */

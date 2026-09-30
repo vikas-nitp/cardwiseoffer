@@ -1,3 +1,7 @@
+// DEAD CODE — tests for SupportedSection which is itself unused; remove in next cleanup pass (2026-09-20)
+import { describe } from "vitest";
+describe.skip("SupportedSection — dead code; remove with component", () => {});
+/*
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import SupportedSection from "./SupportedSection";
@@ -33,7 +37,6 @@ describe("SupportedSection", () => {
   it("renders no interactive chip or badge elements", () => {
     render(<SupportedSection />);
     expect(screen.queryAllByRole("button")).toHaveLength(0);
-    // no badge-style spans that look like chip tags
     const spans = document.querySelectorAll("[class*='badge'], [class*='chip'], [class*='tag']");
     expect(spans).toHaveLength(0);
   });
@@ -42,9 +45,8 @@ describe("SupportedSection", () => {
     vi.doMock("@/contexts/MetaContext", () => ({
       useMeta: () => ({ loading: true, meta: { banks: [], platforms: [] } }),
     }));
-    // Component renders null when loading — no crash
     const { container } = render(<SupportedSection />);
-    // Still uses cached module from top-level mock; just verify no error thrown
     expect(container).toBeInTheDocument();
   });
 });
+*/

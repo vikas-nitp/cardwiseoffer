@@ -35,6 +35,10 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
     () => savingsAmounts.indexOf(Math.max(...savingsAmounts)),
     [savingsAmounts]
   );
+  const hasMeaningfulBest = useMemo(
+    () => maxSavings > 0 && savingsAmounts.some((v) => v > 0 && v < maxSavings),
+    [savingsAmounts, maxSavings]
+  );
 
   const firstStripDate = useMemo(() => strip7days[0] ? parseISO(strip7days[0].date) : new Date(), [strip7days]);
   const canGoPrev = selectedIndex > 0 || isAfter(firstStripDate, startOfDay(new Date()));
@@ -70,14 +74,15 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
       <div className="flex gap-1.5 flex-1 min-w-0">
         {strip7days.map((day, i) => {
           const isSelected = day.date === selectedDateStr;
-          const isBestDay = i === bestDayIndex && savingsAmounts[i] > 0;
+          const isBestDay = i === bestDayIndex && hasMeaningfulBest;
           const dateObj = parseISO(day.date);
           const hasOffers = day.displayText !== DATE_STRIP_NO_OFFERS_LABEL;
           const intensity = maxSavings > 0 ? savingsAmounts[i] / maxSavings : 0;
           // Bar height: min 3px (no offers) to 32px max
           const barH = hasOffers ? Math.max(6, Math.round(intensity * 32)) : 3;
 
-          // Extract just the amount for compact display: "₹2,800" from "Save up to ₹2,800"
+          // Compact amount: "₹2,800" stripped from either format
+          const isUpTo = hasOffers && /^Save up to/i.test(day.displayText);
           const savingsShort = hasOffers
             ? day.displayText.replace(/Save up to\s*/i, "").replace(/Save\s*/i, "")
             : null;
@@ -86,19 +91,19 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
             <button
               key={day.date}
               onClick={() => onDateChange(dateObj)}
-              aria-label={`Select ${format(dateObj, "EEEE dd MMMM")}${hasOffers ? ` — ${day.displayText}` : ""}`}
+              aria-label={`Select ${format(dateObj, "EEEE dd MMMM")}${hasOffers ? ` - ${day.displayText}` : ""}`}
               aria-pressed={isSelected}
               className={cn(
                 "flex flex-col items-center justify-end gap-0 rounded-xl border transition-all duration-200 flex-1 min-w-0 overflow-hidden relative",
                 "pb-2.5 pt-1 px-1",
                 isSelected
-                  ? "bg-accent/15 border-accent shadow-md"
-                  : "bg-card border-border/50 hover:border-accent/40 hover:shadow-sm"
+                  ? "bg-primary/10 border-primary shadow-md"
+                  : "bg-card border-border/50 hover:border-primary/30 hover:shadow-sm"
               )}
             >
               {/* Best day badge — positioned absolutely so bar alignment is consistent */}
               {isBestDay && (
-                <span className="absolute top-1.5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-accent-foreground bg-accent px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap z-10">
+                <span className="absolute top-1.5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-primary-foreground bg-primary px-1.5 py-0.5 rounded-full leading-none whitespace-nowrap z-10">
                   Best
                 </span>
               )}
@@ -107,13 +112,13 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
               <div className="flex items-end justify-center w-full mb-1.5 mt-5" style={{ height: "36px" }}>
                 <div
                   className={cn(
-                    "w-4 rounded-t transition-all duration-300",
+                    "w-4 rounded-t transition-all duration-[120ms]",
                     hasOffers
                       ? isSelected
-                        ? "bg-savings"
+                        ? "bg-primary"
                         : isBestDay
-                        ? "bg-savings"
-                        : "bg-savings/45"
+                        ? "bg-muted-foreground/40"
+                        : "bg-muted-foreground/20"
                       : "bg-border/25"
                   )}
                   style={{ height: `${barH}px` }}
@@ -123,7 +128,7 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
               {/* Day name */}
               <span className={cn(
                 "text-[11px] font-bold leading-none",
-                isSelected ? "text-accent" : "text-foreground/70"
+                isSelected ? "text-primary" : "text-foreground/70"
               )}>
                 {format(dateObj, "EEE")}
               </span>
@@ -131,22 +136,29 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
               {/* Date */}
               <span className={cn(
                 "text-[9px] font-medium leading-none mt-0.5",
-                isSelected ? "text-accent/70" : "text-muted-foreground/55"
+                isSelected ? "text-primary/70" : "text-muted-foreground/55"
               )}>
                 {format(dateObj, "d MMM")}
               </span>
 
-              {/* Savings amount — compact form */}
-              <span className={cn(
-                "text-[10px] font-bold leading-none mt-1.5 w-full text-center",
-                isSelected
-                  ? "text-savings"
-                  : hasOffers
-                  ? "text-savings/75"
-                  : "text-muted-foreground/30"
-              )}>
-                {savingsShort ?? "—"}
-              </span>
+              {/* Savings amount — compact form; "up to" label when no fare entered */}
+              <div className="flex flex-col items-center mt-1.5">
+                {isUpTo && (
+                  <span className="text-[7px] font-semibold leading-none text-savings/50 mb-0.5">
+                    up to
+                  </span>
+                )}
+                <span className={cn(
+                  "text-[10px] font-bold leading-none w-full text-center",
+                  isSelected
+                    ? "text-savings"
+                    : hasOffers
+                    ? "text-savings/75"
+                    : "text-muted-foreground/30"
+                )}>
+                  {savingsShort ?? "-"}
+                </span>
+              </div>
             </button>
           );
         })}

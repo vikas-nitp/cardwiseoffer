@@ -1,17 +1,20 @@
+import { useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useMeta } from "@/contexts/MetaContext";
+import { getLocalOffers } from "@/data/repositories/LocalOfferRepository";
 import { APP_NAME } from "@/constants";
 
-const FAQSection = () => {
-  const { meta } = useMeta();
+const _offers = getLocalOffers();
+const _bankNames = [...new Set(_offers.map((o) => o.bankDisplay).filter(Boolean))].sort().join(", ");
+const _platformNames = [...new Set(_offers.map((o) => o.platformName))].sort().join(", ");
 
-  const bankNames = meta.banks.map((b) => b.name).join(", ");
-  const platformNames = meta.platforms.map((p) => p.name).join(", ");
+const FAQSection = () => {
+  const bankNames = _bankNames;
+  const platformNames = _platformNames;
 
   const faqs = [
     {
@@ -40,9 +43,27 @@ const FAQSection = () => {
     },
   ];
 
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "faq-json-ld";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map((faq) => ({
+        "@type": "Question",
+        "name": faq.q,
+        "acceptedAnswer": { "@type": "Answer", "text": faq.a },
+      })),
+    });
+    document.head.appendChild(script);
+    return () => { document.getElementById("faq-json-ld")?.remove(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <section className="w-full max-w-5xl mx-auto animate-fade-up">
-      <div className="bg-card rounded-2xl border border-border border-t-2 border-t-accent/60 card-shadow-lg p-5 md:p-6">
+      <div className="bg-card rounded-2xl border border-border border-t-2 border-t-primary/50 card-shadow p-5 md:p-6">
         <h2 className="text-lg md:text-xl font-bold text-foreground mb-3 tracking-tight">
           Frequently Asked Questions
         </h2>

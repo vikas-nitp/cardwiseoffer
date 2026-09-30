@@ -1,28 +1,38 @@
-import { APP_NAME, APP_TAGLINE } from "@/constants";
+import { Link } from "react-router-dom";
+import { APP_NAME } from "@/constants";
+import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
+import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
+import EmailCaptureBar from "@/components/EmailCaptureBar";
 
 interface FooterProps {
   onSectionChange?: (section: "about" | "contact") => void;
 }
 
-const Footer = ({ onSectionChange }: FooterProps) => (
-  <footer className="w-full py-4 px-4 border-t border-border/40">
-    <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-      <p className="text-[13px] font-medium text-foreground/70">
-        {APP_NAME} <span className="text-foreground/40 mx-1">—</span> {APP_TAGLINE}.
-      </p>
-      <div className="flex items-center gap-4">
-        {onSectionChange && (
-          <>
-            <button onClick={() => onSectionChange("about")} className="text-[13px] text-foreground/60 hover:text-foreground transition-colors font-medium">About</button>
-            <button onClick={() => onSectionChange("contact")} className="text-[13px] text-foreground/60 hover:text-foreground transition-colors font-medium">Contact</button>
-          </>
-        )}
-        <p className="text-[12px] text-foreground/40">
-          © {new Date().getFullYear()} {APP_NAME}
-        </p>
+const Footer = ({ onSectionChange }: FooterProps) => {
+  const { flags } = useFeatureFlags();
+  const caps = resolveFeatureCapabilities(flags);
+  return (
+    <footer className="w-full border-t border-border/40">
+      <div className="max-w-5xl mx-auto px-4 py-3 flex flex-col items-center gap-2">
+        <div className="flex items-center gap-4 flex-wrap justify-center">
+          {onSectionChange && caps.about && (
+            <button onClick={() => onSectionChange("about")} className="text-[12px] text-foreground/50 hover:text-foreground transition-colors">About</button>
+          )}
+          {onSectionChange && caps.contact && (
+            <button onClick={() => onSectionChange("contact")} className="text-[12px] text-foreground/50 hover:text-foreground transition-colors">Contact</button>
+          )}
+          {caps.privacyPolicy && (
+            <Link to="/privacy" className="text-[12px] text-foreground/50 hover:text-foreground transition-colors">Privacy</Link>
+          )}
+          {caps.termsOfService && (
+            <Link to="/terms" className="text-[12px] text-foreground/50 hover:text-foreground transition-colors">Terms</Link>
+          )}
+          <span className="text-[11px] text-foreground/35">© {new Date().getFullYear()} {APP_NAME}</span>
+        </div>
+        <EmailCaptureBar />
       </div>
-    </div>
-  </footer>
-);
+    </footer>
+  );
+};
 
 export default Footer;

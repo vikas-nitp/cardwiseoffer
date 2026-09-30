@@ -1,5 +1,6 @@
 import type { components } from "@/types/generated-api";
 import type { OfferViewModel } from "@/types/offer";
+import { platformHomeUrl } from "@/domain/platformUrlBuilder";
 
 export interface LocalRawOffer {
   offer_id: string;
@@ -19,6 +20,7 @@ export interface LocalRawOffer {
   eligibility_notes?: string;
   priority_score?: number;
   source_type?: string;
+  source_url?: string | null;
 }
 
 export type ApiOffer =
@@ -43,14 +45,15 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     id: raw.offer_id,
     label:
       (displayKind && labelByKind[displayKind]) ??
-      (raw.bank_id ? `${raw.bank_name ?? raw.bank_id} Offer` : "Default Offer (No Card)"),
+      (raw.bank_id ? `${raw.bank_name ?? raw.bank_id} Offer` : `${raw.platform_name} Offer`),
     bank: raw.bank_id ?? null,
     bankDisplay: raw.bank_name ?? raw.bank_id ?? null,
     cardName: raw.payment_method === "NO_CARD" ? null : raw.card_name ?? null,
+    cardSpecificity: (raw.card_specificity as "ALL" | "SPECIFIC" | null) ?? null,
     platform: raw.platform_id,
     platformName: raw.platform_name,
     offerTitle: raw.offer_title,
-    platformUrl: raw.booking_url ?? null,
+    platformUrl: raw.booking_url ?? platformHomeUrl(raw.platform_id),
     finalPrice:
       "estimated_final_amount" in raw
         ? raw.estimated_final_amount == null ? undefined : Number(raw.estimated_final_amount)
@@ -68,12 +71,14 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     maxDiscount,
     minTransaction: raw.min_transaction == null ? undefined : Number(raw.min_transaction),
     couponCode: raw.coupon_code ?? null,
+    usageLimit: raw.usage_limit ?? null,
     validFrom: raw.valid_from,
     expiryDate: raw.expiry_date,
     eligibilityNotes: raw.eligibility_notes ?? [],
     category: raw.category,
-    // valid_days not yet in the generated API types; cast until backend PR merges
-    validDays: (raw as unknown as { valid_days?: number[] | null }).valid_days ?? null,
+    validDays: raw.valid_days ?? null, // backend uses Python weekday (0=Mon); offerValidity.ts converts on use
+    evidenceStatus: raw.evidence_status ?? undefined,
+    sourceUrl: raw.source_url ?? null,
     sourceType: "api",
     isActive: true,
     priorityScore: 0,
@@ -84,21 +89,23 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
 export function mapLocalOffer(raw: LocalRawOffer): OfferViewModel {
   const notes = raw.eligibility_notes ? [raw.eligibility_notes] : [];
   if (raw.channels) notes.push(`Channels: ${raw.channels}`);
+  const dt = raw.discount_type as OfferViewModel["discountType"];
   return {
     id: raw.offer_id,
     label: raw.bank_id ? `${raw.bank_id} Offer` : "Default Offer",
     bank: raw.bank_id,
     bankDisplay: raw.bank_id,
     cardName: raw.card_name ?? null,
+    cardSpecificity: null,
     platform: raw.platform,
     platformName: raw.platform,
     offerTitle: raw.bank_id ? `${raw.bank_id} offer` : `${raw.platform} offer`,
-    platformUrl: null,
-    savings: raw.discount_type === "FLAT" ? raw.discount_value : raw.max_discount ?? 0,
+    platformUrl: raw.source_url ?? null,
+    savings: (dt === "FLAT" || dt === "CASHBACK") ? raw.discount_value : raw.max_discount ?? 0,
     paymentMethod: raw.payment_method as OfferViewModel["paymentMethod"],
     bookingChannel: raw.channels ?? "WEB_AND_APP",
     newUserOnly: false,
-    discountType: raw.discount_type as OfferViewModel["discountType"],
+    discountType: dt,
     discountValue: raw.discount_value,
     maxDiscount: raw.max_discount,
     minTransaction: raw.min_transaction,
@@ -107,6 +114,10 @@ export function mapLocalOffer(raw: LocalRawOffer): OfferViewModel {
     expiryDate: raw.expiry_date,
     eligibilityNotes: notes,
     category: raw.category,
+    validDays: null,
+    evidenceStatus: undefined,
+    lastUpdatedAt: undefined,
+    sourceUrl: raw.source_url ?? null,
     sourceType: "demo_excel",
     isActive: true,
     priorityScore: raw.priority_score ?? 0,

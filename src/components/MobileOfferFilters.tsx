@@ -1,3 +1,5 @@
+// DEAD CODE — not imported anywhere; remove in next cleanup pass (2026-09-20)
+/*
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from "@/components/ui/sheet";
@@ -55,3 +57,4 @@ const MobileOfferFilters = (props: MobileOfferFiltersProps) => {
 };
 
 export default MobileOfferFilters;
+*/
