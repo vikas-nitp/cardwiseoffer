@@ -132,7 +132,8 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
         availability_start: data.availability_start,
         availability_end: data.availability_end,
         dataset_last_updated_at: data.dataset_last_updated_at,
-        total_offers: DEFAULT_META.total_offers,
+        // The bundled count is stale in API mode; 0 hides the "offers tracked" badge.
+        total_offers: 0,
       };
       setMeta(mergedMeta);
       log.info("Meta data loaded from API");

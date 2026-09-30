@@ -32,7 +32,7 @@ export const API_ENDPOINTS = {
 export const MAX_BANK_FILTERS = 2; // Max banks user can select (enforced by UI warning)
 export const API_TIMEOUT_MS = 30000; // 30 seconds
 
-// Booking window: latest confirmed product rule = today .. today + 10 days.
+// Upper bound for the optional fare input. The bookable date window comes from the API (availability_start/end).
 export const MAX_BOOKING_AMOUNT = 1_000_000;
 export const DATE_STRIP_VISIBLE_DAYS = 7;
 export const DATE_STRIP_NAVIGATION_STEP_DAYS = 1;

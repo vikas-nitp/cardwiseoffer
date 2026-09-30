@@ -15,8 +15,13 @@ import offersJson from "@/data/generated/offers.json";
 import featureFlags from "@/data/generated/featureFlags.json";
 import type { OfferRepository, OfferSearchResult, StripDayEntry } from "./OfferRepository";
 
-const ALL_OFFERS: OfferViewModel[] = (offersJson as unknown as Array<ApiOffer & { is_active?: boolean }>)
+type BundleOffer = ApiOffer & { is_active?: boolean; publish_status?: string };
+
+// The bundle holds every accepted row; serve only what the backend would publish.
+const ALL_OFFERS: OfferViewModel[] = (offersJson as unknown as BundleOffer[])
   .filter((raw) => raw.is_active !== false)
+  .filter((raw) => raw.publish_status === undefined || raw.publish_status === "READY")
+  .filter((raw) => raw.evidence_status === undefined || raw.evidence_status === "VERIFIED")
   .filter((raw) => featureFlags.flightInternationalEnabled || raw.category !== "FLIGHT_INTERNATIONAL")
   .map(mapApiOffer)
   .map((offer) => ({

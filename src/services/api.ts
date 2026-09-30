@@ -52,6 +52,8 @@ async function apiCall<T>(
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt < attempts; attempt += 1) {
+    // A caller that aborted before we started (or between retries) must not trigger a request.
+    if (options.signal?.aborted) throw options.signal.reason ?? new DOMException("Aborted", "AbortError");
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort("timeout"), API_TIMEOUT_MS);
     const abort = () => controller.abort(options.signal?.reason);
@@ -75,6 +77,12 @@ async function apiCall<T>(
       return (await response.json()) as T;
     } catch (error) {
       if (options.signal?.aborted) throw error;
+      // abort("timeout") rejects fetch with the string reason, not an AbortError DOMException.
+      if (controller.signal.aborted && controller.signal.reason === "timeout") {
+        lastError = new APIError(0, "Request timed out");
+        if (attempt + 1 < attempts) await delay(API_RETRY_DELAY_MS * (attempt + 1));
+        continue;
+      }
       if (error instanceof DOMException && error.name === "AbortError") {
         throw new APIError(0, "Request timed out");
       }

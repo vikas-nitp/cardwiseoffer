@@ -72,6 +72,7 @@ export function useAllOffers(isActive: boolean, publicAllOffersEnabled: boolean)
     });
   }, [allOffers, bankFilter, platformFilter, paymentFilter, channelFilter]);
 
+  const handleLimitChange = useCallback((v: number) => { setOffersLimit(v); setOffersPage(1); }, []);
   const handleBankFilterChange = useCallback((v: string[]) => { setBankFilter(v); setOffersPage(1); }, []);
   const handlePlatformFilterChange = useCallback((v: string[]) => { setPlatformFilter(v); setOffersPage(1); }, []);
   const handlePaymentFilterChange = useCallback((v: string[]) => { setPaymentFilter(v); setOffersPage(1); }, []);
@@ -85,7 +86,7 @@ export function useAllOffers(isActive: boolean, publicAllOffersEnabled: boolean)
     filteredAllOffers, allOffersLoading, allOffersError,
     bankFilter, platformFilter, paymentFilter, channelFilter,
     offersPage, setOffersPage, offersTotalPages, offersTotalCount,
-    offersLimit, setOffersLimit,
+    offersLimit, setOffersLimit: handleLimitChange,
     handleBankFilterChange, handlePlatformFilterChange, handlePaymentFilterChange, handleChannelFilterChange,
     handleResetFilters,
   };

@@ -16,8 +16,9 @@ export const analytics = {
   },
   track(event: AnalyticsEvent, properties: Record<string, unknown> = {}) {
     if (!enabled) return;
-    // Only gate on consent when cookieConsentEnabled FF is on.
-    if (cookieConsentRequired && window.__cookie_consent === false) return;
+    // When consent is required, only an explicit "accepted" lets events through: an undecided
+    // visitor (flag still undefined because the banner hasn't run yet) must not be tracked.
+    if (cookieConsentRequired && window.__cookie_consent !== true) return;
     const gtag = (window as typeof window & { gtag?: (...args: unknown[]) => void }).gtag;
     gtag?.("event", event, properties);
   },

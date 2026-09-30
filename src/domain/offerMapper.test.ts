@@ -174,3 +174,19 @@ describe("mapLocalOffer", () => {
     expect(mapLocalOffer(localOffer()).sourceType).toBe("demo_excel");
   });
 });
+
+describe("mapApiOffer cashback savings", () => {
+  const base = {
+    offer_id: "X", platform_id: "MAKEMYTRIP", platform_name: "MakeMyTrip", offer_title: "t",
+    payment_method: "CREDIT", category: "FLIGHT_DOMESTIC", booking_channel: "WEB",
+    valid_from: "2026-01-01", expiry_date: "2027-01-01", updated_at: "2026-01-01",
+    new_user_only: false, eligibility_notes: [], source_url: "https://example.com",
+  };
+
+  it("treats CASHBACK >= 100 as flat rupees and < 100 as a percentage", () => {
+    const flat = mapApiOffer({ ...base, discount_type: "CASHBACK", discount_value: 500 } as never);
+    const pct = mapApiOffer({ ...base, discount_type: "CASHBACK", discount_value: 5, max_discount: 300 } as never);
+    expect(flat.savings).toBe(500);
+    expect(pct.savings).toBe(300);
+  });
+});
