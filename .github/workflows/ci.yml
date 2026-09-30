@@ -20,15 +20,22 @@ jobs:
       - name: Pick backend ref
         id: backend_ref
         env:
+          REPO: vikas-nitp/cwo_backend
           BRANCH: ${{ github.head_ref || github.ref_name }}
           TOKEN: ${{ secrets.BACKEND_REPO_TOKEN }}
         run: |
-          url="https://x-access-token:${TOKEN}@github.com/vikas-nitp/cwo_backend.git"
-          if git ls-remote --exit-code --heads "$url" "$BRANCH" >/dev/null 2>&1; then
-            echo "ref=$BRANCH" >> "$GITHUB_OUTPUT"
-          else
-            echo "ref=main" >> "$GITHUB_OUTPUT"
-          fi
+          auth=$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)
+          set +e
+          git -c "http.extraheader=AUTHORIZATION: basic $auth" ls-remote --exit-code --heads "https://github.com/$REPO.git" "refs/heads/$BRANCH" >/dev/null
+          code=$?
+          set -e
+          case "$code" in
+            0) ref="$BRANCH" ;;
+            2) ref=main; echo "::notice::No '$BRANCH' branch in $REPO; using main for the cross-repo check" ;;
+            *) echo "::error::Could not query $REPO (git exit $code) - check BACKEND_REPO_TOKEN"; exit 1 ;;
+          esac
+          echo "Using $REPO@$ref"
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
 
       - name: Check out backend
         uses: actions/checkout@v4
