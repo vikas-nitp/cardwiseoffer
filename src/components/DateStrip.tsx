@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { format, parseISO, subDays, addDays, isAfter, startOfDay } from "date-fns";
+import { format, parseISO, subDays, addDays, isAfter, isBefore, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DATE_STRIP_NO_OFFERS_LABEL } from "@/constants";
@@ -11,6 +11,8 @@ interface DateStripProps {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
   strip7days: StripDay[];
+  /** Last date with data (availability_end); the next arrow is disabled once the strip reaches it. */
+  maxDate?: Date;
 }
 
 function parseSavingsAmount(displayText: string): number {
@@ -19,7 +21,7 @@ function parseSavingsAmount(displayText: string): number {
   return match ? parseInt(match[0], 10) : 0;
 }
 
-const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) => {
+const DateStrip = ({ selectedDate, onDateChange, strip7days, maxDate }: DateStripProps) => {
   const selectedDateStr = useMemo(() => format(selectedDate, "yyyy-MM-dd"), [selectedDate]);
   const selectedIndex = useMemo(
     () => strip7days.findIndex((d) => d.date === selectedDateStr),
@@ -42,6 +44,9 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
 
   const firstStripDate = useMemo(() => strip7days[0] ? parseISO(strip7days[0].date) : new Date(), [strip7days]);
   const canGoPrev = selectedIndex > 0 || isAfter(firstStripDate, startOfDay(new Date()));
+
+  const lastStripDate = strip7days.length > 0 ? parseISO(strip7days[strip7days.length - 1].date) : null;
+  const canGoNext = selectedIndex < strip7days.length - 1 || !maxDate || !lastStripDate || isBefore(lastStripDate, maxDate);
 
   const moveToPrev = () => {
     if (selectedIndex > 0) {
@@ -82,9 +87,9 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
           const barH = hasOffers ? Math.max(6, Math.round(intensity * 32)) : 3;
 
           // Compact amount: "₹2,800" stripped from either format
-          const isUpTo = hasOffers && /^Save up to/i.test(day.displayText);
+          const isUpTo = hasOffers && /^(Save )?up to/i.test(day.displayText);
           const savingsShort = hasOffers
-            ? day.displayText.replace(/Save up to\s*/i, "").replace(/Save\s*/i, "")
+            ? day.displayText.replace(/^(Save )?up to\s*/i, "").replace(/Save\s*/i, "")
             : null;
 
           return (
@@ -166,7 +171,8 @@ const DateStrip = ({ selectedDate, onDateChange, strip7days }: DateStripProps) =
 
       <button
         onClick={moveToNext}
-        className="p-2 rounded-xl bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors shrink-0 self-center"
+        disabled={!canGoNext}
+        className="p-2 rounded-xl bg-card border border-border/40 shadow-sm hover:bg-muted transition-colors shrink-0 self-center disabled:opacity-30 disabled:cursor-not-allowed"
         aria-label="Next date"
       >
         <ChevronRight className="w-4 h-4 text-muted-foreground" />
