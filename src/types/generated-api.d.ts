@@ -329,6 +329,11 @@ export interface components {
              */
             contactEnabled: boolean;
             /**
+             * Cookieconsentenabled
+             * @default false
+             */
+            cookieConsentEnabled: boolean;
+            /**
              * Couponcodeenabled
              * @default false
              */
@@ -338,11 +343,6 @@ export interface components {
              * @default false
              */
             flightInternationalEnabled: boolean;
-            /**
-             * Cookieconsentenabled
-             * @default false
-             */
-            cookieConsentEnabled: boolean;
             /**
              * Homeentranceanimationenabled
              * @default true
@@ -424,7 +424,7 @@ export interface components {
             /** Booking Channels */
             booking_channels: ("WEB" | "APP" | "WEB_AND_APP")[];
             /** Categories */
-            categories: "FLIGHT_DOMESTIC"[];
+            categories: ("FLIGHT_DOMESTIC" | "FLIGHT_INTERNATIONAL")[];
             /** Data Version */
             data_version: string;
             /**
@@ -483,7 +483,7 @@ export interface components {
             card_specificity?: string | null;
             /**
              * Category
-             * @constant
+             * @enum {string}
              */
             category: "FLIGHT_DOMESTIC" | "FLIGHT_INTERNATIONAL";
             /** Coupon Code */
@@ -492,7 +492,7 @@ export interface components {
              * Discount Type
              * @enum {string}
              */
-            discount_type: "PERCENT" | "FLAT";
+            discount_type: "PERCENT" | "FLAT" | "CASHBACK";
             /** Discount Value */
             discount_value: string;
             /** Eligibility Notes */
@@ -572,7 +572,7 @@ export interface components {
              * Payment Method
              * @enum {string}
              */
-            payment_method: "CREDIT_CARD" | "DEBIT_CARD";
+            payment_method: "CREDIT" | "DEBIT";
         };
         /** SearchDateBenefit */
         SearchDateBenefit: {
@@ -613,7 +613,7 @@ export interface components {
             card_specificity?: string | null;
             /**
              * Category
-             * @constant
+             * @enum {string}
              */
             category: "FLIGHT_DOMESTIC" | "FLIGHT_INTERNATIONAL";
             /** Comparison Text */
@@ -624,7 +624,7 @@ export interface components {
              * Discount Type
              * @enum {string}
              */
-            discount_type: "PERCENT" | "FLAT";
+            discount_type: "PERCENT" | "FLAT" | "CASHBACK";
             /** Discount Value */
             discount_value: string;
             /** Display Kind */
@@ -715,7 +715,7 @@ export interface components {
             /**
              * Category
              * @default FLIGHT_DOMESTIC
-             * @constant
+             * @enum {string}
              */
             category: "FLIGHT_DOMESTIC" | "FLIGHT_INTERNATIONAL";
             /**
@@ -955,7 +955,9 @@ export interface operations {
     list_cards_api_v1_user_cards_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "X-Session-Id": string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -970,12 +972,23 @@ export interface operations {
                     "application/json": unknown;
                 };
             };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
     };
     save_card_api_v1_user_cards_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "X-Session-Id": string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1008,7 +1021,9 @@ export interface operations {
     delete_card_api_v1_user_cards__card_id__delete: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "X-Session-Id": string;
+            };
             path: {
                 card_id: string;
             };
@@ -1039,7 +1054,9 @@ export interface operations {
     get_notification_prefs_api_v1_user_notification_prefs_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "X-Session-Id": string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1054,12 +1071,23 @@ export interface operations {
                     "application/json": unknown;
                 };
             };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
     };
     save_notification_prefs_api_v1_user_notification_prefs_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                "X-Session-Id": string;
+            };
             path?: never;
             cookie?: never;
         };

@@ -4,7 +4,8 @@ import { ArrowLeft, CreditCard, Trash2, Plus, Loader2, AlertCircle } from "lucid
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { resolveFeatureCapabilities } from "@/config/featureCapabilities";
 import { useAuth } from "@/contexts/AuthContext";
-import { APP_NAME, API_BASE_URL } from "@/constants";
+import { APP_NAME } from "@/constants";
+import { userFetch } from "@/lib/userSession";
 import type { CardRecord } from "@/hooks/useUserCards";
 
 const INDIAN_BANKS = [
@@ -49,7 +50,7 @@ const CardList = ({ cards, onRemove, removing }: CardListProps) => {
               <div className="min-w-0">
                 <p className="text-[13px] font-semibold text-foreground truncate">{bankLabel}</p>
                 <p className="text-[11px] text-muted-foreground">
-                  {card.payment_method === "CREDIT_CARD" ? "Credit Card" : "Debit Card"}
+                  {card.payment_method === "CREDIT" ? "Credit Card" : "Debit Card"}
                   {card.card_name ? ` · ${card.card_name}` : ""}
                 </p>
               </div>
@@ -80,7 +81,7 @@ interface AddCardFormProps {
 const AddCardForm = ({ onAdded }: AddCardFormProps) => {
   const [bankId, setBankId] = useState<string>(INDIAN_BANKS[0].id);
   const [cardName, setCardName] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"CREDIT_CARD" | "DEBIT_CARD">("CREDIT_CARD");
+  const [paymentMethod, setPaymentMethod] = useState<"CREDIT" | "DEBIT">("CREDIT");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -88,7 +89,7 @@ const AddCardForm = ({ onAdded }: AddCardFormProps) => {
     setSubmitting(true);
     setError(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/user/cards`, {
+      const res = await userFetch(`/api/v1/user/cards`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -146,7 +147,7 @@ const AddCardForm = ({ onAdded }: AddCardFormProps) => {
       <div className="flex flex-col gap-2">
         <label className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Type</label>
         <div className="flex gap-2">
-          {(["CREDIT_CARD", "DEBIT_CARD"] as const).map((pm) => (
+          {(["CREDIT", "DEBIT"] as const).map((pm) => (
             <button
               key={pm}
               type="button"
@@ -157,7 +158,7 @@ const AddCardForm = ({ onAdded }: AddCardFormProps) => {
                   : "bg-background text-muted-foreground border-border/40 hover:text-foreground hover:border-accent/30"
               }`}
             >
-              {pm === "CREDIT_CARD" ? "Credit" : "Debit"}
+              {pm === "CREDIT" ? "Credit" : "Debit"}
             </button>
           ))}
         </div>
@@ -199,7 +200,7 @@ const NotificationPrefsSection = ({ enabled }: NotificationPrefsSectionProps) =>
 
   useEffect(() => {
     if (!enabled) return;
-    fetch(`${API_BASE_URL}/api/v1/user/notification-prefs`)
+    userFetch(`/api/v1/user/notification-prefs`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data: NotificationPrefs | null) => {
         if (data) setPrefs({ notify_expiring: Boolean(data.notify_expiring), notify_new: Boolean(data.notify_new) });
@@ -210,7 +211,7 @@ const NotificationPrefsSection = ({ enabled }: NotificationPrefsSectionProps) =>
   const savePrefs = useCallback(
     (next: NotificationPrefs) => {
       setSaving(true);
-      fetch(`${API_BASE_URL}/api/v1/user/notification-prefs`, {
+      userFetch(`/api/v1/user/notification-prefs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(next),
@@ -281,7 +282,7 @@ const ProfilePage = () => {
     setLoading(true);
     setFetchError(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/user/cards`);
+      const res = await userFetch(`/api/v1/user/cards`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json() as { cards: CardRecord[] };
       setCards(data.cards ?? []);
@@ -300,7 +301,7 @@ const ProfilePage = () => {
   const handleRemove = async (cardId: string) => {
     setRemoving(cardId);
     try {
-      await fetch(`${API_BASE_URL}/api/v1/user/cards/${cardId}`, { method: "DELETE" });
+      await userFetch(`/api/v1/user/cards/${cardId}`, { method: "DELETE" });
       await fetchCards();
     } catch {
       // silent

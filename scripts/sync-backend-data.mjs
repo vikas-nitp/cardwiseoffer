@@ -20,13 +20,25 @@
  */
 
 import { readFile, writeFile, cp, mkdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
-const backendRoot = resolve(root, "../cwo_backend");
+// Sibling checkout by default; set CWO_BACKEND_DIR to point elsewhere (e.g. in CI).
+const backendRoot = process.env.CWO_BACKEND_DIR
+  ? resolve(process.env.CWO_BACKEND_DIR)
+  : resolve(root, "../cwo_backend");
 const generatedSrc = resolve(backendRoot, "data/generated");
 const destination = resolve(root, "src/data/generated");
 const backendContract = resolve(backendRoot, "contracts/openapi.json");
+
+if (!existsSync(resolve(generatedSrc, "offers.snapshot.json"))) {
+  console.error(
+    `No generated backend data at ${generatedSrc}.\n` +
+      "Run `python scripts/build_data_bundle.py` in cwo_backend first (or set CWO_BACKEND_DIR).",
+  );
+  process.exit(1);
+}
 
 await mkdir(destination, { recursive: true });
 
