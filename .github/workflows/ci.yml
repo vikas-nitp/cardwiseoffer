@@ -16,12 +16,26 @@ jobs:
 
       # Generated data and the API contract come from the backend repo (source of truth).
       # Needs a read-only token for the private backend repo stored as BACKEND_REPO_TOKEN.
+      # Use the backend branch with the same name when it exists, otherwise main.
+      - name: Pick backend ref
+        id: backend_ref
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          TOKEN: ${{ secrets.BACKEND_REPO_TOKEN }}
+        run: |
+          url="https://x-access-token:${TOKEN}@github.com/vikas-nitp/cwo_backend.git"
+          if git ls-remote --exit-code --heads "$url" "$BRANCH" >/dev/null 2>&1; then
+            echo "ref=$BRANCH" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=main" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Check out backend
         uses: actions/checkout@v4
         with:
           repository: vikas-nitp/cwo_backend
           token: ${{ secrets.BACKEND_REPO_TOKEN }}
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: ${{ steps.backend_ref.outputs.ref }}
           path: backend
 
       - uses: actions/setup-python@v5
@@ -49,7 +63,7 @@ jobs:
       - name: Contract and generated API types are in sync with backend
         run: |
           npm run check:api-types
-          git diff --exit-code -- contracts
+          test -z "$(git status --porcelain -- contracts src/types)" || { git status --short -- contracts src/types; exit 1; }
 
       - name: Lint
         run: npm run lint
