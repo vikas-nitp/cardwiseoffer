@@ -69,9 +69,12 @@ describe("mapApiOffer", () => {
   });
 
   describe("label derivation", () => {
-    it("maps display_kind SELECTED_CARD to 'Your Card Offer'", () => {
-      const vm = mapApiOffer(apiOffer({ display_kind: "SELECTED_CARD" }));
-      expect(vm.label).toBe("Your Card Offer");
+    it("maps display_kind to the same internal keys the local ranker emits", () => {
+      const label = (display_kind: string) => mapApiOffer(apiOffer({ display_kind })).label;
+      expect(label("SELECTED_CARD")).toBe("Selected");
+      expect(label("SECOND_SELECTED_CARD")).toBe("Selected Alt");
+      expect(label("DEFAULT_OFFER")).toBe("Default");
+      expect(label("GENERAL_BEST")).toBe("Best Offer");
     });
 
     it("maps display_kind BETTER_ALTERNATIVE correctly", () => {
