@@ -277,6 +277,8 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [removing, setRemoving] = useState<string | null>(null);
+  const [removeError, setRemoveError] = useState<string | null>(null);
+  const enabled = isSignedIn && caps.userCards;
 
   const fetchCards = useCallback(async () => {
     setLoading(true);
@@ -293,18 +295,22 @@ const ProfilePage = () => {
     }
   }, []);
 
-  useEffect(() => { void fetchCards(); }, [fetchCards]);
+  useEffect(() => {
+    if (enabled) void fetchCards();
+  }, [enabled, fetchCards]);
 
   if (!isSignedIn) return <Navigate to="/" replace />;
   if (!caps.userCards) return <Navigate to="/" replace />;
 
   const handleRemove = async (cardId: string) => {
     setRemoving(cardId);
+    setRemoveError(null);
     try {
-      await userFetch(`/api/v1/user/cards/${cardId}`, { method: "DELETE" });
+      const res = await userFetch(`/api/v1/user/cards/${cardId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       await fetchCards();
     } catch {
-      // silent
+      setRemoveError("Couldn't remove that card. Please try again.");
     } finally {
       setRemoving(null);
     }
@@ -337,6 +343,11 @@ const ProfilePage = () => {
               <div className="flex items-center gap-2 text-[13px] text-muted-foreground py-2">
                 <Loader2 className="w-4 h-4 animate-spin" /> Loading...
               </div>
+            )}
+            {removeError && (
+              <p className="text-[13px] text-destructive flex items-center gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5" /> {removeError}
+              </p>
             )}
             {fetchError && !loading && (
               <p className="text-[13px] text-destructive flex items-center gap-1.5">

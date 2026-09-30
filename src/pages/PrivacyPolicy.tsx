@@ -150,6 +150,12 @@ const PrivacyPolicy = () => {
               identifier used to count unique sessions. Contains no personal information.
               Stored in <code className="text-[12px] bg-muted px-1.5 py-0.5 rounded font-mono">localStorage</code>.
             </li>
+            <li>
+              <strong className="text-foreground/80">Saved-cards ID</strong> — if you use the saved cards or
+              notification settings on your profile, a random identifier (no personal information) is stored in{" "}
+              <code className="text-[12px] bg-muted px-1.5 py-0.5 rounded font-mono">localStorage</code> and sent to our
+              server so your saved cards stay separate from other visitors'. It is only created when you open those features.
+            </li>
           </ul>
           <p className="mt-3">
             All browser storage data stays entirely on your device. To clear it: open your browser's
