@@ -499,7 +499,7 @@ export interface components {
             eligibility_notes: string[];
             /**
              * Evidence Status
-             * @description Curation confidence level: VERIFIED | UNVERIFIED
+             * @description Curation confidence level: VERIFIED | PARTIAL | UNVERIFIED
              * @example VERIFIED
              */
             evidence_status?: string | null;
@@ -546,7 +546,7 @@ export interface components {
             usage_limit?: string | null;
             /**
              * Valid Days
-             * @description JS weekday indices (0=Sun … 6=Sat) on which offer is valid; null = every day
+             * @description Python weekday indices (0=Mon … 6=Sun) on which offer is valid; null = every day
              * @example [
              *       1,
              *       2,
@@ -639,7 +639,7 @@ export interface components {
             estimated_savings: number | null;
             /**
              * Evidence Status
-             * @description Curation confidence level: VERIFIED | UNVERIFIED
+             * @description Curation confidence level: VERIFIED | PARTIAL | UNVERIFIED
              * @example VERIFIED
              */
             evidence_status?: string | null;
@@ -690,7 +690,7 @@ export interface components {
             usage_limit?: string | null;
             /**
              * Valid Days
-             * @description JS weekday indices (0=Sun … 6=Sat) on which offer is valid; null = every day
+             * @description Python weekday indices (0=Mon … 6=Sun) on which offer is valid; null = every day
              * @example [
              *       1,
              *       2,
