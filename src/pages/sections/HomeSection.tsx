@@ -12,8 +12,8 @@ const animatedContainer = {
   show: { transition: { staggerChildren: 0.13, delayChildren: 0.28 } },
 };
 const animatedItem = {
-  hidden: { opacity: 0, y: 22 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" as const } },
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.28, ease: "easeOut" as const } },
 };
 const staticContainer = { hidden: {}, show: {} };
 const staticItem = { hidden: {}, show: {} };
@@ -42,12 +42,12 @@ const HomeSection = ({ searchState, formDate, onSearch }: HomeSectionProps) => {
       className="flex flex-col items-center justify-center pt-6 md:pt-10 pb-4 max-w-2xl mx-auto text-center px-4"
     >
       <motion.div variants={item} className="mb-5 inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-accent/35 bg-accent/8 text-accent text-[11px] font-bold uppercase tracking-[0.14em]">
-        <span className="w-1.5 h-1.5 rounded-full bg-accent pulse-gold inline-block" />
+        <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
         Live card offers · India
       </motion.div>
       <motion.h1 variants={item} className="font-display leading-[1.0]">
         <span className="block text-[28px] md:text-[42px] text-foreground leading-[1.15]">Which card saves the most</span>
-        <span className="block text-[42px] md:text-[60px] text-accent mt-1 leading-[1.0]">on your flight?</span>
+        <span className="block text-[42px] md:text-[60px] mt-1 leading-[1.0] bg-gradient-to-r from-accent via-[hsl(200_90%_58%)] to-[hsl(185_85%_55%)] bg-clip-text text-transparent">on your flight?</span>
       </motion.h1>
       <motion.p variants={item} className="mt-4 text-[13px] md:text-[14px] text-foreground/70 leading-snug">
         {APP_HERO_SUBTITLE}
@@ -75,21 +75,21 @@ const HomeSection = ({ searchState, formDate, onSearch }: HomeSectionProps) => {
         className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-4"
       >
         {meta.total_offers > 0 && (
-          <span className="flex items-center gap-1.5 text-[13px] font-semibold text-foreground/80">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent/80 inline-block shrink-0" />
+          <span className="flex items-center gap-1.5 text-[12px] font-medium text-foreground/60">
+            <span className="w-1 h-1 rounded-full bg-accent/60 inline-block shrink-0" />
             {meta.total_offers} offers tracked
           </span>
         )}
         {[TRUST_LABELS.NO_BOOKING_BIAS, TRUST_LABELS.UPDATED_DAILY, TRUST_LABELS.INDEPENDENT_COMPARISON].map((label) => (
-          <span key={label} className="flex items-center gap-1.5 text-[13px] font-semibold text-foreground/80">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent/80 inline-block shrink-0" />
+          <span key={label} className="flex items-center gap-1.5 text-[12px] font-medium text-foreground/60">
+            <span className="w-1 h-1 rounded-full bg-accent/60 inline-block shrink-0" />
             {label}
           </span>
         ))}
         {visitorCount !== null && visitorCount > 1 && (
-          <span className="flex items-center gap-1.5 text-[13px] font-semibold text-foreground/80">
-            <span className="w-1.5 h-1.5 rounded-full bg-savings/80 inline-block shrink-0 animate-pulse" />
-            {visitorCount} people browsing now
+          <span className="flex items-center gap-1.5 text-[12px] font-medium text-foreground/60">
+            <span className="w-1 h-1 rounded-full bg-savings/70 inline-block shrink-0 animate-pulse" />
+            {visitorCount} browsing now
           </span>
         )}
       </motion.div>

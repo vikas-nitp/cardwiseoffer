@@ -106,7 +106,7 @@ const PayFilterBar = ({ value, onChange, hasCard }: { value: PayFilter; onChange
           onClick={() => onChange(v)}
           className={cn(
             "h-7 px-3 rounded-lg text-[12px] font-semibold transition-colors",
-            v === value ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+            v === value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
           )}
         >
           {label}
@@ -174,7 +174,7 @@ const ResultsSection = ({
           <>
             <span className="text-border/40 hidden sm:block">·</span>
             {searchState.banks.map((b) => (
-              <span key={b} className="text-[10px] font-bold bg-accent/10 text-accent px-2 py-0.5 rounded-full border border-accent/20">{b}</span>
+              <span key={b} className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20">{b}</span>
             ))}
           </>
         )}
@@ -187,7 +187,7 @@ const ResultsSection = ({
           </>
         )}
       </div>
-      <Search className="w-4 h-4 text-muted-foreground/40 group-hover:text-accent shrink-0 transition-colors" />
+      <Search className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary shrink-0 transition-colors" />
     </button>
 
     {/* Loading state — skeleton cards */}

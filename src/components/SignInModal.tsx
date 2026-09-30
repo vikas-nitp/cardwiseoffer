@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { isLocalMode } from "@/services/dataRepo";
+import { APP_NAME } from "@/constants";
 
 const RESEND_SECONDS = 30;
 
@@ -54,7 +55,7 @@ const PhoneStep = () => {
 
       <div className="space-y-1.5">
         <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Mobile Number</Label>
-        <div className="flex items-center gap-0 rounded-xl overflow-hidden border border-border focus-within:border-accent transition-colors bg-secondary/30">
+        <div className="flex items-center gap-0 rounded-xl overflow-hidden border border-border focus-within:border-primary transition-colors bg-secondary/30">
           <span className="px-3 py-3 text-sm font-semibold text-muted-foreground border-r border-border bg-muted/20 select-none">
             🇮🇳 +91
           </span>
@@ -143,7 +144,7 @@ const OtpStep = () => {
               <InputOTPSlot
                 key={i}
                 index={i}
-                className="w-10 h-12 text-base rounded-xl border-border bg-secondary/30 focus:border-accent"
+                className="w-10 h-12 text-base rounded-xl border-border bg-secondary/30 focus:border-primary"
               />
             ))}
           </InputOTPGroup>
@@ -296,7 +297,7 @@ const SignInModal = () => {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && closeSignIn()}>
       <DialogContent className="sm:max-w-[380px] rounded-2xl border-border/50 bg-card p-6">
-        <DialogTitle className="sr-only">Sign in to CardSage</DialogTitle>
+        <DialogTitle className="sr-only">Sign in to {APP_NAME}</DialogTitle>
         {authStep === "phone" && <PhoneStep />}
         {authStep === "otp" && <OtpStep />}
         {authStep === "consent" && <ConsentStep />}
