@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "predev": "node scripts/ensure-data.mjs",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "typecheck": "tsc -b --pretty false",
+    "pretypecheck": "node scripts/ensure-data.mjs",
     "data:check": "node scripts/validate-data-bundle.mjs",
     "data:validate": "node scripts/validate-offer-quality.mjs",
     "data:tag-synthetic": "node scripts/tag-synthetic-data.mjs --write",
@@ -18,6 +20,7 @@
     "check:api-types": "npm run generate:api && git diff --exit-code -- src/types/generated-api.d.ts",
     "preview": "vite preview",
     "test": "vitest run",
+    "pretest": "node scripts/ensure-data.mjs",
     "test:watch": "vitest",
     "check": "vitest run && tsc --noEmit"
   },
