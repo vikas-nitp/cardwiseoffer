@@ -58,7 +58,7 @@ Production builds **require** `VITE_DATA_SOURCE=api` — the app throws at start
 
 The backend (`cwo_backend`) is the source of truth for offer data **and** the API contract. cardsage delivers the
 offer CSV to the backend, the backend builds the bundle, and this repo copies it in. `src/data/generated/` is
-gitignored, so run a sync after a fresh clone or before `npm test`/`npm run typecheck`.
+gitignored. `npm run dev`, `npm test` and `npm run typecheck` sync it automatically when it is missing (building the backend bundle first if needed); run `npm run data:build` yourself to refresh it after backend data changes.
 
 ```bash
 # In cwo_backend: build the bundle from data/source/offers.csv
