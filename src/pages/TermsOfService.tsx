@@ -72,7 +72,7 @@ const TermsOfService = () => {
 
         <Section title="Accuracy of offer information">
           <p>
-            We make reasonable efforts to keep offer information current. However, card offers, coupon codes,
+            We make reasonable efforts to keep offer information current. However, card offers,
             discount amounts, and eligibility conditions are set by banks and platforms and can change without
             notice.
           </p>

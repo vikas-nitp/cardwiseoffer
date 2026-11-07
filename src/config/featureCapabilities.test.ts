@@ -22,24 +22,25 @@ const flags = (value: boolean): FeatureFlags => ({
   subscriptionsEnabled: value,
   userCardsEnabled: value,
   notificationsEnabled: value,
+  tieredDiscountEnabled: value,
 });
 
 const allFalse = {
   phase2UserFeatures: false, publicAllOffers: false, couponCode: false,
-  cookieConsent: false,
+  flightInternational: false, cookieConsent: false,
   analytics: false, bookingAmountComparison: false, visitorCount: false, auth: false,
   about: false, contact: false, homeEntranceAnimation: false, howItWorks: false,
   privacyPolicy: false, splashScreen: false, termsOfService: false,
-  subscriptions: false, userCards: false, notifications: false,
+  subscriptions: false, userCards: false, notifications: false, tieredDiscount: false,
 };
 
 const allTrue = {
   phase2UserFeatures: true, publicAllOffers: true, couponCode: true,
-  cookieConsent: true,
+  flightInternational: true, cookieConsent: true,
   analytics: true, bookingAmountComparison: true, visitorCount: true, auth: true,
   about: true, contact: true, homeEntranceAnimation: true, howItWorks: true,
   privacyPolicy: true, splashScreen: true, termsOfService: true,
-  subscriptions: true, userCards: true, notifications: true,
+  subscriptions: true, userCards: true, notifications: true, tieredDiscount: true,
 };
 
 describe("final feature configuration", () => {

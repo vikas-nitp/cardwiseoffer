@@ -692,7 +692,7 @@
                 "type": "null"
               }
             ],
-            "description": "Curation confidence level: VERIFIED | PARTIAL | UNVERIFIED",
+            "description": "Curation confidence level: VERIFIED | UNVERIFIED",
             "examples": [
               "VERIFIED"
             ],
@@ -819,7 +819,7 @@
                 "type": "null"
               }
             ],
-            "description": "Python weekday indices (0=Mon \u2026 6=Sun) on which offer is valid; null = every day",
+            "description": "JS weekday indices (0=Sun \u2026 6=Sat) on which offer is valid; null = every day",
             "examples": [
               [
                 1,
@@ -1114,7 +1114,7 @@
                 "type": "null"
               }
             ],
-            "description": "Curation confidence level: VERIFIED | PARTIAL | UNVERIFIED",
+            "description": "Curation confidence level: VERIFIED | UNVERIFIED",
             "examples": [
               "VERIFIED"
             ],
@@ -1256,7 +1256,7 @@
                 "type": "null"
               }
             ],
-            "description": "Python weekday indices (0=Mon \u2026 6=Sun) on which offer is valid; null = every day",
+            "description": "JS weekday indices (0=Sun \u2026 6=Sat) on which offer is valid; null = every day",
             "examples": [
               [
                 1,
@@ -1305,7 +1305,7 @@
             "items": {
               "type": "string"
             },
-            "maxItems": 4,
+            "maxItems": 2,
             "title": "Banks",
             "type": "array"
           },
@@ -1794,18 +1794,6 @@
     "/api/v1/user/cards": {
       "get": {
         "operationId": "list_cards_api_v1_user_cards_get",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "X-Session-Id",
-            "required": true,
-            "schema": {
-              "pattern": "^[A-Za-z0-9-]{16,64}$",
-              "title": "X-Session-Id",
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "content": {
@@ -1814,16 +1802,6 @@
               }
             },
             "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
           }
         },
         "summary": "List Cards",
@@ -1833,18 +1811,6 @@
       },
       "post": {
         "operationId": "save_card_api_v1_user_cards_post",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "X-Session-Id",
-            "required": true,
-            "schema": {
-              "pattern": "^[A-Za-z0-9-]{16,64}$",
-              "title": "X-Session-Id",
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1893,16 +1859,6 @@
               "title": "Card Id",
               "type": "string"
             }
-          },
-          {
-            "in": "header",
-            "name": "X-Session-Id",
-            "required": true,
-            "schema": {
-              "pattern": "^[A-Za-z0-9-]{16,64}$",
-              "title": "X-Session-Id",
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1934,18 +1890,6 @@
     "/api/v1/user/notification-prefs": {
       "get": {
         "operationId": "get_notification_prefs_api_v1_user_notification_prefs_get",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "X-Session-Id",
-            "required": true,
-            "schema": {
-              "pattern": "^[A-Za-z0-9-]{16,64}$",
-              "title": "X-Session-Id",
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "content": {
@@ -1954,16 +1898,6 @@
               }
             },
             "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
           }
         },
         "summary": "Get Notification Prefs",
@@ -1973,18 +1907,6 @@
       },
       "post": {
         "operationId": "save_notification_prefs_api_v1_user_notification_prefs_post",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "X-Session-Id",
-            "required": true,
-            "schema": {
-              "pattern": "^[A-Za-z0-9-]{16,64}$",
-              "title": "X-Session-Id",
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {

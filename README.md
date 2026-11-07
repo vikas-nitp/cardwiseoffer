@@ -95,7 +95,7 @@ npm run dev
 
 ## Feature flags
 
-Flags are read from `src/data/generated/featureFlags.json` (local) or `/api/v1/feature-flags` (API):
+Flags come from `src/data/generated/featureFlags.json` (local mode) or `/api/v1/feature-flags` (API mode). The **source of truth** is `cwo_backend/app/core/feature_flags.py` — `featureFlags.json` is auto-generated from it; never edit it by hand.
 
 | Flag | Effect |
 |------|--------|
@@ -103,12 +103,20 @@ Flags are read from `src/data/generated/featureFlags.json` (local) or `/api/v1/f
 | `publicAllOffersEnabled` | Show "All Offers" catalogue section |
 | `couponCodeEnabled` | Show coupon codes on offer tiles |
 | `bookingAmountComparisonEnabled` | Enable booking-amount fare input and estimated saving |
+| `tieredDiscountEnabled` | Use tier-accurate savings when offer has `discount_tiers` |
 | `analyticsEnabled` | Enable analytics tracking |
 | `visitorCountEnabled` | Enable live visitor count indicator |
 | `userCardsEnabled` | Enable saved cards and profile page |
 | `notificationsEnabled` | Enable notification preference section |
 
-To add a new flag run `python3 scripts/add_feature_flag.py <flagName> <true|false>` from the backend — it updates all touch points automatically.
+**Adding a flag** — one command from the backend, touches nothing else manually:
+
+```bash
+cd cwo_backend
+python3 scripts/add_feature_flag.py myNewFeatureEnabled true
+```
+
+This edits `feature_flags.py`, calls `sync_feature_flags.py` (regenerates `featureCapabilities.ts` + `featureFlags.json`), then regenerates the OpenAPI contract and TS types.
 
 ---
 

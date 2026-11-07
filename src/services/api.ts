@@ -64,6 +64,7 @@ async function apiCall<T>(
         headers: { "Content-Type": "application/json" },
         body: options.body === undefined ? undefined : JSON.stringify(options.body),
         signal: controller.signal,
+        cache: "no-store",
       });
       const metadata = metadataFrom(response);
       if (!response.ok) {

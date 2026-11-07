@@ -82,8 +82,9 @@ const PrivacyPolicy = () => {
             any other third party.
           </p>
           <p>
-            Offer data displayed on this site is sourced from publicly available bank and booking platform
-            promotions. Submitting a search does not send your personal data to any external service.
+            Offer data displayed on this site is collected automatically from publicly accessible offer pages
+            on booking platforms and bank websites. No login or account access is used to retrieve this data.
+            Submitting a search does not send your personal data to any external service.
           </p>
         </Section>
 
