@@ -80,13 +80,13 @@ describe("savingsLabel", () => {
     it("shows percentage when pct is a normal savings rate (~20%)", () => {
       // ₹2,000 off on ₹10,000 min = 20%
       const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 2000, minTransaction: 10000 };
-      expect(savingsLabel(o)).toBe("₹2,000 off (~20%)");
+      expect(savingsLabel(o)).toBe("~20% off · up to ₹2,000");
     });
 
     it("shows percentage when pct is ~30%", () => {
       // ₹3,000 off on ₹10,000 min = 30%
       const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 3000, minTransaction: 10000 };
-      expect(savingsLabel(o)).toBe("₹3,000 off (~30%)");
+      expect(savingsLabel(o)).toBe("~30% off · up to ₹3,000");
     });
 
     it("suppresses percentage when pct is exactly 100% (Paytm tiered offer bug)", () => {
