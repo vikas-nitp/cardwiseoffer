@@ -27,8 +27,8 @@ const container = {
   show: { transition: { staggerChildren: 0.12, delayChildren: 0.08 } },
 };
 const cardVariant = {
-  hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.38, ease: "easeOut" as const } },
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.22, ease: "easeOut" as const } },
 };
 
 const HowItWorksSection = () => (
@@ -49,7 +49,7 @@ const HowItWorksSection = () => (
         <motion.div
           key={item.step}
           variants={cardVariant}
-          className={`bg-card rounded-2xl border card-shadow p-4 md:p-5 text-center hover:card-shadow-lg hover:-translate-y-0.5 transition-all duration-300 ${item.step === "03" ? "border-accent/30 hover:border-accent/50" : "border-border hover:border-accent/20"}`}
+          className="bg-card rounded-2xl border border-border card-shadow p-4 md:p-5 text-center hover:card-shadow-lg hover:-translate-y-0.5 hover:border-primary/25 transition-all duration-150"
         >
           <div className="flex items-center justify-center gap-2 mb-3">
             <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">

@@ -38,9 +38,9 @@ const PerPageDropdown = ({ value, onChange }: { value: number; onChange: (n: num
               <button
                 key={n}
                 onClick={() => { onChange(n); setOpen(false); }}
-                className={`w-full text-left px-3 py-1.5 text-[12px] font-medium transition-colors flex items-center gap-1.5 ${n === value ? "text-accent" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"}`}
+                className={`w-full text-left px-3 py-1.5 text-[12px] font-medium transition-colors flex items-center gap-1.5 ${n === value ? "text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"}`}
               >
-                {n === value && <span className="w-1 h-1 rounded-full bg-accent inline-block" />}
+                {n === value && <span className="w-1 h-1 rounded-full bg-primary inline-block" />}
                 {n === value ? null : <span className="w-1 h-1 inline-block" />}
                 {n}
               </button>
@@ -138,8 +138,8 @@ const AllOffersSection = ({
                 onClick={() => setMyCardsActive((v) => !v)}
                 className={`inline-flex items-center gap-1.5 h-7 px-3 rounded-full text-[12px] font-medium border transition-colors ${
                   myCardsActive
-                    ? "bg-accent text-accent-foreground border-accent"
-                    : "bg-background text-muted-foreground border-border/40 hover:border-accent/40 hover:text-foreground"
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background text-muted-foreground border-border/40 hover:border-primary/40 hover:text-foreground"
                 }`}
               >
                 My Cards
@@ -198,7 +198,7 @@ const AllOffersSection = ({
             {gated && (
               <div className="relative mt-4">
                 <div className="pointer-events-none absolute -top-20 left-0 right-0 h-20 bg-gradient-to-b from-transparent to-background z-10" />
-                <div className="relative z-20 flex flex-col items-center gap-3 py-8 px-6 rounded-2xl border border-accent/20 bg-accent/5 text-center">
+                <div className="relative z-20 flex flex-col items-center gap-3 py-8 px-6 rounded-2xl border border-primary/20 bg-primary/5 text-center">
                   <p className="text-[13px] font-semibold text-foreground">
                     {hiddenCount > 0
                       ? `${hiddenCount} more offer${hiddenCount !== 1 ? "s" : ""} available`
@@ -209,7 +209,7 @@ const AllOffersSection = ({
                   </p>
                   <button
                     onClick={onSignIn}
-                    className="mt-1 inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-accent text-accent-foreground text-[13px] font-semibold hover:bg-accent/90 transition-colors shimmer-hover"
+                    className="mt-1 inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-primary text-primary-foreground text-[13px] font-semibold hover:brightness-110 transition-all"
                   >
                     Sign in to see all offers
                   </button>
@@ -235,7 +235,7 @@ const AllOffersSection = ({
                   <button
                     key={p}
                     onClick={() => setOffersPage(p)}
-                    className={`h-8 min-w-[32px] px-2 rounded-lg text-[13px] font-medium transition-colors ${p === offersPage ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted/40"}`}
+                    className={`h-8 min-w-[32px] px-2 rounded-lg text-[13px] font-medium transition-colors ${p === offersPage ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted/40"}`}
                   >
                     {p}
                   </button>

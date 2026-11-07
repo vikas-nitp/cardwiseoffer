@@ -49,7 +49,7 @@ export const API_RETRY_DELAY_MS = 1000;
 // Brand
 // ────────────────────────────────────────────────────────────────────
 
-export const APP_NAME = "CardSage";
+export const APP_NAME = "CardOptimal";
 export const APP_TAGLINE = "smart card picks for Indian flights";
 export const APP_HERO_SUBTITLE = "Your card could save more than you think.";
 export const DISCLAIMER_TEXT =
@@ -59,7 +59,9 @@ export const DISCLAIMER_TEXT =
 // Contact
 // ────────────────────────────────────────────────────────────────────
 
+export const APP_DOMAIN = "cardsage.in";
 export const SUPPORT_EMAIL = "support@cardsage.in";
+export const GRIEVANCE_EMAIL = "grievance@cardsage.in";
 
 // ────────────────────────────────────────────────────────────────────
 // Date Strip

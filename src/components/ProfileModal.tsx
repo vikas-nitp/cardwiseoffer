@@ -3,6 +3,7 @@ import { Phone, LogOut, ShieldCheck, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { APP_NAME } from "@/constants";
 
 interface ProfileModalProps {
   open: boolean;
@@ -30,7 +31,7 @@ const ProfileModal = ({ open, onClose }: ProfileModalProps) => {
           </div>
           <div className="text-center">
             <p className="text-xl font-bold text-foreground tracking-tight">{user.maskedPhone}</p>
-            <p className="text-[12px] text-muted-foreground mt-0.5">CardSage account</p>
+            <p className="text-[12px] text-muted-foreground mt-0.5">{APP_NAME} account</p>
           </div>
         </div>
 

@@ -1,12 +1,12 @@
 /*
- * Button — Midnight Sovereign variants
+ * Button — Institutional Slate variants
  *
- *  default     Sovereign gold bg · near-black text · shimmer-on-hover sweep
+ *  default     Electric blue bg · white text
  *  secondary   Raised dark surface · near-white text · subtle border
- *  ghost       Transparent · muted text · gold text + muted bg on hover
+ *  ghost       Transparent · muted text · blue text + muted bg on hover
  *  outline     Border only · muted bg on hover
  *  destructive Danger red
- *  link        Gold underline
+ *  link        Blue underline
  *
  * Sizes follow 8pt grid: sm=32px · default=40px · lg=48px
  * Radius: 14px (--radius) on all interactive variants.
@@ -30,17 +30,14 @@ const buttonVariants = cva(
     variants: {
       variant: {
         /*
-         * Sovereign gold — the primary CTA.
-         * Gold background, near-black text (8.5:1 contrast).
-         * Shimmer sweep on hover via the `.shimmer-hover` utility.
+         * Electric blue — primary CTA.
+         * Blue background, white text. Gold is reserved for badges/icons only.
          */
         default: [
           "rounded-[14px]",
-          "shimmer-hover",
-          "bg-accent text-accent-foreground",
-          /* depth: top-edge inner highlight + directional outer shadow */
-          "[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.15),0_1px_2px_hsl(225_37%_2%/0.6),0_4px_16px_hsl(var(--accent)/0.35)]",
-          "hover:brightness-110 hover:[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.22),0_1px_2px_hsl(225_37%_2%/0.6),0_6px_24px_hsl(var(--accent)/0.45)]",
+          "btn-primary-gradient text-primary-foreground",
+          "[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.18),0_1px_2px_hsl(225_37%_2%/0.5),0_3px_12px_hsl(var(--primary)/0.32)]",
+          "hover:[box-shadow:inset_0_1px_0_hsl(0_0%_100%/0.22),0_2px_4px_hsl(225_37%_2%/0.5),0_6px_20px_hsl(var(--primary)/0.40)]",
           "active:brightness-95 active:scale-[0.98]",
           "transition-all duration-150",
         ],
@@ -65,8 +62,8 @@ const buttonVariants = cva(
         /* Border only */
         outline: [
           "rounded-[14px]",
-          "border border-border text-foreground",
-          "hover:bg-muted hover:border-primary/30",
+          "border border-foreground/[0.18] text-foreground",
+          "hover:bg-muted hover:border-primary/40 hover:text-primary",
           "active:scale-[0.98]",
         ],
 

@@ -44,6 +44,13 @@ await cp(
   { force: true },
 );
 
+// facets.snapshot.json → facets.json
+await cp(
+  resolve(generatedSrc, "facets.snapshot.json"),
+  resolve(destination, "facets.json"),
+  { force: true },
+);
+
 // manifest.json
 await cp(
   resolve(generatedSrc, "manifest.json"),
@@ -62,6 +69,13 @@ await cp(
 await cp(
   resolve(backendRoot, "data/airports.json"),
   resolve(destination, "airports.json"),
+  { force: true },
+);
+
+// validation-report.json
+await cp(
+  resolve(generatedSrc, "validation-report.json"),
+  resolve(destination, "validation-report.json"),
   { force: true },
 );
 
