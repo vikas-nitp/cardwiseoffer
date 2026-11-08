@@ -89,7 +89,7 @@ const HomeSection = ({ searchState, formDate, onSearch }: HomeSectionProps) => {
         {visitorCount !== null && visitorCount > 1 && (
           <span className="flex items-center gap-1.5 text-[12px] font-medium text-foreground/60">
             <span className="w-1 h-1 rounded-full bg-savings/70 inline-block shrink-0 animate-pulse" />
-            {visitorCount} browsing now
+            {visitorCount} visitor{visitorCount !== 1 ? "s" : ""}
           </span>
         )}
       </motion.div>

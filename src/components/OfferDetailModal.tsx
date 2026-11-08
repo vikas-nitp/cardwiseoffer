@@ -24,7 +24,7 @@ function formatValidDays(days: number[]): string | null {
 
 // Same filter used in OfferCard — keeps only meaningful eligibility notes
 const GARBAGE_NOTE_RE =
-  /customer\s+service|log\s*in\s*[/|]\s*sign\s*up|sign\s*in|my\s+account|recent\s+search|search\s+flights|about\s+the\s+offer|what\s+do\s+you\s+get|how\s+do\s+you\s+get|the\s+customer\s+will|customers?\s+will\s+get|to\s+avail\s+the\s+offer|adventure\s+holidays|deal\s+of\s+the\s+day|fly\s+&\s+save|no\s+card|partial\s+evidence|unverified|draft\s+offer|hidden|inactive|app\s+only|website\s+only|expires\s+\d+|expires\s+on\b|valid\s+(mon|tue|wed|thu|fri|sat|sun)|valid\s+(?:for\s+bookings?\s+)?(?:till|until|through)\s+\d|valid\s+(?:for\s+bookings?)\s+till|carry-forward|not\s+seen\s+in\s+this\s+run|also\s+found\s+at:|^domestic\s+flights?$|^international\s+flights?$|great\s+offers?\s*&\s*amazing\s+deals|min(?:imum)?\.?\s+booking\s+(?:INR|Rs\.?|₹)|coupon\s+code\s*:|validity\s*:|(?:get\s+)?up\s+to\s+[₹]\s*[\d,]+\s+off\b|up\s+to\s+INR\s+[\d,]+\s+off\b|\d+\s+days?\s+left\b|use\s+code\s*[:\t]|^\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}$|^about\s+the\b|terms\s*&\s*conditions?\b|^t\s*&\s*c\b/i;
+  /customer\s+service|log\s*in\s*[/|]\s*sign\s*up|sign\s*in|my\s+account|recent\s+search|search\s+flights|about\s+the\s+offer|what\s+(?:do\s+)?you\s+get|how\s+do\s+you\s+get|the\s+customer\s+will|customers?\s+will\s+get|to\s+avail\s+the\s+offer|adventure\s+holidays|deal\s+of\s+the\s+day|fly\s+&\s+save|no\s+card|partial\s+evidence|unverified|draft\s+offer|hidden|inactive|app\s+only|website\s+only|expires\s+\d+|expires\s+on\b|valid\s+(mon|tue|wed|thu|fri|sat|sun)|valid\s+(?:for\s+bookings?\s+)?(?:till|until|through)\s+\d|valid\s+(?:for\s+bookings?)\s+till|carry-forward|not\s+seen\s+in\s+this\s+run|also\s+found\s+at:|^(?:domestic|international)\s+flights?$|great\s+offers?\s*&\s*amazing\s+deals|min(?:imum)?\.?\s+booking\s+(?:INR|Rs\.?|₹)|coupon\s+code\s*:|validity\s*:|(?:get\s+)?up\s+to\s+[₹]\s*[\d,]+\s+off\b|up\s+to\s+INR\s+[\d,]+\s+off\b|\d+\s+days?\s+left\b|use\s+code\s*[:\t]|^\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}$|^about\s+the\b|terms\s*&\s*conditions?\b|^t\s*&\s*c\b|^(?:add\s+)?promo\s+code$|^services\s+offer$|^where\s+we\s+fly$|^prepare\s+to\s+travel$|^air\s+india\s+experience$|^round\s+trip$|^multi\s+city$|home\s+book\s+exclusive|exclusive\s+deals\s+\w+\s+(?:emi|discount|offer)/i;
 
 function isUsableNote(note: string): boolean {
   const trimmed = note.trim();
@@ -68,7 +68,7 @@ const OfferDetailModal = ({ offer, onClose, userFareProvided = false, searchDate
   const ctaHref = offer.platformUrl ? buildAffiliateUrl(offer.platformUrl, offer.platform) : null;
   const canBook = !!ctaHref && isAllowed(ctaHref) && !expired && !upcoming;
 
-  const showCoupon = capabilities.couponCode && offer.couponCode && !/^(PARTIAL|DRAFT|TEST|UNKNOWN|N\/A)$/i.test(offer.couponCode);
+  const showCoupon = capabilities.couponCode && offer.couponCode && !/^(PARTIAL|DRAFT|TEST|UNKNOWN|N\/A|AIRLINE|LINKS)$/i.test(offer.couponCode);
 
   const allNotes = [...new Set(offer.eligibilityNotes.filter(isUsableNote))];
   const validDaysLabel = offer.validDays && offer.validDays.length > 0 && offer.validDays.length < 7

@@ -4,6 +4,20 @@ All items here are deferred. Do not implement until explicitly asked.
 
 ---
 
+## Review: Visitor count logic (`useVisitorCount`)
+
+**Files:** `src/hooks/useVisitorCount.ts`, `src/pages/sections/HomeSection.tsx`
+
+Review the current implementation before launch:
+- Backend TTL / eviction strategy for visitor IDs — does it handle tab close correctly?
+- Whether count=1 silently hiding the badge is the right UX (vs. showing "1 browsing now")
+- Polling interval (currently 60s) — too slow / too fast for launch traffic?
+- Whether `visitorCountEnabled` FF should default to off until traffic is meaningful (avoid "1 browsing now" embarrassment at low traffic)
+
+**Do not change until explicitly asked.**
+
+---
+
 ## Phase 3 UI: Top offer cards on homepage
 
 Show 3–4 live offer cards on the homepage without requiring a search. Acts as social proof + entry point for users who don't have a specific flight in mind.

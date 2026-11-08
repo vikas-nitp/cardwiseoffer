@@ -80,3 +80,20 @@ describe("DateStrip", () => {
     expect(screen.getByRole("button", { name: /Next date/i })).toBeInTheDocument();
   });
 });
+
+describe("DateStrip availability bound", () => {
+  it("disables the next arrow once the strip reaches the last available date", () => {
+    render(<DateStrip {...defaultProps} selectedDate={new Date("2026-09-03T00:00:00")} maxDate={new Date("2026-09-03T00:00:00")} />);
+    expect(screen.getByRole("button", { name: "Next date" })).toBeDisabled();
+  });
+
+  it("keeps the next arrow enabled while later dates exist", () => {
+    render(<DateStrip {...defaultProps} selectedDate={new Date("2026-09-03T00:00:00")} maxDate={new Date("2026-12-31T00:00:00")} />);
+    expect(screen.getByRole("button", { name: "Next date" })).toBeEnabled();
+  });
+
+  it("shortens API-style 'Up to ₹' labels", () => {
+    render(<DateStrip {...defaultProps} strip7days={[{ date: "2026-09-01", displayText: "Up to ₹1,500" }]} />);
+    expect(screen.getByText("₹1,500")).toBeInTheDocument();
+  });
+});

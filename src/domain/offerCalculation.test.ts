@@ -73,12 +73,8 @@ describe("savingsLabel", () => {
     expect(savingsLabel(o)).toBe("Offer available");
   });
 
-  describe("FLAT percentage annotation", () => {
-    // pct = Math.round((amt / minTransaction) * 100 * 10) / 10
-    // Annotation shows only when pct >= 1 && pct < 50.
-
-    it("shows percentage when pct is a normal savings rate (~20%)", () => {
-      // ₹2,000 off on ₹10,000 min = 20%
+  describe("FLAT — Option B hero label format", () => {
+    it("shows percentage when pct is in range 1–49%", () => {
       const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 2000, minTransaction: 10000 };
       expect(savingsLabel(o)).toBe("~20% off · up to ₹2,000");
     });
@@ -94,28 +90,16 @@ describe("savingsLabel", () => {
       // This is a data artifact from paired tiers, not a real savings rate.
       const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 5000, minTransaction: 5000 };
       expect(savingsLabel(o)).toBe("₹5,000 off");
+    });
+
+    it("suppresses percentage when pct is >= 50%", () => {
+      // ₹5,000 off on ₹10,000 min = 50% — at the boundary, not shown
+      const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 5000, minTransaction: 10000 };
+      expect(savingsLabel(o)).toBe("₹5,000 off");
       expect(savingsLabel(o)).not.toContain("%");
     });
 
-    it("suppresses percentage at the 50% boundary", () => {
-      // ₹5,000 off on ₹10,000 min = 50% — at boundary, should NOT show
-      const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 5000, minTransaction: 10000 };
-      expect(savingsLabel(o)).toBe("₹5,000 off");
-    });
-
-    it("shows percentage just below 50% boundary (49%)", () => {
-      // ₹4,900 off on ₹10,000 min = 49%
-      const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 4900, minTransaction: 10000 };
-      expect(savingsLabel(o)).toContain("~49%");
-    });
-
-    it("suppresses percentage when pct is below 1%", () => {
-      // ₹50 off on ₹10,000 min = 0.5% — too small to show
-      const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 50, minTransaction: 10000 };
-      expect(savingsLabel(o)).toBe("₹50 off");
-    });
-
-    it("suppresses percentage when minTransaction is null", () => {
+    it("never shows percentage hint when minTransaction is null", () => {
       const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 2000, minTransaction: null };
       expect(savingsLabel(o)).toBe("₹2,000 off");
       expect(savingsLabel(o)).not.toContain("%");

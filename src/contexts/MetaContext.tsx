@@ -12,6 +12,7 @@ import metadataJson from "@/data/generated/metadata.json";
 import { getDataMode } from "@/config/dataMode";
 import { fetchMetadata } from "@/services/api";
 import { getLocalOffers } from "@/data/repositories/LocalOfferRepository";
+import { API_BASE_URL } from "@/constants";
 
 // ── Types (match backend /api/v1/meta response) ────────────────────
 
@@ -38,6 +39,7 @@ export interface MetaData {
   platforms: PlatformMeta[];
   airports: AirportMeta[];
   payment_methods: string[];
+  booking_channels: string[];
   categories: string[];
   supported_banks: string[];      // Bank IDs currently supported
   supported_platforms: string[];  // Platform IDs currently supported
@@ -53,6 +55,7 @@ const LOCAL_METADATA = metadataJson as {
   platforms: PlatformMeta[];
   airports: AirportMeta[];
   payment_methods: string[];
+  booking_channels: string[];
   categories: string[];
   availability_start: string | null;
   availability_end: string | null;
@@ -64,6 +67,7 @@ const DEFAULT_META: MetaData = {
   platforms: LOCAL_METADATA.platforms,
   airports: LOCAL_METADATA.airports,
   payment_methods: LOCAL_METADATA.payment_methods,
+  booking_channels: LOCAL_METADATA.booking_channels ?? ["WEB_AND_APP"],
   categories: LOCAL_METADATA.categories,
   supported_banks: LOCAL_METADATA.banks.map((bank) => bank.id),
   supported_platforms: LOCAL_METADATA.platforms.map((platform) => platform.id),
@@ -126,14 +130,24 @@ export const MetaProvider = ({ children }: MetaProviderProps) => {
         platforms: data.platforms || DEFAULT_META.platforms,
         airports: data.airports || DEFAULT_META.airports,
         payment_methods: data.payment_methods || DEFAULT_META.payment_methods,
+        booking_channels: (data as { booking_channels?: string[] }).booking_channels ?? DEFAULT_META.booking_channels,
         categories: data.categories || DEFAULT_META.categories,
         supported_banks: data.banks.map((bank) => bank.id),
         supported_platforms: data.platforms.map((platform) => platform.id),
         availability_start: data.availability_start,
         availability_end: data.availability_end,
         dataset_last_updated_at: data.dataset_last_updated_at,
-        total_offers: DEFAULT_META.total_offers,
+        total_offers: 0,
       };
+      // Fetch total offer count separately (lightweight — limit=1 returns only pagination).
+      try {
+        const countRes = await fetch(`${API_BASE_URL}/api/v1/offers?limit=1`, { signal: AbortSignal.timeout(5000), cache: "no-store" });
+        if (countRes.ok) {
+          const countData = await countRes.json();
+          mergedMeta.total_offers = countData.pagination?.total ?? 0;
+        }
+      } catch { /* non-critical — badge stays hidden */ }
+
       setMeta(mergedMeta);
       log.info("Meta data loaded from API");
     } catch (err) {

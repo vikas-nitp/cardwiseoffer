@@ -69,9 +69,12 @@ describe("mapApiOffer", () => {
   });
 
   describe("label derivation", () => {
-    it("maps display_kind SELECTED_CARD to 'Your Card Offer'", () => {
-      const vm = mapApiOffer(apiOffer({ display_kind: "SELECTED_CARD" }));
-      expect(vm.label).toBe("Your Card Offer");
+    it("maps display_kind to the same internal keys the local ranker emits", () => {
+      const label = (display_kind: string) => mapApiOffer(apiOffer({ display_kind })).label;
+      expect(label("SELECTED_CARD")).toBe("Selected");
+      expect(label("SECOND_SELECTED_CARD")).toBe("Selected Alt");
+      expect(label("DEFAULT_OFFER")).toBe("Default");
+      expect(label("GENERAL_BEST")).toBe("Best Offer");
     });
 
     it("maps display_kind BETTER_ALTERNATIVE correctly", () => {
@@ -172,5 +175,21 @@ describe("mapLocalOffer", () => {
 
   it("always marks sourceType as demo_excel", () => {
     expect(mapLocalOffer(localOffer()).sourceType).toBe("demo_excel");
+  });
+});
+
+describe("mapApiOffer cashback savings", () => {
+  const base = {
+    offer_id: "X", platform_id: "MAKEMYTRIP", platform_name: "MakeMyTrip", offer_title: "t",
+    payment_method: "CREDIT", category: "FLIGHT_DOMESTIC", booking_channel: "WEB",
+    valid_from: "2026-01-01", expiry_date: "2027-01-01", updated_at: "2026-01-01",
+    new_user_only: false, eligibility_notes: [], source_url: "https://example.com",
+  };
+
+  it("treats CASHBACK >= 100 as flat rupees and < 100 as a percentage", () => {
+    const flat = mapApiOffer({ ...base, discount_type: "CASHBACK", discount_value: 500 } as never);
+    const pct = mapApiOffer({ ...base, discount_type: "CASHBACK", discount_value: 5, max_discount: 300 } as never);
+    expect(flat.savings).toBe(500);
+    expect(pct.savings).toBe(300);
   });
 });

@@ -4,8 +4,10 @@ import { repoFetchAllOffersPage, isLocalMode } from "@/services/dataRepo";
 import { filterCatalogueOffers } from "@/domain/offerFiltering";
 import { analytics } from "@/services/analytics";
 import { log } from "@/lib/logger";
+import { useMeta } from "@/contexts/MetaContext";
 
 export function useAllOffers(isActive: boolean, publicAllOffersEnabled: boolean) {
+  const { meta } = useMeta();
   const [allOffers, setAllOffers] = useState<OfferViewModel[]>([]);
   const [offersPage, setOffersPage] = useState(1);
   const [offersTotalPages, setOffersTotalPages] = useState(1);
@@ -27,12 +29,13 @@ export function useAllOffers(isActive: boolean, publicAllOffersEnabled: boolean)
     setAllOffersLoading(true);
     setAllOffersError(null);
     try {
-      // Expand WEB/APP selection to also include WEB_AND_APP offers
+      // Expand WEB/APP to include WEB_AND_APP, then drop any values the backend doesn't know about.
+      const supported = new Set(meta.booking_channels);
       const expandedChannels = channelFilter.length > 0
         ? [...new Set([
             ...channelFilter,
             ...(channelFilter.includes("WEB") || channelFilter.includes("APP") ? ["WEB_AND_APP"] : []),
-          ])]
+          ])].filter((c) => supported.has(c))
         : undefined;
       const result = await repoFetchAllOffersPage({
         bank: bankFilter,
@@ -72,6 +75,7 @@ export function useAllOffers(isActive: boolean, publicAllOffersEnabled: boolean)
     });
   }, [allOffers, bankFilter, platformFilter, paymentFilter, channelFilter]);
 
+  const handleLimitChange = useCallback((v: number) => { setOffersLimit(v); setOffersPage(1); }, []);
   const handleBankFilterChange = useCallback((v: string[]) => { setBankFilter(v); setOffersPage(1); }, []);
   const handlePlatformFilterChange = useCallback((v: string[]) => { setPlatformFilter(v); setOffersPage(1); }, []);
   const handlePaymentFilterChange = useCallback((v: string[]) => { setPaymentFilter(v); setOffersPage(1); }, []);
@@ -85,7 +89,7 @@ export function useAllOffers(isActive: boolean, publicAllOffersEnabled: boolean)
     filteredAllOffers, allOffersLoading, allOffersError,
     bankFilter, platformFilter, paymentFilter, channelFilter,
     offersPage, setOffersPage, offersTotalPages, offersTotalCount,
-    offersLimit, setOffersLimit,
+    offersLimit, setOffersLimit: handleLimitChange,
     handleBankFilterChange, handlePlatformFilterChange, handlePaymentFilterChange, handleChannelFilterChange,
     handleResetFilters,
   };

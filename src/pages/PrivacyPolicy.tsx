@@ -82,8 +82,9 @@ const PrivacyPolicy = () => {
             any other third party.
           </p>
           <p>
-            Offer data displayed on this site is sourced from publicly available bank and booking platform
-            promotions. Submitting a search does not send your personal data to any external service.
+            Offer data displayed on this site is collected automatically from publicly accessible offer pages
+            on booking platforms and bank websites. No login or account access is used to retrieve this data.
+            Submitting a search does not send your personal data to any external service.
           </p>
         </Section>
 
@@ -149,6 +150,12 @@ const PrivacyPolicy = () => {
               <strong className="text-foreground/80">Anonymous visitor ID</strong> — a randomly generated
               identifier used to count unique sessions. Contains no personal information.
               Stored in <code className="text-[12px] bg-muted px-1.5 py-0.5 rounded font-mono">localStorage</code>.
+            </li>
+            <li>
+              <strong className="text-foreground/80">Saved-cards ID</strong> — if you use the saved cards or
+              notification settings on your profile, a random identifier (no personal information) is stored in{" "}
+              <code className="text-[12px] bg-muted px-1.5 py-0.5 rounded font-mono">localStorage</code> and sent to our
+              server so your saved cards stay separate from other visitors'. It is only created when you open those features.
             </li>
           </ul>
           <p className="mt-3">

@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { API_BASE_URL } from "@/constants";
+import { userFetch } from "@/lib/userSession";
 
 export interface CardRecord {
   card_id: string;
   bank_id: string;
   card_name: string | null;
-  payment_method: "CREDIT_CARD" | "DEBIT_CARD";
+  payment_method: "CREDIT" | "DEBIT";
 }
 
 interface UseUserCardsOptions {
@@ -32,7 +32,7 @@ export function useUserCards({ enabled }: UseUserCardsOptions): UseUserCardsResu
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/user/cards`, {
+      const res = await userFetch("/api/v1/user/cards", {
         headers: { "Content-Type": "application/json" },
       });
       if (!res.ok) {

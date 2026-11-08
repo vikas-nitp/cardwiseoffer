@@ -5,6 +5,7 @@ export function resolveFeatureCapabilities(flags: FeatureFlags) {
     phase2UserFeatures: flags.phase2UserFeaturesEnabled,
     publicAllOffers: flags.publicAllOffersEnabled,
     couponCode: flags.couponCodeEnabled,
+    flightInternational: flags.flightInternationalEnabled,
     cookieConsent: flags.cookieConsentEnabled,
     analytics: flags.analyticsEnabled,
     bookingAmountComparison: flags.bookingAmountComparisonEnabled,
@@ -20,5 +21,6 @@ export function resolveFeatureCapabilities(flags: FeatureFlags) {
     subscriptions: flags.subscriptionsEnabled,
     userCards: flags.userCardsEnabled,
     notifications: flags.notificationsEnabled,
+    tieredDiscount: flags.tieredDiscountEnabled,
   };
 }

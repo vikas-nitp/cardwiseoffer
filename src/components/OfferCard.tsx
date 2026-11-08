@@ -1,4 +1,4 @@
-import { ExternalLink, Star, TrendingUp, Gift, CreditCard, Smartphone, Globe, Tag, Calendar, UserCheck, Clock, ArrowDownCircle, Info, Repeat2, Users } from "lucide-react";
+import { ExternalLink, Star, TrendingUp, Gift, CreditCard, Smartphone, Globe, Tag, Calendar, UserCheck, Clock, ArrowDownCircle, Info, Repeat2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { OfferViewModel } from "@/types/offer";
 import { validityLabel, isOfferExpired, isOfferUpcoming } from "@/domain/offerValidity";
@@ -52,19 +52,6 @@ function formatValidDays(days: number[]): string | null {
   return sorted.map((d) => DAY_NAMES[d]).join(" · ") + " only";
 }
 
-// Eligibility notes that are garbage/redundant — filtered before display.
-// Raw-scraped notes often contain page navigation, T&C blobs, or info already
-// shown via structured fields (validity date, bank, card type, channel).
-const GARBAGE_NOTE_RE =
-  /customer\s+service|log\s*in\s*[/|]\s*sign\s*up|sign\s*in|my\s+account|recent\s+search|search\s+flights|about\s+the\s+offer|what\s+do\s+you\s+get|how\s+do\s+you\s+get|the\s+customer\s+will|customers?\s+will\s+get|to\s+avail\s+the\s+offer|adventure\s+holidays|deal\s+of\s+the\s+day|fly\s+&\s+save|no\s+card|partial\s+evidence|unverified|draft\s+offer|hidden|inactive|app\s+only|website\s+only|expires\s+\d+|expires\s+on\b|valid\s+(mon|tue|wed|thu|fri|sat|sun)|valid\s+(?:for\s+bookings?\s+)?(?:till|until|through)\s+\d|valid\s+(?:for\s+bookings?)\s+till|carry-forward|not\s+seen\s+in\s+this\s+run|also\s+found\s+at:|^domestic\s+flights?$|^international\s+flights?$|great\s+offers?\s*&\s*amazing\s+deals|min(?:imum)?\.?\s+booking\s+(?:INR|Rs\.?|₹)|coupon\s+code\s*:|validity\s*:|(?:get\s+)?up\s+to\s+[₹]\s*[\d,]+\s+off\b|up\s+to\s+INR\s+[\d,]+\s+off\b|\d+\s+days?\s+left\b|use\s+code\s*[:\t]|^\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+20\d{2}$|^about\s+the\b|terms\s*&\s*conditions?\b|^t\s*&\s*c\b/i;
-
-function isUsableNote(note: string): boolean {
-  const trimmed = note.trim();
-  if (trimmed.length < 13) return false;         // too short to be meaningful (truncated fragments)
-  if (trimmed.length > 110) return false;         // T&C blobs are always too long
-  if ((trimmed.match(/;/g) ?? []).length >= 2) return false; // Ixigo nav concatenation
-  return !GARBAGE_NOTE_RE.test(trimmed);
-}
 
 const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = false, userFareProvided = false, searchDate, onExpand }: OfferCardProps) => {
   const { flags } = useFeatureFlags();
@@ -82,7 +69,7 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
   const canBook = !!ctaHref && isAllowed(ctaHref) && !expired && !upcoming;
   const isNoCard = offer.paymentMethod === "NO_CARD" || offer.bank === null;
   const badgeLabel = label ?? offer.label;
-  const showCoupon = capabilities.couponCode && offer.couponCode && !/^(PARTIAL|DRAFT|TEST|UNKNOWN|N\/A)$/i.test(offer.couponCode);
+  const showCoupon = capabilities.couponCode && offer.couponCode && !/^(PARTIAL|DRAFT|TEST|UNKNOWN|N\/A|AIRLINE|LINKS)$/i.test(offer.couponCode);
 
   const displayCardName = (() => {
     if (!offer.cardName) return offer.bankDisplay ?? null;
@@ -109,8 +96,6 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
   const isNoCostEmi = /no[\s-]*cost[\s-]*emi|interest[\s-]*free/i.test(offer.offerTitle);
   const hasEmi = !!(offer.couponCode && /EMI/i.test(offer.couponCode)) || /\bemi\b/i.test(offer.offerTitle);
   const emiLabel = hasEmi ? (isNoCostEmi ? "No Cost EMI" : "EMI") : null;
-  const visibleNotes = [...new Set(offer.eligibilityNotes.filter(isUsableNote))].slice(0, 2);
-
   const cardAriaLabel = isNoCard
     ? `Platform Offer on ${offer.platformName}: ${savingsLabel(offer)}`
     : `${offer.bankDisplay ?? offer.bank} offer on ${offer.platformName}: ${savingsLabel(offer)}`;
@@ -183,11 +168,18 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
                   Debit
                 </span>
               )}
+              {offer.paymentMethod === "CREDIT" && !/(credit|signature|infinite|platinum|select|reserve|world|elite|titanium)/i.test(displayCardName ?? "") && (
+                <span className="inline-flex text-[10px] font-semibold text-foreground bg-muted/50 border border-border/40 px-2 py-0.5 rounded-md">
+                  Credit
+                </span>
+              )}
             </div>
           </div>
         )}
         {offer.minTransaction ? (
           <Condition icon={ArrowDownCircle} text={`Min. ₹${offer.minTransaction.toLocaleString()}`} />
+        ) : offer.discountType === "FLAT" ? (
+          <Condition icon={ArrowDownCircle} text="No minimum spend" />
         ) : null}
         {offer.discountType === "FLAT" && offer.maxDiscount && offer.maxDiscount !== offer.discountValue ? (
           <Condition icon={Tag} text={`Max discount ₹${offer.maxDiscount.toLocaleString()}`} />
@@ -195,12 +187,10 @@ const OfferCard = ({ offer, variant = "neutral", label, extraLabel, compact = fa
         {emiLabel && <Condition icon={Repeat2} text={emiLabel} />}
         <Condition icon={Calendar} text={validity} tone={expired ? "danger" : upcoming ? "warn" : "muted"} />
         {offer.newUserOnly && <Condition icon={UserCheck} text="New users only" />}
-        {offer.usageLimit && <Condition icon={Users} text={offer.usageLimit} />}
         {offer.validDays && offer.validDays.length > 0 && offer.validDays.length < 7 && (() => {
           const label = formatValidDays(offer.validDays!);
           return label ? <Condition icon={Clock} text={label} tone="warn" /> : null;
         })()}
-        {visibleNotes.map((note) => <Condition key={note} icon={Info} text={note} />)}
         {userFareProvided && offer.amountEligible === false && <Condition icon={Info} text="Below minimum booking amount" tone="warn" />}
       </div>
 

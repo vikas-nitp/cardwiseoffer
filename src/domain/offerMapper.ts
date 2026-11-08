@@ -34,10 +34,11 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     "estimated_savings" in raw ? raw.estimated_savings ?? undefined : undefined;
   const displayKind = "display_kind" in raw ? raw.display_kind : undefined;
   const labelByKind: Record<string, string> = {
-    SELECTED_CARD: "Your Card Offer",
-    SECOND_SELECTED_CARD: "Second Selected Card",
+    // Internal keys shared with the local ranker; ResultsSection.decorateResults turns them into display text.
+    SELECTED_CARD: "Selected",
+    SECOND_SELECTED_CARD: "Selected Alt",
     BETTER_ALTERNATIVE: "Better Alternative",
-    DEFAULT_OFFER: "Default Offer (No Card)",
+    DEFAULT_OFFER: "Default",
     GENERAL_BEST: "Best Offer",
   };
 
@@ -62,7 +63,10 @@ export function mapApiOffer(raw: ApiOffer): OfferViewModel {
     comparisonText: "comparison_text" in raw ? raw.comparison_text ?? null : null,
     savings:
       estimatedSavings ??
-      (raw.discount_type === "FLAT" ? discountValue : maxDiscount ?? 0),
+      // CASHBACK values of 100+ are flat rupees, below 100 are percentages (same rule as estimateSavings).
+      (raw.discount_type === "FLAT" || (raw.discount_type === "CASHBACK" && discountValue >= 100)
+        ? discountValue
+        : maxDiscount ?? 0),
     paymentMethod: raw.payment_method,
     bookingChannel: raw.booking_channel,
     newUserOnly: raw.new_user_only,

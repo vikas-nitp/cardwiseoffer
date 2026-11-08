@@ -9,11 +9,11 @@ export function getDataMode(): DataMode {
 export const IS_LOCAL_MODE = getDataMode() === "local";
 export const IS_API_MODE = getDataMode() === "api";
 
-// Fail loudly at module load time if a production build is serving mock data.
-// VITE_DATA_SOURCE must be set to "api" in all production deployments.
+// Warn if a production build is running in local (bundled-data) mode.
+// Set VITE_DATA_SOURCE=api when a live backend is available.
 if (import.meta.env.PROD && getDataMode() !== "api") {
-  throw new Error(
-    "Production build started with VITE_DATA_SOURCE != 'api'. " +
-    "Set VITE_DATA_SOURCE=api in your Vercel / CI environment variables."
+  console.warn(
+    "Production build running with VITE_DATA_SOURCE=local (bundled data). " +
+    "Set VITE_DATA_SOURCE=api when a live backend is available."
   );
 }

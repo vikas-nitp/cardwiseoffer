@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { ArrowRight, Search, AlertCircle, Calendar as CalendarIcon, Star, Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -130,7 +130,7 @@ const ResultsSection = ({
   searchState, searchLoading, searchError,
   searchResults, strip7days, onDateChange, onEditSearch,
 }: ResultsSectionProps) => {
-  const { getBankDisplayName } = useMeta();
+  const { getBankDisplayName, meta } = useMeta();
   const [payFilter, setPayFilter] = useState<PayFilter>("all");
   const [selectedOffer, setSelectedOffer] = useState<OfferViewModel | null>(null);
 
@@ -212,7 +212,12 @@ const ResultsSection = ({
       <>
         {strip7days.length > 0 && strip7days.some((d) => d.displayText !== DATE_STRIP_NO_OFFERS_LABEL) && (
           <div className={cn(stripCenter, "mb-5")}>
-            <DateStrip selectedDate={searchState.date} onDateChange={onDateChange} strip7days={strip7days} />
+            <DateStrip
+              selectedDate={searchState.date}
+              onDateChange={onDateChange}
+              strip7days={strip7days}
+              maxDate={meta.availability_end ? parseISO(meta.availability_end) : undefined}
+            />
           </div>
         )}
         {banksWithNoOffers.length > 0 && searchResults.length > 0 && (

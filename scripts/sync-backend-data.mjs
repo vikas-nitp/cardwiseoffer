@@ -20,13 +20,38 @@
  */
 
 import { readFile, writeFile, cp, mkdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
-const backendRoot = resolve(root, "../cwo_backend");
+// Sibling checkout by default; set CWO_BACKEND_DIR to point elsewhere (e.g. in CI).
+const backendRoot = process.env.CWO_BACKEND_DIR
+  ? resolve(process.env.CWO_BACKEND_DIR)
+  : resolve(root, "../cwo_backend");
 const generatedSrc = resolve(backendRoot, "data/generated");
 const destination = resolve(root, "src/data/generated");
 const backendContract = resolve(backendRoot, "contracts/openapi.json");
+
+// Validate every input up front so a bad checkout never leaves src/data/generated half-updated.
+const requiredInputs = [
+  "data/generated/offers.snapshot.json",
+  "data/generated/metadata.snapshot.json",
+  "data/generated/facets.snapshot.json",
+  "data/generated/manifest.json",
+  "data/generated/validation-report.json",
+  "data/config/feature_flags.json",
+  "data/airports.json",
+  "contracts/openapi.json",
+  "contracts/examples",
+];
+const missing = requiredInputs.filter((p) => !existsSync(resolve(backendRoot, p)));
+if (missing.length > 0) {
+  console.error(
+    `Backend checkout at ${backendRoot} is missing:\n  ${missing.join("\n  ")}\n` +
+      "Run `python scripts/build_data_bundle.py` in cwo_backend first (or set CWO_BACKEND_DIR).",
+  );
+  process.exit(1);
+}
 
 await mkdir(destination, { recursive: true });
 
