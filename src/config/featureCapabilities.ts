@@ -22,5 +22,7 @@ export function resolveFeatureCapabilities(flags: FeatureFlags) {
     userCards: flags.userCardsEnabled,
     notifications: flags.notificationsEnabled,
     tieredDiscount: flags.tieredDiscountEnabled,
+    instagram: flags.instagramEnabled,
+    youtube: flags.youtubeEnabled,
   };
 }
