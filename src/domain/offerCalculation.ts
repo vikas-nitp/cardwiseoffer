@@ -48,11 +48,7 @@ export function savingsLabel(offer: OfferViewModel): string {
   if (offer.discountType === "FLAT") {
     const amt = estimateSavings(offer);
     if (amt <= 0) return "Offer available";
-    if (offer.minTransaction && offer.minTransaction > 0) {
-      const pct = Math.round((amt / offer.minTransaction) * 100 * 10) / 10;
-      if (pct >= 1 && pct < 50) return `~${pct}% off · up to ₹${amt.toLocaleString()}`;
-    }
-    return `₹${amt.toLocaleString()} off`;
+    return `Flat ₹${amt.toLocaleString()} off`;
   }
   // PERCENT
   const cap = offer.maxDiscount ? ` · up to ₹${offer.maxDiscount.toLocaleString()}` : "";
