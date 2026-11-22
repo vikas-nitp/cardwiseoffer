@@ -63,9 +63,9 @@ describe("savingsLabel", () => {
     expect(savingsLabel(o)).toBe("12% off");
   });
 
-  it("FLAT shows rupee amount", () => {
+  it("FLAT shows flat rupee label", () => {
     const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 2000, maxDiscount: null };
-    expect(savingsLabel(o)).toBe("₹2,000 off");
+    expect(savingsLabel(o)).toBe("Flat ₹2,000 off");
   });
 
   it("FLAT with zero discount shows Offer available", () => {
@@ -73,35 +73,28 @@ describe("savingsLabel", () => {
     expect(savingsLabel(o)).toBe("Offer available");
   });
 
-  describe("FLAT — Option B hero label format", () => {
-    it("shows percentage when pct is in range 1–49%", () => {
+  describe("FLAT — always shows fixed rupee, never a percentage", () => {
+    it("shows flat label regardless of min_transaction ratio", () => {
       const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 2000, minTransaction: 10000 };
-      expect(savingsLabel(o)).toBe("~20% off · up to ₹2,000");
-    });
-
-    it("shows percentage when pct is ~30%", () => {
-      // ₹3,000 off on ₹10,000 min = 30%
-      const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 3000, minTransaction: 10000 };
-      expect(savingsLabel(o)).toBe("~30% off · up to ₹3,000");
-    });
-
-    it("suppresses percentage when pct is exactly 100% (Paytm tiered offer bug)", () => {
-      // HSBC scenario: ₹5,000 discount / ₹5,000 min_transaction = 100%
-      // This is a data artifact from paired tiers, not a real savings rate.
-      const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 5000, minTransaction: 5000 };
-      expect(savingsLabel(o)).toBe("₹5,000 off");
-    });
-
-    it("suppresses percentage when pct is >= 50%", () => {
-      // ₹5,000 off on ₹10,000 min = 50% — at the boundary, not shown
-      const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 5000, minTransaction: 10000 };
-      expect(savingsLabel(o)).toBe("₹5,000 off");
+      expect(savingsLabel(o)).toBe("Flat ₹2,000 off");
       expect(savingsLabel(o)).not.toContain("%");
     });
 
-    it("never shows percentage hint when minTransaction is null", () => {
+    it("shows flat label when ratio would be ~30%", () => {
+      const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 3000, minTransaction: 10000 };
+      expect(savingsLabel(o)).toBe("Flat ₹3,000 off");
+      expect(savingsLabel(o)).not.toContain("%");
+    });
+
+    it("shows flat label when ratio is 100%", () => {
+      const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 5000, minTransaction: 5000 };
+      expect(savingsLabel(o)).toBe("Flat ₹5,000 off");
+      expect(savingsLabel(o)).not.toContain("%");
+    });
+
+    it("shows flat label when minTransaction is null", () => {
       const o: OfferViewModel = { ...base, discountType: "FLAT", discountValue: 2000, minTransaction: null };
-      expect(savingsLabel(o)).toBe("₹2,000 off");
+      expect(savingsLabel(o)).toBe("Flat ₹2,000 off");
       expect(savingsLabel(o)).not.toContain("%");
     });
   });

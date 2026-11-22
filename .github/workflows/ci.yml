@@ -24,6 +24,11 @@ jobs:
           BRANCH: ${{ github.head_ref || github.ref_name }}
           TOKEN: ${{ secrets.BACKEND_REPO_TOKEN }}
         run: |
+          if [ -z "$TOKEN" ]; then
+            echo "BACKEND_REPO_TOKEN not set — skipping backend sync"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           auth=$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)
           set +e
           git -c "http.extraheader=AUTHORIZATION: basic $auth" ls-remote --exit-code --heads "https://github.com/$REPO.git" "refs/heads/$BRANCH" >/dev/null
@@ -36,8 +41,10 @@ jobs:
           esac
           echo "Using $REPO@$ref"
           echo "ref=$ref" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
 
       - name: Check out backend
+        if: steps.backend_ref.outputs.skip != 'true'
         uses: actions/checkout@v4
         with:
           repository: vikas-nitp/cwo_backend
@@ -45,11 +52,14 @@ jobs:
           ref: ${{ steps.backend_ref.outputs.ref }}
           path: backend
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        if: steps.backend_ref.outputs.skip != 'true'
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Build backend data bundle
+        if: steps.backend_ref.outputs.skip != 'true'
         run: |
           pip install -r backend/requirements.txt
           python backend/scripts/build_data_bundle.py
@@ -63,11 +73,13 @@ jobs:
         run: npm ci
 
       - name: Sync backend data + contract
+        if: steps.backend_ref.outputs.skip != 'true'
         run: npm run data:build
         env:
           CWO_BACKEND_DIR: ${{ github.workspace }}/backend
 
       - name: Contract and generated API types are in sync with backend
+        if: steps.backend_ref.outputs.skip != 'true'
         run: |
           npm run check:api-types
           test -z "$(git status --porcelain -- contracts src/types)" || { git status --short -- contracts src/types; exit 1; }
