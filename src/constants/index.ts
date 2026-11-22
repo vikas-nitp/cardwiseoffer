@@ -59,9 +59,15 @@ export const DISCLAIMER_TEXT =
 // Contact
 // ────────────────────────────────────────────────────────────────────
 
-export const APP_DOMAIN = "cardsage.in";
-export const SUPPORT_EMAIL = "support@cardsage.in";
-export const GRIEVANCE_EMAIL = "grievance@cardsage.in";
+export const APP_DOMAIN = "cardoptimal.in";
+export const SUPPORT_EMAIL = "support@cardoptimal.in";
+export const GRIEVANCE_EMAIL = "grievance@cardoptimal.in";
+
+// Social — set URLs when accounts are live; keep empty string until then
+export const SOCIAL_LINKS = {
+  INSTAGRAM: "",
+  YOUTUBE: "",
+} as const;
 
 // ────────────────────────────────────────────────────────────────────
 // Date Strip
